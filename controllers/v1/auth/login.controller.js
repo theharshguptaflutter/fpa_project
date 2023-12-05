@@ -1,6 +1,6 @@
 const tableNames = require("../../../utils/table_name");
 const { v4: uuidv4 } = require("uuid");
-
+const otpTimeValidation = require("../../../utils/otp_time_checker");
 const {
   success,
   error,
@@ -17,9 +17,7 @@ async function login(req, res) {
     let SqlQuery = await tableNames.User.findOne({
       where: { user_number: mobile_number },
     });
-    console.log(SqlQuery);
 
-    //const otpcode = Math.floor(1000 + Math.random() * 9000);
     var otpcode = 1234;
 
     const vvcode = uuidv4();
@@ -39,15 +37,14 @@ async function login(req, res) {
     });
 
     if (UserOtp === 0) {
-      error(res, "Otp not send", 404);
+      error(res, "Otp not send");
     } else {
-      //await sendOtpApi(mobile_number, otpcode);
-      success(res, "Verification code", {
+      success(res, "Verification code Found", "Verification code Not Found", {
         verification_code: UserOtp["verification_code"],
       });
     }
   } else {
-    error(res, "Enter your number", 404);
+    error(res, "Enter your number", 1);
   }
 }
 
@@ -55,30 +52,42 @@ async function otpverify(req, res) {
   const otp = req.body.otp;
   const verification_code = req.body.verification_code;
 
-  let otpData = await tableNames.Otp.findOne({
+  if (verification_code == null || verification_code == "") {
+    error(res, "Enter your number", 1);
+  }
+
+  let otpFindQuery = await tableNames.Otp.findOne({
     where: {
       otp_code: otp,
       verification_code: verification_code,
     },
   });
-  if (otpData) {
-    var data = otpData.toJSON();
 
-    var otp_active_status = data["otp_active_status"];
-
-    if (otp_active_status == 1) {
-      error(res, "Otp already verified", 404);
+  if (otpFindQuery == null) {
+    error(res, "Otp not inserted", 409, 1);
+  } else if (otpFindQuery["otp_active_status"] == 1) {
+    error(res, "Otp already verified", 404, 1);
+  } else if (
+    otpFindQuery["otp_code"] != otp ||
+    otpFindQuery["verification_code"] != verification_code
+  ) {
+    error(res, "Otp not match", 404, 1);
+  } else {
+    var otpTimestamp = otpFindQuery["otp_creation_dt"];
+    var isExpired = await otpTimeValidation(otpTimestamp);
+    if (isExpired) {
+      console.log("OTP has expired");
+      error(res, "OTP has expired", 410, 1);
     } else {
+      var data = otpFindQuery.toJSON();
+
       if (data["user_id"] == null) {
         var otp_id = data["otp_id"];
-
         var otpActivate = 1;
         var u_number = data["number"];
-        const coin = 200;
 
         let userinfo = {
-          userNumber: u_number,
-          coin: coin,
+          user_number: u_number,
         };
 
         const user = await tableNames.User.create(userinfo);
@@ -86,66 +95,124 @@ async function otpverify(req, res) {
           const privatekey = process.env.privateKey;
           let params = {
             user_id: user["user_id"],
-            userNumber: user["userNumber"],
+            user_number: user["user_number"],
           };
           const token = await jwt.sign(params, privatekey, {
             expiresIn: "365d",
           });
 
           if (!token) {
-            error(res, "Token not generated", 404);
+            error(res, "Token not generated", 409, 1);
           } else {
             let tokeninfo = {
               user_id: user["user_id"],
-              number: user["userNumber"],
+              user_number: user["user_number"],
               gen_token: token,
             };
-            const sqlquery1 = await tableNames.gen_token.create(tokeninfo);
+            const accessTokensGenInsetQuery =
+              await tableNames.accessTokens.create(tokeninfo);
+            if (!accessTokensGenInsetQuery) {
+              error(res, "Generated token not inserted into db", 404, 1);
+            } else {
+              const otpVerified = await tableNames.Otp.update(
+                {
+                  otp_active_status: otpActivate,
+                },
+                { where: { otp_id: otp_id } }
+              );
+
+              if (!otpVerified) {
+                error(res, "Otp not verified", 404, 1);
+              } else {
+                // success1(res, "user has been logout", 200);
+                res.status(200).send({
+                  status: 200,
+                  isuserfound: false,
+                  message: "Otp verified successfully",
+                  user_details: [
+                    {
+                      user_id: user["user_id"],
+                      name: user["name"] ?? " ",
+                      avatar: user["avatar"] ?? " ",
+                      email: user["email"] ?? " ",
+                      user_number: user["user_number"] ?? " ",
+                      city_id: user["city_id"] ?? " ",
+                      state_id: user["state_id"] ?? " ",
+                      user_online_status: user["user_online_status"],
+                      user_delete_flag: user["user_delete_flag"],
+                      token: token ?? " ",
+                    },
+                  ],
+                });
+              }
+            }
+          }
+        }
+      } else {
+        var otp_active_status = data["otp_active_status"];
+
+        uuid = data["user_id"];
+        let userData = await tableNames.User.findOne({
+          where: { user_id: uuid },
+        });
+
+        if (userData != null) {
+          const privatekey = process.env.privateKey;
+          let params = {
+            user_id: userData["user_id"],
+            user_number: userData["user_number"],
+          };
+          const token = await jwt.sign(params, privatekey, {
+            expiresIn: "365Y",
+          });
+
+          if (!token) {
+            error(res, "Token not generated", 404, 1);
+          } else {
+            let tokeninfo = {
+              user_id: userData["user_id"],
+
+              gen_token: token,
+            };
+            const sqlquery1 = await tableNames.accessTokens.create(tokeninfo);
             if (!sqlquery1) {
               error(res, "Generated token not inserted into db", 404);
             } else {
-              let transactioninfo = {
-                user_id: user["user_id"],
-                booking_id: null,
-                reason: "New Registration",
-                type: "in",
-                coins: coin,
-              };
-
-              const sqlquery = await tableNames.walletsTransaction.create(
-                transactioninfo
+              const otpVerified = await tableNames.Otp.update(
+                {
+                  otp_active_status: 1,
+                },
+                { where: { otp_id: data["otp_id"] } }
               );
-              if (!sqlquery) {
-                error(res, "transaction wallet not added", 404);
-              } else {
-                const otpVerified = await tableNames.Otp.update(
-                  {
-                    otp_active_status: otpActivate,
-                  },
-                  { where: { otp_id: otp_id } }
-                );
 
-                if (!otpVerified) {
-                  error(res, "Otp not verified", 404);
+              if (!otpVerified) {
+                error(res, "Otp not verified", 404);
+              } else {
+                const userOnlineStatus = await tableNames.User.update(
+                  {
+                    user_online_status: 0,
+                  },
+                  { where: { user_id: uuid } }
+                );
+                if (!userOnlineStatus) {
+                  error(res, "user online status not changes", 209);
                 } else {
                   res.status(200).send({
                     status: 200,
-                    isuserfound: false,
+                    isuserfound: true,
                     message: "Otp verified successfully",
                     user_details: [
                       {
-                        user_id: user["user_id"],
-                        reseller_id: user["reseller_id"],
-                        name: user["user_name"] ?? " ",
-                        photo: user["user_photo"] ?? " ",
-                        email: user["userEmail"] ?? " ",
-                        password: user["userPassword"] ?? " ",
-                        number: user["userNumber"] ?? " ",
-                        city: user["usercity"] ?? " ",
-                        state: user["userstate"] ?? " ",
-                        coin: user["coin"] ?? " ",
-                        user_online_status: user["user_online_status"],
-                        user_active_status: user["user_delete_flag"],
+                        user_id: userData["user_id"],
+                        name: userData["name"] ?? " ",
+                        avatar: userData["avatar"] ?? " ",
+                        user_photo: userData["user_photo"] ?? " ",
+                        email: userData["email"] ?? " ",
+                        user_number: userData["user_number"] ?? " ",
+                        city_id: userData["city_id"] ?? " ",
+                        state_id: userData["state_id"] ?? " ",
+                        user_online_status: userData["user_online_status"],
+                        user_delete_flag: userData["user_delete_flag"],
                         token: token ?? " ",
                       },
                     ],
@@ -154,93 +221,11 @@ async function otpverify(req, res) {
               }
             }
           }
-        }
-      } else {
-        var otp_active_status = data["otp_active_status"];
-        if (otp_active_status == 1) {
-          error(res, "Otp already verified", 404);
         } else {
-          uuid = data["user_id"];
-          let userData = await tableNames.User.findOne({
-            where: { user_id: uuid },
-          });
-
-          if (userData != null) {
-            const privatekey = process.env.privateKey;
-            let params = {
-              user_id: userData["user_id"],
-              userNumber: userData["userNumber"],
-            };
-            const token = await jwt.sign(params, privatekey, {
-              expiresIn: "10d",
-            });
-
-            if (!token) {
-              error(res, "Token not generated", 404);
-            } else {
-              let tokeninfo = {
-                user_id: userData["user_id"],
-                number: userData["userNumber"],
-                gen_token: token,
-              };
-              const sqlquery1 = await tableNames.gen_token.create(tokeninfo);
-              if (!sqlquery1) {
-                error(res, "Generated token not inserted into db", 404);
-              } else {
-                const otpVerified = await tableNames.Otp.update(
-                  {
-                    otp_active_status: 1,
-                  },
-                  { where: { otp_id: data["otp_id"] } }
-                );
-
-                if (!otpVerified) {
-                  error(res, "Otp not verified", 404);
-                } else {
-                  const userOnlineStatus = await tableNames.User.update(
-                    {
-                      user_online_status: 0,
-                    },
-                    { where: { user_id: uuid } }
-                  );
-                  if (!userOnlineStatus) {
-                    error(res, "user online status not changes", 209);
-                  } else {
-                    res.status(200).send({
-                      status: 200,
-                      isuserfound: true,
-                      message: "Otp verified successfully",
-                      user_details: [
-                        {
-                          user_id: userData["user_id"],
-                          reseller_id: userData["reseller_id"],
-                          name: userData["user_name"] ?? " ",
-                          photo: userData["user_photo"] ?? " ",
-                          email: userData["userEmail"] ?? " ",
-                          password: userData["userPassword"] ?? " ",
-                          number: userData["userNumber"] ?? " ",
-                          city: userData["usercity"] ?? " ",
-                          state: userData["userstate"] ?? " ",
-                          coin: userData["coin"] ?? " ",
-                          user_online_status: userData["user_online_status"],
-
-                          user_active_status: userData["user_delete_flag"],
-                          token: token ?? " ",
-                        },
-                      ],
-                    });
-                  }
-                }
-              }
-            }
-          } else {
-            error(res, "user not found", 404);
-          }
+          error(res, "user not found", 404, 1);
         }
       }
     }
-  } else {
-    error(res, "Otp wrong", 404);
   }
 }
 

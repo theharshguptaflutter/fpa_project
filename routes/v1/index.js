@@ -6,6 +6,6 @@ const auth = require("./auth");
 const profile = require("./profile");
 
 router.use("/auth", auth);
-router.use("/user", profile);
+router.use("/user",authJWT, profile);
 
 module.exports = router;

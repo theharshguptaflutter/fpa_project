@@ -18,14 +18,14 @@ async function s3Upload(image, BUCKET_NAME = process.env.BUCKET_NAME) {
   var imageData = Buffer.from(base64String, "base64");
 
   var uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-  var fileName = uniqueSuffix + ".png";
+  var fileName = uniqueSuffix + ".glb";
 
   const params = {
     Bucket: BUCKET_NAME,
     Key: fileName,
     Body: imageData,
     ACL: "public-read",
-    ContentType: "image/png",
+    ContentType: "model/gltf-binary",
   };
 
   return new Promise((resolve, reject) => {
@@ -33,7 +33,7 @@ async function s3Upload(image, BUCKET_NAME = process.env.BUCKET_NAME) {
       if (err) {
         reject(err);
       } else {
-        console.log(data["Location"]);
+        //  console.log(data["Location"]);
         resolve(data["Location"]);
       }
     });

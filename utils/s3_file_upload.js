@@ -24,7 +24,7 @@ async function s3Upload(image, BUCKET_NAME = process.env.BUCKET_NAME) {
     Bucket: BUCKET_NAME,
     Key: fileName,
     Body: imageData,
-    acl: "public-read",
+    ACL: "public-read",
     ContentType: "image/png",
   };
 

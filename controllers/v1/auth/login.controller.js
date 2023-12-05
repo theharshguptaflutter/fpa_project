@@ -4,7 +4,7 @@ const otpTimeValidation = require("../../../utils/otp_time_checker");
 const {
   success,
   error,
-  validation,
+  successWithdata,
   success1,
 } = require("../../../utils/responseApi");
 
@@ -39,9 +39,14 @@ async function login(req, res) {
     if (UserOtp === 0) {
       error(res, "Otp not send");
     } else {
-      success(res, "Verification code Found", "Verification code Not Found", {
-        verification_code: UserOtp["verification_code"],
-      });
+      successWithdata(
+        res,
+        "Verification code Found",
+        "Verification code Not Found",
+        {
+          verification_code: UserOtp["verification_code"],
+        }
+      );
     }
   } else {
     error(res, "Enter your number", 1);

@@ -1,6 +1,10 @@
 const tableNames = require("../../../utils/table_name");
 
-const { success, error } = require("../../../utils/responseApi");
+const {
+  success,
+  error,
+  successWithdata,
+} = require("../../../utils/responseApi");
 const editParameterQuery = require("../../../utils/edit_query");
 const { s3Upload } = require("../../../utils/s3_file_upload");
 async function userProfileUpdate(req, res) {
@@ -8,10 +12,10 @@ async function userProfileUpdate(req, res) {
     var user_id = req.params.user_id;
     var user_avatar = req.body.avatar;
 
-    if ( user_avatar != "") {
+    if (user_avatar != "") {
       user_avatar = await s3Upload(user_avatar);
     }
-   
+
     let profileUpdateInfo = {
       role: req.body.role,
       state_id: req.body.state_id,
@@ -42,6 +46,21 @@ async function userProfileUpdate(req, res) {
   }
 }
 
+async function getUserProfile(req, res) {
+  var user_id = req.params.user_id;
+  let userFindQuery = await tableNames.User.findOne({
+    where: { user_id: user_id, user_delete_flag: 0 },
+  });
+  successWithdata(
+    res,
+    "User profle details found",
+    "User profile details not found",
+    userFindQuery,
+    0
+  );
+}
+
 module.exports = {
   userProfileUpdate,
+  getUserProfile,
 };

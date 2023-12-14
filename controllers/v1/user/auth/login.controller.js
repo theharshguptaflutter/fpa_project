@@ -1,12 +1,12 @@
-const tableNames = require("../../../utils/table_name");
+const tableNames = require("../../../../utils/table_name");
 const { v4: uuidv4 } = require("uuid");
-const otpTimeValidation = require("../../../utils/otp_time_checker");
+const otpTimeValidation = require("../../../../utils/otp_time_checker");
 const {
   success,
   error,
   successWithdata,
   success1,
-} = require("../../../utils/responseApi");
+} = require("../../../../utils/responseApi");
 
 var jwt = require("jsonwebtoken");
 

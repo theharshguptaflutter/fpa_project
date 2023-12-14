@@ -18,6 +18,11 @@ const db = {};
 db.sequelize = sequelize;
 
 db.users = require("../models/auth/user.model.js")(sequelize, DataTypes);
+
+db.doctor_user = require("../models/doctor/doctor_user/doctor.model.js")(
+  sequelize,
+  DataTypes
+);
 db.Otp = require("../models/otp/otp.model.js")(sequelize, DataTypes);
 db.access_token = require("../models/access_token/access_tokens.model.js")(
   sequelize,
@@ -27,7 +32,16 @@ db.access_token = require("../models/access_token/access_tokens.model.js")(
 db.city = require("../models/city/city.model.js")(sequelize, DataTypes);
 db.state = require("../models/state/state.model.js")(sequelize, DataTypes);
 
-// db.sequelize.sync({ force: false }).then(() => {
+db.category = require("../models/resource/category.model.js")(
+  sequelize,
+  DataTypes
+);
+db.doctor_category = require("../models/resource/doctor_category.model.js")(
+  sequelize,
+  DataTypes
+);
+
+// db.sequelize.sync({ force: true }).then(() => {
 //   console.log("yes re-sync done!");
 // });
 

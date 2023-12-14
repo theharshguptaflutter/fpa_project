@@ -7,19 +7,16 @@ async function authJWT(req, res, next) {
     token = authorization.split(" ")[1];
 
     if (token == null) {
-      // res.status(404).send({ message: "Token not found" });
-      error(res, "Token not found",1);
+      error(res, "Token not found", 1);
     } else {
       const privatekey = process.env.privateKey;
       jwt.verify(token, privatekey, async (err, decoded) => {
         if (err) {
-          
-          error(res, "invalid token",1);
+          error(res, "invalid token", 1);
         }
         data = decoded;
-        console.log(data);
 
-        if (data == null) {
+        if (data == null || data == "") {
           res.status(200).send({ message: "not authorized" });
         }
         {
@@ -29,7 +26,7 @@ async function authJWT(req, res, next) {
               user_id: data.user_id,
             },
           });
-          if (!Sqltoken) {
+          if (Sqltoken == null || Sqltoken == "") {
             error(res, "Token failed", err, 1);
           } else {
             let Sqlquery = await tableNames.User.findOne({
@@ -38,10 +35,11 @@ async function authJWT(req, res, next) {
             if (!Sqlquery) {
               error(res, "User Not found", 1);
             }
+            next();
           }
         }
 
-        next();
+      
       });
     }
   } catch (err) {

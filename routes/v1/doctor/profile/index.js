@@ -3,7 +3,7 @@ const router = express.Router();
 const {
   userProfileUpdate,
   getUserProfile,
-} = require("../../../controllers/v1/profile/profile.controller");
+} = require("../../../../controllers/v1/user/profile/profile.controller");
 
 router.patch("/update/:user_id", (req, res) => {
   userProfileUpdate(req, res);

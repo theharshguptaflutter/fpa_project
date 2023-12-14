@@ -5,7 +5,7 @@ const {
   otpverify,
   logout,
   tokenReGenerate,
-} = require("../../../controllers/v1/auth/login.controller");
+} = require("../../../../controllers/v1/user/auth/login.controller");
 
 router.post("/login", (req, res) => {
   login(req, res);

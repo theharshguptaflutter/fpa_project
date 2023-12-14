@@ -1,13 +1,13 @@
 module.exports = (sequelize, DataTypes) => {
-  const Otp = sequelize.define(
-    "otp",
+  const doctor_category = sequelize.define(
+    "doctor_category",
     {
-      otp_id: {
+      doctor_category_id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
       },
-      user_id: {
+      category_id: {
         type: DataTypes.INTEGER,
         defaultValue: null,
       },
@@ -15,29 +15,15 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         defaultValue: null,
       },
-      
-      otp_code: {
-        type: DataTypes.BIGINT,
-        defaultValue: 0,
-      },
-      verification_code: {
-        type: DataTypes.CHAR,
-        defaultValue: null,
-      },
-      number: {
-        type: DataTypes.BIGINT,
-        defaultValue: null,
-      },
-
-      otp_active_status: {
+      delete_flag: {
         type: DataTypes.TINYINT,
         defaultValue: 0,
       },
     },
     {
-      createdAt: "otp_creation_dt",
+      createdAt: true,
       updatedAt: false,
     }
   );
-  return Otp;
+  return doctor_category;
 };

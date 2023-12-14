@@ -1,12 +1,12 @@
-const tableNames = require("../../../utils/table_name");
+const tableNames = require("../../../../utils/table_name");
 
 const {
   success,
   error,
   successWithdata,
-} = require("../../../utils/responseApi");
-const editParameterQuery = require("../../../utils/edit_query");
-const { s3Upload } = require("../../../utils/s3_file_upload");
+} = require("../../../../utils/responseApi");
+const editParameterQuery = require("../../../../utils/edit_query");
+const { s3Upload } = require("../../../../utils/s3_file_upload");
 async function userProfileUpdate(req, res) {
   try {
     var user_id = req.params.user_id;

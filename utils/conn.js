@@ -17,20 +17,20 @@ const db = {};
 
 db.sequelize = sequelize;
 
-db.users = require("../models/auth/user.model.js")(sequelize, DataTypes);
+db.users = require("../models/user/profile/user.model.js")(sequelize, DataTypes);
 
-db.doctor_user = require("../models/doctor/doctor_user/doctor.model.js")(
+db.doctor_user = require("../models/doctor/profile/doctor.model.js")(
   sequelize,
   DataTypes
 );
-db.Otp = require("../models/otp/otp.model.js")(sequelize, DataTypes);
-db.access_token = require("../models/access_token/access_tokens.model.js")(
+db.Otp = require("../models/resource/otp/otp.model.js")(sequelize, DataTypes);
+db.access_token = require("../models/resource/access_token/access_tokens.model.js")(
   sequelize,
   DataTypes
 );
 
-db.city = require("../models/city/city.model.js")(sequelize, DataTypes);
-db.state = require("../models/state/state.model.js")(sequelize, DataTypes);
+db.city = require("../models/resource/city/city.model.js")(sequelize, DataTypes);
+db.state = require("../models/resource/state/state.model.js")(sequelize, DataTypes);
 
 db.category = require("../models/resource/category.model.js")(
   sequelize,

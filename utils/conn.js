@@ -41,7 +41,9 @@ db.doctor_category = require("../models/resource/doctor_category.model.js")(
   DataTypes
 );
 
-// db.sequelize.sync({ force: true }).then(() => {
+db.role = require("../models/resource/role.model.js")(sequelize, DataTypes);
+
+// db.sequelize.sync({ force: false }).then(() => {
 //   console.log("yes re-sync done!");
 // });
 

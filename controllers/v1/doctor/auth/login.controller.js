@@ -12,7 +12,7 @@ var jwt = require("jsonwebtoken");
 
 async function login(req, res) {
   const mobile_number = req.body.number;
-
+  
   if (mobile_number != "") {
     let SqlQuery = await tableNames.doctorUser.findOne({
       where: { doctor_number: mobile_number },
@@ -29,14 +29,14 @@ async function login(req, res) {
       }
     }
 
-    const UserOtp = await tableNames.Otp.create({
+    const doctorUserOtp = await tableNames.Otp.create({
       verification_code: vvcode,
       otp_code: otpcode,
-      doctor_id: data == null ? null : data["doctor_id"],
+      doctor_id : data == null ? null : data["doctor_id"],
       number: mobile_number,
     });
 
-    if (UserOtp === 0) {
+    if (doctorUserOtp === 0) {
       error(res, "Otp not send");
     } else {
       successWithdata(
@@ -44,7 +44,7 @@ async function login(req, res) {
         "Verification code Found",
         "Verification code Not Found",
         {
-          verification_code: UserOtp["verification_code"],
+          verification_code: doctorUserOtp["verification_code"],
         }
       );
     }
@@ -81,26 +81,26 @@ async function otpverify(req, res) {
     var otpTimestamp = otpFindQuery["otp_creation_dt"];
     var isExpired = await otpTimeValidation(otpTimestamp);
     if (isExpired) {
-      console.log("OTP has expired");
+     
       error(res, "OTP has expired", 410, 1);
     } else {
       var data = otpFindQuery.toJSON();
 
-      if (data["user_id"] == null) {
+      if (data["doctor_id"] == null) {
         var otp_id = data["otp_id"];
         var otpActivate = 1;
-        var u_number = data["number"];
+        var doctor_number = data["number"];
 
         let userinfo = {
-          user_number: u_number,
+          doctor_number: doctor_number,
         };
 
-        const user = await tableNames.User.create(userinfo);
-        if (user) {
+        const doctorUser = await tableNames.doctorUser.create(userinfo);
+        if (doctorUser) {
           const privatekey = process.env.privateKey;
           let params = {
-            user_id: user["user_id"],
-            user_number: user["user_number"],
+            doctor_id: doctorUser["doctor_id"],
+            doctor_number: doctorUser["doctor_number"],
           };
           const token = await jwt.sign(params, privatekey, {
             expiresIn: "365d",
@@ -110,8 +110,8 @@ async function otpverify(req, res) {
             error(res, "Token not generated", 409, 1);
           } else {
             let tokeninfo = {
-              user_id: user["user_id"],
-              user_number: user["user_number"],
+              doctor_id: doctorUser["doctor_id"],
+              doctor_number: doctorUser["doctor_number"],
               gen_token: token,
             };
             const accessTokensGenInsetQuery =
@@ -129,22 +129,14 @@ async function otpverify(req, res) {
               if (!otpVerified) {
                 error(res, "Otp not verified", 404, 1);
               } else {
-                // success1(res, "user has been logout", 200);
+                // success1(res, "doctorUser has been logout", 200);
                 res.status(200).send({
                   status: 200,
                   isuserfound: false,
                   message: "Otp verified successfully",
                   user_details: [
                     {
-                      user_id: user["user_id"],
-                      name: user["name"] ?? " ",
-                      avatar: user["avatar"] ?? " ",
-                      email: user["email"] ?? " ",
-                      user_number: user["user_number"] ?? " ",
-                      city_id: user["city_id"] ?? " ",
-                      state_id: user["state_id"] ?? " ",
-                      user_online_status: user["user_online_status"],
-                      user_delete_flag: user["user_delete_flag"],
+                      doctor_id: doctorUser["doctor_id"],
                       token: token ?? " ",
                     },
                   ],
@@ -156,16 +148,16 @@ async function otpverify(req, res) {
       } else {
         var otp_active_status = data["otp_active_status"];
 
-        uuid = data["user_id"];
-        let userData = await tableNames.User.findOne({
-          where: { user_id: uuid },
+        uuid = data["doctor_id"];
+        let doctorData = await tableNames.doctorUser.findOne({
+          where: { doctor_id: uuid },
         });
 
-        if (userData != null) {
+        if (doctorData != null) {
           const privatekey = process.env.privateKey;
           let params = {
-            user_id: userData["user_id"],
-            user_number: userData["user_number"],
+            doctor_id: doctorData["doctor_id"],
+            doctor_number: doctorData["doctor_number"],
           };
           const token = await jwt.sign(params, privatekey, {
             expiresIn: "365Y",
@@ -175,7 +167,7 @@ async function otpverify(req, res) {
             error(res, "Token not generated", 404, 1);
           } else {
             let tokeninfo = {
-              user_id: userData["user_id"],
+              doctor_id: doctorData["doctor_id"],
 
               gen_token: token,
             };
@@ -193,31 +185,22 @@ async function otpverify(req, res) {
               if (!otpVerified) {
                 error(res, "Otp not verified", 404);
               } else {
-                const userOnlineStatus = await tableNames.User.update(
+                const userOnlineStatus = await tableNames.doctorUser.update(
                   {
-                    user_online_status: 0,
+                    doctor_online_status: 0,
                   },
-                  { where: { user_id: uuid } }
+                  { where: { doctor_id: uuid } }
                 );
                 if (!userOnlineStatus) {
-                  error(res, "user online status not changes", 209);
+                  error(res, "doctorUser online status not changes", 209);
                 } else {
                   res.status(200).send({
                     status: 200,
                     isuserfound: true,
                     message: "Otp verified successfully",
-                    user_details: [
+                    doctor_details: [
                       {
-                        user_id: userData["user_id"],
-                        name: userData["name"] ?? " ",
-                        avatar: userData["avatar"] ?? " ",
-                        user_photo: userData["user_photo"] ?? " ",
-                        email: userData["email"] ?? " ",
-                        user_number: userData["user_number"] ?? " ",
-                        city_id: userData["city_id"] ?? " ",
-                        state_id: userData["state_id"] ?? " ",
-                        user_online_status: userData["user_online_status"],
-                        user_delete_flag: userData["user_delete_flag"],
+                        doctor_id: doctorData["doctor_id"],
                         token: token ?? " ",
                       },
                     ],
@@ -227,7 +210,7 @@ async function otpverify(req, res) {
             }
           }
         } else {
-          error(res, "user not found", 404, 1);
+          error(res, "doctor not found", 404, 1);
         }
       }
     }
@@ -236,18 +219,18 @@ async function otpverify(req, res) {
 
 async function logout(req, res) {
   try {
-    var user_id = req.params.user_id;
+    var doctor_id = req.params.doctor_id;
 
-    const updateQuery = tableNames.User.update(
-      { user_online_status: 1 },
+    const updateQuery = tableNames.doctorUser.update(
+      { doctor_online_status: 1 },
       {
         where: {
-          user_id: user_id,
+          doctor_id: doctor_id,
         },
       }
     );
     if (updateQuery != null) {
-      success1(res, "user has been logout", 200);
+      success1(res, "doctorUser has been logout", 200);
     } else {
       error(res, "unable to logout please try again later ", 209);
     }
@@ -257,29 +240,29 @@ async function logout(req, res) {
 }
 
 async function tokenReGenerate(req, res) {
-  var user_id = req.params.user_id;
+  var doctor_id = req.params.doctor_id;
 
-  const findUser = await tableNames.User.findOne({
+  const findUser = await tableNames.doctorUser.findOne({
     where: {
-      user_delete_flag: 0,
-      user_id: user_id,
+      doctor_delete_flag: 0,
+      doctor_id: doctor_id,
     },
   });
-  var userData = null;
+  var doctorData = null;
   if (findUser) {
-    userData = findUser.toJSON();
-    if (userData["user_delete_flag"] == 1) {
+    doctorData = findUser.toJSON();
+    if (doctorData["doctor_delete_flag"] == 1) {
       error(res, "you account has been deactivated", 404);
     }
   }
 
-  if (userData == null || userData == "") {
+  if (doctorData == null || doctorData == "") {
     error(res, "User Not Found", 404);
   } else {
     const privatekey = process.env.privateKey;
     let params = {
-      user_id: userData["user_id"],
-      userNumber: userData["userNumber"],
+      doctor_id: doctorData["doctor_id"],
+      userNumber: doctorData["doctor_number"],
     };
     const token = await jwt.sign(params, privatekey, {
       expiresIn: "30d",
@@ -289,11 +272,11 @@ async function tokenReGenerate(req, res) {
       error(res, "Token not generated", 404);
     } else {
       let tokeninfo = {
-        user_id: userData["user_id"],
-        number: userData["userNumber"],
+        doctor_id: doctorData["doctor_id"],
+        number: doctorData["doctor_number"],
         gen_token: token,
       };
-      const sqlquery1 = await tableNames.gen_token.create(tokeninfo);
+      const sqlquery1 = await tableNames.accessTokens.create(tokeninfo);
       if (!sqlquery1) {
         error(res, "Generated token not inserted into db", 404);
       } else {
@@ -303,7 +286,7 @@ async function tokenReGenerate(req, res) {
           message: "Token Regenerated",
           data: [
             {
-              user_id: userData["user_id"],
+              doctor_id: doctorData["doctor_id"],
               token: token,
             },
           ],

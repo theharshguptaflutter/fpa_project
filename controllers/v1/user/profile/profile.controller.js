@@ -7,6 +7,7 @@ const {
 } = require("../../../../utils/responseApi");
 const editParameterQuery = require("../../../../utils/edit_query");
 const { s3Upload } = require("../../../../utils/s3_file_upload");
+
 async function userProfileUpdate(req, res) {
   try {
     var user_id = req.params.user_id;
@@ -51,8 +52,7 @@ async function getUserProfile(req, res) {
   let userFindQuery = await tableNames.User.findOne({
     where: { user_id: user_id, user_delete_flag: 0 },
   });
-  if (userFindQuery != null || userFindQuery != "")
-   {
+  if (userFindQuery != null || userFindQuery != "") {
     successWithdata(
       res,
       "User profle details found",

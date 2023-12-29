@@ -3,13 +3,14 @@ const router = express.Router();
 const {
   userProfileUpdate,
   getUserProfile,
-} = require("../../../../controllers/v1/user/profile/profile.controller");
+} = require("../../../../controllers/v1/doctor/profile/profile.controller.js");
 
-router.patch("/update/:user_id", (req, res) => {
+router.patch("/update/:doctor_id", (req, res) => {
   userProfileUpdate(req, res);
 });
 
-router.get("/get/:user_id", (req, res) => {
+router.get("/get/:doctor_id", (req, res) => {
+  
   getUserProfile(req, res);
 });
 

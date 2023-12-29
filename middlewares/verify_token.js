@@ -18,28 +18,51 @@ async function authJWT(req, res, next) {
 
         if (data == null || data == "") {
           res.status(200).send({ message: "not authorized" });
-        }
-        {
-          let Sqltoken = await tableNames.accessTokens.findOne({
-            where: {
-              gen_token: token,
-              user_id: data.user_id,
-            },
-          });
-          if (Sqltoken == null || Sqltoken == "") {
-            error(res, "Token failed", err, 1);
-          } else {
-            let Sqlquery = await tableNames.User.findOne({
-              where: { user_id: data.user_id },
+        } else {
+          if (
+            data.user_id == null ||
+            data.user_id == "" ||
+            data.user_id == undefined
+          ) {
+            let Sqltoken = await tableNames.accessTokens.findOne({
+              where: {
+                gen_token: token,
+                doctor_id: data.doctor_id,
+              },
             });
-            if (!Sqlquery) {
-              error(res, "User Not found", 1);
+
+            if (Sqltoken == null || Sqltoken == "") {
+              error(res, "Token failed", err, 1);
+            } else {
+              let Sqlquery = await tableNames.doctorUser.findOne({
+                where: { doctor_id: data.doctor_id },
+              });
+              if (!Sqlquery) {
+                error(res, "doctor Not found", 1);
+              }
+              next();
             }
-            next();
+          } else {
+            let Sqltoken = await tableNames.accessTokens.findOne({
+              where: {
+                gen_token: token,
+                user_id: data.user_id,
+              },
+            });
+
+            if (Sqltoken == null || Sqltoken == "") {
+              error(res, "Token failed", err, 1);
+            } else {
+              let Sqlquery = await tableNames.User.findOne({
+                where: { user_id: data.user_id },
+              });
+              if (!Sqlquery) {
+                error(res, "User Not found", 1);
+              }
+              next();
+            }
           }
         }
-
-      
       });
     }
   } catch (err) {

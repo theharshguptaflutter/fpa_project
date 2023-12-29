@@ -4,8 +4,10 @@ const router = Router();
 
 const user = require("./user");
 const doctor = require("./doctor");
+const resource = require("../resource");
 
-router.use("/doctor", user);
-router.use("/user", doctor);
+router.use("/doctor", doctor);
+router.use("/resource", resource);
+router.use("/user", user);
 
 module.exports = router;

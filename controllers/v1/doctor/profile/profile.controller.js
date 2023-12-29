@@ -7,36 +7,45 @@ const {
 } = require("../../../../utils/responseApi");
 const editParameterQuery = require("../../../../utils/edit_query");
 const { s3Upload } = require("../../../../utils/s3_file_upload");
+
 async function userProfileUpdate(req, res) {
   try {
-    var user_id = req.params.user_id;
-    var user_avatar = req.body.avatar;
+    var doctor_id = req.params.doctor_id;
+    var doctor_photo = req.body.photo;
+    var category_id = req.body.category_id;
 
-    if (user_avatar != "") {
-      user_avatar = await s3Upload(user_avatar);
+    if (doctor_photo != "") {
+      doctor_photo = await s3Upload(doctor_photo);
     }
 
     let profileUpdateInfo = {
-      role: req.body.role,
       state_id: req.body.state_id,
       city_id: req.body.city_id,
-      name: req.body.name,
-      email: req.body.email,
-      avatar: user_avatar,
-      user_profile_update: 1,
+      doctor_name: req.body.doctor_name,
+      doctor_email: req.body.doctor_email,
+      doctor_number: req.body.doctor_number,
+      photo: req.body.photo,
+      doctor_occupation: req.body.doctor_occupation,
+      doctor_specialist: req.body.doctor_specialist,
+      doctor_profile_update: 1,
     };
     var userProfileUpdateParamiter = await editParameterQuery(
       profileUpdateInfo
     );
-    const userProfileupdateQuery = tableNames.User.update(
+    const userProfileupdateQuery = tableNames.doctorUser.update(
       userProfileUpdateParamiter,
       {
         where: {
-          user_id: user_id,
+          doctor_id: doctor_id,
         },
       }
     );
     if (userProfileupdateQuery != null) {
+      let doctorCategoryInfo = {
+        doctor_id: doctor_id,
+        category_id: category_id,
+      };
+      const doctorCategoryInsertQuery = tableNames.doctorCategory.create(doctorCategoryInfo);
       success(res, "Profile has been updated", 200, 1);
     } else {
       error(res, "Profile  not updated please try again later ", 209, 1);
@@ -47,15 +56,16 @@ async function userProfileUpdate(req, res) {
 }
 
 async function getUserProfile(req, res) {
-  var user_id = req.params.user_id;
-  let userFindQuery = await tableNames.User.findOne({
-    where: { user_id: user_id, user_delete_flag: 0 },
+  var doctor_id = req.params.doctor_id;
+
+  let doctorFindQuery = await tableNames.doctorUser.findOne({
+    where: { doctor_id: doctor_id, doctor_delete_flag: 0 },
   });
   successWithdata(
     res,
-    "User profle details found",
-    "User profile details not found",
-    userFindQuery,
+    "Doctor profle details found",
+    "Doctor profile details not found",
+    doctorFindQuery,
     0
   );
 }

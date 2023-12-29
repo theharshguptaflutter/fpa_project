@@ -7,6 +7,6 @@ const auth = require("../doctor/auth");
 const profile = require("../doctor/profile");
 
 router.use("/auth", auth);
-router.use("/profile",authJWT, profile);
+router.use("/profile", authJWT, profile);
 
 module.exports = router;

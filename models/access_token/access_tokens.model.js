@@ -13,7 +13,11 @@ module.exports = (sequelize, DataTypes) => {
       },
       user_id: {
         type: DataTypes.INTEGER,
-        defaultValue: 0,
+        defaultValue: null,
+      },
+      doctor_id: {
+        type: DataTypes.INTEGER,
+        defaultValue: null,
       },
       delete_flag: {
         type: DataTypes.TINYINT,

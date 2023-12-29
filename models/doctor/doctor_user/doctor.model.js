@@ -40,11 +40,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         defaultValue: null,
       },
-      doctor_category: {
-        type: DataTypes.TINYINT,
-        defaultValue: 0,
-      },
-
       doctor_profile_update: {
         type: DataTypes.TINYINT,
         defaultValue: 0,

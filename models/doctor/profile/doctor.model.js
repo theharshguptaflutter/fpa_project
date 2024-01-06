@@ -7,7 +7,10 @@ module.exports = (sequelize, DataTypes) => {
         autoIncrement: true,
         primaryKey: true,
       },
-
+      password: {
+        type: DataTypes.INTEGER,
+        defaultValue: null,
+      },
       state_id: {
         type: DataTypes.INTEGER,
         defaultValue: null,

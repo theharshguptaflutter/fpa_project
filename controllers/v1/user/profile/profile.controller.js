@@ -7,6 +7,7 @@ const {
 } = require("../../../../utils/responseApi");
 const editParameterQuery = require("../../../../utils/edit_query");
 const { s3Upload } = require("../../../../utils/s3_file_upload");
+const bcrypt = require("bcrypt");
 
 async function userProfileUpdate(req, res) {
   try {
@@ -18,13 +19,14 @@ async function userProfileUpdate(req, res) {
     }
 
     let profileUpdateInfo = {
-      role: req.body.role,
+      role_id: req.body.role_id,
       state_id: req.body.state_id,
       city_id: req.body.city_id,
       name: req.body.name,
       email: req.body.email,
       avatar: user_avatar,
       user_profile_update: 1,
+      password:  bcrypt.hashSync(String(req.body.password), 10)
     };
     var userProfileUpdateParamiter = await editParameterQuery(
       profileUpdateInfo

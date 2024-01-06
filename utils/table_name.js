@@ -10,6 +10,11 @@ tableNames = {
   State: db.state,
   City: db.city,
   Category: db.category,
+  chatMessage: db.chat_message,
+  Inbox: db.inbox,
+  chatMessagesLog: db.chat_message_log,
+  appointmentBooking:db.appointment_booking,
+  bookingStatus:db.booking_status,
 };
 
 module.exports = Object.freeze(tableNames);

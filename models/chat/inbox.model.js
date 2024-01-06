@@ -1,11 +1,16 @@
 module.exports = (sequelize, DataTypes) => {
-  const Otp = sequelize.define(
-    "otp",
+  const inbox = sequelize.define(
+    "inbox",
     {
-      otp_id: {
+      inbox_id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
+      },
+
+      appointment_booking_id: {
+        type: DataTypes.INTEGER,
+        defaultValue: null,
       },
       user_id: {
         type: DataTypes.INTEGER,
@@ -15,33 +20,19 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         defaultValue: null,
       },
-
-      otp_code: {
-        type: DataTypes.BIGINT,
+      chat_complete_flag: {
+        type: DataTypes.TINYINT,
         defaultValue: 0,
       },
-      verification_code: {
-        type: DataTypes.CHAR,
-        defaultValue: null,
-      },
-      number: {
-        type: DataTypes.BIGINT,
-        defaultValue: null,
-      },
-      email: {
-        type: DataTypes.STRING,
-        defaultValue: null,
-      },
-
-      otp_active_status: {
+      delete_flag: {
         type: DataTypes.TINYINT,
         defaultValue: 0,
       },
     },
     {
-      createdAt: "otp_creation_dt",
+      createdAt: true,
       updatedAt: false,
     }
   );
-  return Otp;
+  return inbox;
 };

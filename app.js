@@ -5,6 +5,7 @@ const v1 = require("./routes/v1");
 const resource = require("./routes/resource");
 var cors = require("cors");
 const path = require("path");
+const {chatController} = require("./controllers/chat/chat.controller.js");
 const dotenv = require("dotenv").config({
   path: path.resolve(process.cwd(), ".env"),
 });
@@ -26,12 +27,17 @@ app.use(
   })
 );
 
+// Socket.IO connection event handler
 io.on("connection", (socket) => {
-  console.log("connected");
-  console.log(socket.id, "has join");
-  // socket.on("/test", (msg) => {
-  //   console.log(msg);
-  // });
+ 
+
+  // Pass the socket to the chatController
+  chatController(app, io, socket);
+
+  // Disconnect event
+  socket.on("disconnect", () => {
+    console.log("User disconnected");
+  });
 });
 
 app.use("/api/v1", v1);

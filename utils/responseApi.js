@@ -7,6 +7,23 @@ exports.success = (res, respSuccessMsg) => {
   ];
 };
 
+exports.resetpasswordsucess = (res, respSuccessMsg) => {
+  return [
+    res.status(res.statusCode).send({
+      status: 200,
+      message: respSuccessMsg,
+    }),
+  ];
+};
+exports.verifyemailsucess = (res, respSuccessMsg) => {
+  return [
+    res.status(res.statusCode).send({
+      status: 200,
+      message: respSuccessMsg,
+    }),
+  ];
+};
+
 exports.successWithdata = (
   res,
   respSuccessMsg,
@@ -29,7 +46,7 @@ exports.error = (res, Msg, errormsg, condition) => {
 
   if (!findCode) res.statusCode = 500;
   else statusCode = findCode;
-
+  
   return [
     res.status(res.statusCode).send({
       status: res.statusCode,

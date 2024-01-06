@@ -25,6 +25,7 @@ async function userProfileUpdate(req, res) {
       doctor_email: req.body.doctor_email,
       doctor_number: req.body.doctor_number,
       photo: req.body.photo,
+      password:  bcrypt.hashSync(String(req.body.password), 10),
       doctor_occupation: req.body.doctor_occupation,
       doctor_specialist: req.body.doctor_specialist,
       doctor_profile_update: 1,

@@ -4,7 +4,14 @@ const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
 const otpTimeValidation = require("../../../../utils/otp_time_checker");
 const editParameterQuery = require("../../../../utils/edit_query");
-const { success, error, successWithdata, success1, resetpasswordsucess, verifyemailsucess } = require("../../../../utils/responseApi");
+const {
+  success,
+  error,
+  successWithdata,
+  success1,
+  resetpasswordsucess,
+  verifyemailsucess,
+} = require("../../../../utils/responseApi");
 
 var jwt = require("jsonwebtoken");
 
@@ -17,20 +24,20 @@ async function login(req, res) {
   //if (mobile_number != "") {
   if (guest) {
     let guestinfo = {
-      guest_user: "true"
+      guest_user: "true",
     };
     const guest = await tableNames.User.create(guestinfo);
     const privatekey = process.env.privateKey;
     let params = {
       user_id: guest["user_id"],
-      user_number: guest["user_number"]
+      user_number: guest["user_number"],
     };
     const token = await jwt.sign(params, privatekey, {
-      expiresIn: "365d"
+      expiresIn: "365d",
     });
     let tokeninfo = {
       user_info: guest["user_id"],
-      gen_token: token
+      gen_token: token,
     };
     await tableNames.accessTokens.create(tokeninfo);
     res.status(200).send({
@@ -48,29 +55,29 @@ async function login(req, res) {
           state_id: " ",
           user_online_status: null,
           user_delete_flag: null,
-          token: token ?? " "
-        }
-      ]
+          token: token ?? " ",
+        },
+      ],
     });
   } else {
     let SqlQuery = await tableNames.User.findOne({
       where: {
         ...(mobile_number
           ? {
-              user_number: mobile_number
+              user_number: mobile_number,
             }
           : {}),
         ...(email
           ? {
-              email: email
+              email: email,
             }
           : {}),
-          ...(pwd
-            ? {
-                password: bcrypt.hashSync(String(pwd), 10)
-              }
-            : {})
-      }
+        ...(pwd
+          ? {
+              password: bcrypt.hashSync(String(pwd), 10),
+            }
+          : {}),
+      },
     });
     let result = true;
     // console.log("sql===>", SqlQuery.password);
@@ -78,18 +85,24 @@ async function login(req, res) {
       let verification_status = await userverify(email);
       if (SqlQuery) {
         if (SqlQuery?.password != null && pwd) {
-
           result = await bcrypt.compare(String(pwd), SqlQuery?.password);
         } else {
-          return error(res, "your password/email not added yet or you are already user", 404);
+          return error(
+            res,
+            "your password/email not added yet or you are already user",
+            404
+          );
         }
       } else {
-        if(!verification_status && pwd){
-          return error(res, "you are not registered user or please check your mail id", 404);
-        }else{
+        if (!verification_status && pwd) {
+          return error(
+            res,
+            "you are not registered user or please check your mail id",
+            404
+          );
+        } else {
           result = null;
         }
-        
       }
     }
     //comparing the password of the registered user
@@ -102,8 +115,8 @@ async function login(req, res) {
           secure: false,
           auth: {
             user: process.env.USER_MAIL,
-            pass: process.env.PASSWORD_MAIL
-          }
+            pass: process.env.PASSWORD_MAIL,
+          },
         });
         const mailOptions = {
           from: process.env.USER_MAIL,
@@ -119,7 +132,7 @@ async function login(req, res) {
             
           </body>
         </html>
-      `
+      `,
         };
 
         await transporter.sendMail(mailOptions);
@@ -138,27 +151,32 @@ async function login(req, res) {
         user_id: data == null ? null : data["user_id"],
         ...(email
           ? {
-              email: email
+              email: email,
             }
           : {}),
         ...(mobile_number
           ? {
-              number: mobile_number
+              number: mobile_number,
             }
           : {}),
         ...(pwd
           ? {
-              password: bcrypt.hashSync(String(pwd), 10)
+              password: bcrypt.hashSync(String(pwd), 10),
             }
-          : {})
+          : {}),
       });
 
       if (UserOtp === 0) {
         error(res, "Otp not send");
       } else {
-        successWithdata(res, "Verification code Found", "Verification code Not Found", {
-          verification_code: UserOtp["verification_code"]
-        });
+        successWithdata(
+          res,
+          "Verification code Found",
+          "Verification code Not Found",
+          {
+            verification_code: UserOtp["verification_code"],
+          }
+        );
       }
     } else {
       return error(res, "Passwords do not match! Login failed.", 404);
@@ -176,8 +194,8 @@ async function verifyemail(req, res) {
     secure: false,
     auth: {
       user: process.env.USER_MAIL,
-      pass: process.env.PASSWORD_MAIL
-    }
+      pass: process.env.PASSWORD_MAIL,
+    },
   });
   let verification_status = await userverify(email);
   console.log("verification_status===>", verification_status);
@@ -196,7 +214,7 @@ async function verifyemail(req, res) {
           <a href="http://localhost:8000/reset-password/user_id=${verification_status.data}">Reset Password</a>
         </body>
       </html>
-    `
+    `,
     };
 
     const info = await transporter.sendMail(mailOptions);
@@ -214,7 +232,7 @@ async function verifyemail(req, res) {
 async function userverify(email) {
   try {
     let SqlQuery = await tableNames.User.findOne({
-      where: { email: email }
+      where: { email: email },
     });
     let data = null;
     if (SqlQuery) {
@@ -228,18 +246,20 @@ async function userverify(email) {
   }
 }
 
-
 async function passwordrecovery(req, res) {
   const user_id = req.body.user_id;
   let profileUpdateInfo = {
-    password: bcrypt.hashSync(String(req.body.password), 10)
+    password: bcrypt.hashSync(String(req.body.password), 10),
   };
   var userProfileUpdateParamiter = await editParameterQuery(profileUpdateInfo);
-  const userProfileupdateQuery = tableNames.User.update(userProfileUpdateParamiter, {
-    where: {
-      user_id: user_id
+  const userProfileupdateQuery = tableNames.User.update(
+    userProfileUpdateParamiter,
+    {
+      where: {
+        user_id: user_id,
+      },
     }
-  });
+  );
   if (userProfileupdateQuery != null) {
     verifyemailsucess(res, "Password has been changed");
   } else {
@@ -257,15 +277,18 @@ async function otpverify(req, res) {
   let otpFindQuery = await tableNames.Otp.findOne({
     where: {
       otp_code: otp,
-      verification_code: verification_code
-    }
+      verification_code: verification_code,
+    },
   });
 
   if (otpFindQuery == null) {
     error(res, "Otp not inserted", 409, 1);
   } else if (otpFindQuery["otp_active_status"] == 1) {
     error(res, "Otp already verified", 404, 1);
-  } else if (otpFindQuery["otp_code"] != otp || otpFindQuery["verification_code"] != verification_code) {
+  } else if (
+    otpFindQuery["otp_code"] != otp ||
+    otpFindQuery["verification_code"] != verification_code
+  ) {
     error(res, "Otp not match", 404, 1);
   } else {
     var otpTimestamp = otpFindQuery["otp_creation_dt"];
@@ -288,14 +311,14 @@ async function otpverify(req, res) {
           guest_user: "false",
           ...(u_email
             ? {
-                email: u_email
+                email: u_email,
               }
             : {}),
           ...(u_password
             ? {
-                password: u_password
+                password: u_password,
               }
-            : {})
+            : {}),
         };
 
         const user = await tableNames.User.create(userinfo);
@@ -303,10 +326,10 @@ async function otpverify(req, res) {
           const privatekey = process.env.privateKey;
           let params = {
             user_id: user["user_id"],
-            user_number: user["user_number"]
+            user_number: user["user_number"],
           };
           const token = await jwt.sign(params, privatekey, {
-            expiresIn: "365d"
+            expiresIn: "365d",
           });
 
           if (!token) {
@@ -315,15 +338,16 @@ async function otpverify(req, res) {
             let tokeninfo = {
               user_id: user["user_id"],
               user_number: user["user_number"],
-              gen_token: token
+              gen_token: token,
             };
-            const accessTokensGenInsetQuery = await tableNames.accessTokens.create(tokeninfo);
+            const accessTokensGenInsetQuery =
+              await tableNames.accessTokens.create(tokeninfo);
             if (!accessTokensGenInsetQuery) {
               error(res, "Generated token not inserted into db", 404, 1);
             } else {
               const otpVerified = await tableNames.Otp.update(
                 {
-                  otp_active_status: otpActivate
+                  otp_active_status: otpActivate,
                 },
                 { where: { otp_id: otp_id } }
               );
@@ -347,9 +371,9 @@ async function otpverify(req, res) {
                       state_id: user["state_id"] ?? " ",
                       user_online_status: user["user_online_status"],
                       user_delete_flag: user["user_delete_flag"],
-                      token: token ?? " "
-                    }
-                  ]
+                      token: token ?? " ",
+                    },
+                  ],
                 });
               }
             }
@@ -360,17 +384,17 @@ async function otpverify(req, res) {
 
         uuid = data["user_id"];
         let userData = await tableNames.User.findOne({
-          where: { user_id: uuid }
+          where: { user_id: uuid },
         });
 
         if (userData != null) {
           const privatekey = process.env.privateKey;
           let params = {
             user_id: userData["user_id"],
-            user_number: userData["user_number"]
+            user_number: userData["user_number"],
           };
           const token = await jwt.sign(params, privatekey, {
-            expiresIn: "365Y"
+            expiresIn: "365Y",
           });
 
           if (!token) {
@@ -379,7 +403,7 @@ async function otpverify(req, res) {
             let tokeninfo = {
               user_id: userData["user_id"],
 
-              gen_token: token
+              gen_token: token,
             };
             const sqlquery1 = await tableNames.accessTokens.create(tokeninfo);
             if (!sqlquery1) {
@@ -387,7 +411,7 @@ async function otpverify(req, res) {
             } else {
               const otpVerified = await tableNames.Otp.update(
                 {
-                  otp_active_status: 1
+                  otp_active_status: 1,
                 },
                 { where: { otp_id: data["otp_id"] } }
               );
@@ -397,7 +421,7 @@ async function otpverify(req, res) {
               } else {
                 const userOnlineStatus = await tableNames.User.update(
                   {
-                    user_online_status: 0
+                    user_online_status: 0,
                   },
                   { where: { user_id: uuid } }
                 );
@@ -420,9 +444,9 @@ async function otpverify(req, res) {
                         state_id: userData["state_id"] ?? " ",
                         user_online_status: userData["user_online_status"],
                         user_delete_flag: userData["user_delete_flag"],
-                        token: token ?? " "
-                      }
-                    ]
+                        token: token ?? " ",
+                      },
+                    ],
                   });
                 }
               }
@@ -444,8 +468,8 @@ async function logout(req, res) {
       { user_online_status: 1 },
       {
         where: {
-          user_id: user_id
-        }
+          user_id: user_id,
+        },
       }
     );
     if (updateQuery != null) {
@@ -464,8 +488,8 @@ async function tokenReGenerate(req, res) {
   const findUser = await tableNames.User.findOne({
     where: {
       user_delete_flag: 0,
-      user_id: user_id
-    }
+      user_id: user_id,
+    },
   });
   var userData = null;
   if (findUser) {
@@ -481,10 +505,10 @@ async function tokenReGenerate(req, res) {
     const privatekey = process.env.privateKey;
     let params = {
       user_id: userData["user_id"],
-      userNumber: userData["userNumber"]
+      userNumber: userData["userNumber"],
     };
     const token = await jwt.sign(params, privatekey, {
-      expiresIn: "30d"
+      expiresIn: "30d",
     });
 
     if (!token) {
@@ -493,7 +517,7 @@ async function tokenReGenerate(req, res) {
       let tokeninfo = {
         user_id: userData["user_id"],
         number: userData["userNumber"],
-        gen_token: token
+        gen_token: token,
       };
       const sqlquery1 = await tableNames.gen_token.create(tokeninfo);
       if (!sqlquery1) {
@@ -506,15 +530,13 @@ async function tokenReGenerate(req, res) {
           data: [
             {
               user_id: userData["user_id"],
-              token: token
-            }
-          ]
+              token: token,
+            },
+          ],
         });
       }
     }
   }
-
-  
 }
 
 module.exports = {
@@ -523,5 +545,5 @@ module.exports = {
   logout,
   tokenReGenerate,
   passwordrecovery,
-  verifyemail
+  verifyemail,
 };

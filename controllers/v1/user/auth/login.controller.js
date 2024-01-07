@@ -64,15 +64,35 @@ async function login(req, res) {
           ? {
               email: email
             }
-          : {})
+          : {}),
+          ...(pwd
+            ? {
+                password: bcrypt.hashSync(String(pwd), 10)
+              }
+            : {})
       }
     });
     let result = true;
+    // console.log("sql===>", SqlQuery.password);
     if (!mobile_number) {
-      result = SqlQuery ? await bcrypt.compare(String(pwd), SqlQuery.password) : null;
+      let verification_status = await userverify(email);
+      if (SqlQuery) {
+        if (SqlQuery?.password != null && pwd) {
+
+          result = await bcrypt.compare(String(pwd), SqlQuery?.password);
+        } else {
+          return error(res, "your password/email not added yet or you are already user", 404);
+        }
+      } else {
+        if(!verification_status && pwd){
+          return error(res, "you are not registered user or please check your mail id", 404);
+        }else{
+          result = null;
+        }
+        
+      }
     }
     //comparing the password of the registered user
-    // console.log("result===>", result, !result , result != null)
     if (result == true || result === null) {
       const otpcode = Math.floor(1000 + Math.random() * 9000);
       if (email) {
@@ -102,7 +122,7 @@ async function login(req, res) {
       `
         };
 
-        const info = await transporter.sendMail(mailOptions);
+        await transporter.sendMail(mailOptions);
       }
       const vvcode = uuidv4();
       var data = null;
@@ -159,7 +179,8 @@ async function verifyemail(req, res) {
       pass: process.env.PASSWORD_MAIL
     }
   });
-
+  let verification_status = await userverify(email);
+  console.log("verification_status===>", verification_status);
   try {
     const mailOptions = {
       from: process.env.USER_MAIL,
@@ -179,8 +200,7 @@ async function verifyemail(req, res) {
     };
 
     const info = await transporter.sendMail(mailOptions);
-    console.log("Email sent:", info.response);
-    let verification_status = await userverify(email);
+
     if (verification_status) {
       resetpasswordsucess(res, "Mail has been sent successfully");
     } else {
@@ -207,6 +227,7 @@ async function userverify(email) {
     console.error("Error in Sequelize query===>", error);
   }
 }
+
 
 async function passwordrecovery(req, res) {
   const user_id = req.body.user_id;

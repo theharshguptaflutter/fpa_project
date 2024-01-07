@@ -12,6 +12,7 @@ async function login(req, res) {
   const doctor_number = req.body.number;
   const doctor_email = req.body.email;
   const pwd = req.body.password;
+  // if(doctor_number && doctor_number)
   let SqlQuery = await tableNames.doctorUser.findOne({
     where: {
       ...(doctor_number

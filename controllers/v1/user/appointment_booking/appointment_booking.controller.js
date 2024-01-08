@@ -65,7 +65,6 @@ async function addAppointment(req, res) {
       const inboxCreateQuery2 = await tableNames.chatMessage.create(
         userchatCreateQuery1
       );
-
     } else {
       error(res, "Inbox not created", 500);
     }

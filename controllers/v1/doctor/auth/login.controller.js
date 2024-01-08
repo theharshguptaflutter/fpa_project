@@ -12,7 +12,9 @@ async function login(req, res) {
   const doctor_number = req.body.number;
   const doctor_email = req.body.email;
   const pwd = req.body.password;
-  // if(doctor_number && doctor_number)
+  if (String(doctor_number).length < 10 && doctor_number !=undefined) {
+    return error(res, "Please enter correct phone number", 404);
+  }
   let SqlQuery = await tableNames.doctorUser.findOne({
     where: {
       ...(doctor_number
@@ -29,12 +31,28 @@ async function login(req, res) {
   });
   let result = true;
   if (!doctor_number) {
-    result = SqlQuery ? await bcrypt.compare(String(pwd), SqlQuery.password) : null;
+    let verification_status = await userverify(doctor_email);
+    if (SqlQuery) {
+      if (SqlQuery?.password != null && pwd) {
+        result = await bcrypt.compare(String(pwd), SqlQuery?.password);
+      } else {
+        return error(res, "your password/email not added yet or you are already user", 404);
+      }
+    } else {
+      if (!verification_status && pwd) {
+        return error(res, "you are not registered user or please check your mail id", 404);
+      } else {
+        if(verification_status && pwd){
+          result = null;
+        }else{
+          result = "not found";
+        }
+      }
+    }
   }
   //comparing the password of the registered user
-  if (result == true || result === null) {
-    //const otpcode = Math.floor(1000 + Math.random() * 9000);
-    const otpcode = "0000";
+  if (result == true || result === "not found") {
+    const otpcode = Math.floor(1000 + Math.random() * 9000);
     if (doctor_email) {
       const transporter = nodemailer.createTransport({
         host: process.env.HOST_MAIL,
@@ -56,7 +74,6 @@ async function login(req, res) {
           <h1>Hello!</h1>
           <p>This is a validation mail.</p>
           <p>Your Email Otp is ${otpcode}</p>
-          
         </body>
       </html>
     `
@@ -121,8 +138,7 @@ async function verifyemail(req, res) {
   });
 
   try {
-   // const otpcode = Math.floor(1000 + Math.random() * 9000);
-    const otpcode = "0000";
+    const otpcode = Math.floor(1000 + Math.random() * 9000);
 
     let verification_status = await userverify(email);
     const mailOptions = {

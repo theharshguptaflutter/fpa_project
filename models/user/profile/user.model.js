@@ -9,7 +9,8 @@ module.exports = (sequelize, DataTypes) => {
       },
       guest_user: {
         type: DataTypes.STRING,
-        unique: true,
+        defaultValue: null,
+      //  unique: true,
       },
       role_id: {
         type: DataTypes.INTEGER,

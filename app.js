@@ -42,7 +42,7 @@ io.on("connection", (socket) => {
 
 app.use("/api/v1", v1);
 
-app.get("/", (req, res) => res.send("test server"));
+app.get("/", (req, res) => res.send("test server 11/01"));
 
 server.listen(port, () => {
   console.log(`server is running at ${port}`);

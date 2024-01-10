@@ -19,7 +19,7 @@ async function addAppointment(req, res) {
   var booked_current_time = req.body.booked_current_time;
   var order_status = req.body.order_status;
 
-  // try {
+ try {
   const addAppointmentInsert = await tableNames.appointmentBooking.create({
     user_id: user_id,
     doctor_id: doctor_id,
@@ -72,9 +72,9 @@ async function addAppointment(req, res) {
   } else {
     error(res, "Appointment not added", 500);
   }
-  // } catch (err) {
-  //   error(res, err, 500);
-  // }
+  } catch (err) {
+    error(res, err, 500);
+  }
 }
 
 async function checkAppointmentAvailability(req, res) {

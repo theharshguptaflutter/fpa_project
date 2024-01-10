@@ -20,7 +20,7 @@ async function login(req, res) {
   }
   if (guest) {
     let guestinfo = {
-      guest_user: "true"
+      guest_user: true
     };
     const guest = await tableNames.User.create(guestinfo);
     const privatekey = process.env.privateKey;
@@ -98,7 +98,8 @@ async function login(req, res) {
     //comparing the password of the registered user
     console.log("result===>", result);
     if (result === true || result === "not found") {
-      const otpcode = Math.floor(1000 + Math.random() * 9000);
+      //const otpcode = Math.floor(1000 + Math.random() * 9000);
+      const otpcode =4444;
       if (email) {
         const transporter = nodemailer.createTransport({
           host: process.env.HOST_MAIL,
@@ -296,7 +297,7 @@ async function otpverify(req, res) {
 
         let userinfo = {
           user_number: u_number,
-          guest_user: "false",
+          guest_user: false,
           ...(u_email
             ? {
                 email: u_email

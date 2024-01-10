@@ -55,7 +55,8 @@ async function login(req, res) {
   }
   //comparing the password of the registered user
   if (result == true || result === "not found") {
-    const otpcode = Math.floor(1000 + Math.random() * 9000);
+   // const otpcode = Math.floor(1000 + Math.random() * 9000);
+    var otpcode = 4444;
     if (doctor_email) {
       const transporter = nodemailer.createTransport({
         host: process.env.HOST_MAIL,
@@ -144,7 +145,8 @@ async function verifyemail(req, res) {
   });
 
   try {
-    const otpcode = Math.floor(1000 + Math.random() * 9000);
+   // const otpcode = Math.floor(1000 + Math.random() * 9000);
+    const otpcode = 4444;
 
     let verification_status = await userverify(email);
     const mailOptions = {

@@ -65,6 +65,7 @@ async function addAppointment(req, res) {
       const inboxCreateQuery2 = await tableNames.chatMessage.create(
         userchatCreateQuery1
       );
+      success(res, "Appointment added", 200, 0);
     } else {
       error(res, "Inbox not created", 500);
     }
@@ -139,7 +140,63 @@ async function checkAppointmentAvailability(req, res) {
   }
 }
 
+async function getAppointmentUserHistory(req, res) {
+  const { user_id } = req.params;
+
+  try {
+    const userAppointmentHistory = await tableNames.appointmentBooking.findAll({
+      include: [
+        {
+          attributes: [
+            "doctor_id",
+            "doctor_name",
+            "doctor_email",
+            "doctor_number",
+        
+          ],
+          model: tableNames.doctorUser,
+        },
+        {
+          attributes: [
+          
+            "booking_status_name",
+        
+          ],
+          model: tableNames.bookingStatus,
+        },
+      ],
+      where: {
+        booking_status_id: 1,
+        user_id: user_id,
+      },
+    });
+    successWithdata(
+      res,
+      "User appointment history found",
+      "User appointment history not found",
+      userAppointmentHistory,
+      0
+    );
+
+    // if (userAppointmentHistory != "") {
+    //   // res.status(404).send({
+    //   //   status: 404,
+    //   //   message: ,
+    //   // });
+    //   error(res, "User appointment history not found", 404,1);
+    // } else {
+    //   // res.status(200).send({
+    //   //   status: 200,
+    //   //   message: "",
+    //   // });
+    //   successWithdata(res, "User appointment history found", 200,1);
+    // }
+  } catch (err) {
+    error(res, err, 500);
+  }
+}
 module.exports = {
   addAppointment,
   checkAppointmentAvailability,
+  getAppointmentUserHistory,
 };

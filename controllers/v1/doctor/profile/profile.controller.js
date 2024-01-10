@@ -49,7 +49,8 @@ async function userProfileUpdate(req, res) {
       const doctorCategoryInsertQuery = tableNames.doctorCategory.create(doctorCategoryInfo);
       success(res, "Profile has been updated", 200, 1);
     } else {
-      error(res, "Profile  not updated please try again later ", 209, 1);
+      res.statusCode= 404;
+      error(res, "Profile  not updated please try again later ");
     }
   } catch (err) {
     error(res, err, 500);

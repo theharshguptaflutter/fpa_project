@@ -78,8 +78,6 @@ db.role = require("../models/resource/role.model.js")(sequelize, DataTypes);
 //   console.log("yes re-sync done!");
 // });
 
-module.exports = { db, sequelize };
-
 //access toekn tb link
 db.access_token.belongsTo(db.users, {
   foreignKey: "user_id", // foreign table
@@ -94,6 +92,7 @@ db.access_token.belongsTo(db.doctor_user, {
 db.appointment_booking.belongsTo(db.users, {
   foreignKey: "user_id", // foreign table
   targetKey: "user_id", // primary table
+  uniqueKey: "apppintment_type_fk",
 });
 
 db.appointment_booking.belongsTo(db.doctor_user, {
@@ -105,6 +104,10 @@ db.appointment_booking.belongsTo(db.doctor_user, {
 db.appointment_booking.belongsTo(db.booking_status, {
   foreignKey: "booking_status_id", // foreign table
   targetKey: "booking_status_id", // primary table
+});
+db.appointment_booking.belongsTo(db.users, {
+  foreignKey: "user_id", // foreign table
+  targetKey: "user_id", // primary table
 });
 
 //chat message table  link
@@ -169,6 +172,7 @@ db.inbox.belongsTo(db.appointment_booking, {
   foreignKey: "appointment_booking_id", // foreign table
   targetKey: "appointment_booking_id", // primary table
 });
+
 db.inbox.belongsTo(db.users, {
   foreignKey: "user_id", // foreign table
   targetKey: "user_id", // primary table
@@ -178,7 +182,6 @@ db.inbox.belongsTo(db.doctor_user, {
   foreignKey: "doctor_id", // foreign table
   targetKey: "doctor_id", // primary table
 });
-
 
 //otp  tb link
 db.Otp.belongsTo(db.users, {
@@ -195,3 +198,17 @@ db.users.belongsTo(db.role, {
   foreignKey: "role_id", // foreign table
   targetKey: "role_id", // primary table
 });
+
+db.users.hasMany(db.appointment_booking, {
+  foreignKey: "user_id",
+});
+
+db.doctor_user.hasMany(db.appointment_booking, {
+  foreignKey: "doctor_id",
+});
+
+db.booking_status.hasMany(db.appointment_booking, {
+  foreignKey: "booking_status_id",
+});
+
+module.exports = { db, sequelize };

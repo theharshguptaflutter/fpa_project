@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
 const otpTimeValidation = require("../../../../utils/otp_time_checker");
 const editParameterQuery = require("../../../../utils/edit_query");
-const { success, error, successWithdata, success1, resetpasswordsucess, verifyemailsucess } = require("../../../../utils/responseApi");
+const { success, error, successWithdata, success1, resetpasswordsucess, resetpassworderror, verifyemailsucess } = require("../../../../utils/responseApi");
 
 var jwt = require("jsonwebtoken");
 
@@ -13,9 +13,10 @@ async function login(req, res) {
   const email = req.body.email;
   const pwd = req.body.password;
   const guest = req.body.guest;
-  console.log(mobile_number)
-  if (String(mobile_number).length < 10 && mobile_number !=undefined) {
-    return error(res, "Please enter correct phone number", 404);
+  console.log(mobile_number);
+  if (String(mobile_number).length < 10 && mobile_number != undefined) {
+    res.statusCode=404;
+    return error(res, "Please enter correct phone number");
   }
   if (guest) {
     let guestinfo = {
@@ -73,30 +74,31 @@ async function login(req, res) {
     // console.log("sql===>", SqlQuery.password);
     let verification_status = await userverify(email);
     if (!mobile_number) {
-      console.log("qqqqqqqqqqq===>", SqlQuery)
+      console.log("qqqqqqqqqqq===>", SqlQuery);
       if (SqlQuery) {
         if (SqlQuery?.password != null && pwd) {
           result = await bcrypt.compare(String(pwd), SqlQuery?.password);
         } else {
-          return error(res, "your password/email not added yet or you are already user", 404);
+          res.statusCode=401;
+          return error(res, "your password/email not added yet or you are already user");
         }
       } else {
         if (!verification_status && pwd) {
-          return error(res, "you are not registered user or please check your mail id", 404);
+          res.statusCode=401;
+          return error(res, "you are not registered user or please check your mail id");
         } else {
-          if(verification_status && pwd){
+          if (verification_status && pwd) {
             result = null;
-          }else{
+          } else {
             result = "not found";
           }
         }
       }
     }
     //comparing the password of the registered user
-    console.log("result===>", result)
+    console.log("result===>", result);
     if (result === true || result === "not found") {
-   //   const otpcode = Math.floor(1000 + Math.random() * 9000);
-      const otpcode = 4444;
+      const otpcode = Math.floor(1000 + Math.random() * 9000);
       if (email) {
         const transporter = nodemailer.createTransport({
           host: process.env.HOST_MAIL,
@@ -131,7 +133,8 @@ async function login(req, res) {
       if (SqlQuery) {
         data = SqlQuery.toJSON();
         if (data["user_delete_flag"] == 1) {
-          error(res, "you account has been deactivated", 404);
+          res.statusCode= 403;
+          error(res, "you account has been deactivated");
         }
       }
       const UserOtp = await tableNames.Otp.create({
@@ -156,6 +159,7 @@ async function login(req, res) {
       });
 
       if (UserOtp === 0) {
+        res.statusCode=422;
         error(res, "Otp not send");
       } else {
         successWithdata(res, "Verification code Found", "Verification code Not Found", {
@@ -163,7 +167,8 @@ async function login(req, res) {
         });
       }
     } else {
-      return error(res, "Passwords do not match! Login failed.", 404);
+      res.statusCode=401;
+      return error(res, "Passwords do not match! Login failed.");
     }
   }
 }
@@ -206,7 +211,8 @@ async function verifyemail(req, res) {
     if (verification_status) {
       resetpasswordsucess(res, "Mail has been sent successfully");
     } else {
-      error(res, "Unknown User", 404);
+      res.statusCode= 400;
+      resetpassworderror(res, "Unknown User");
     }
   } catch (error) {
     console.error("Error sending email:", error);
@@ -221,7 +227,7 @@ async function userverify(email) {
     let data = null;
     if (SqlQuery) {
       data = SqlQuery.toJSON();
-      return { status: true, data: data["user_id"] ,pwd: ["password"]};
+      return { status: true, data: data["user_id"], pwd: ["password"] };
     } else {
       return false;
     }
@@ -244,7 +250,8 @@ async function passwordrecovery(req, res) {
   if (userProfileupdateQuery != null) {
     verifyemailsucess(res, "Password has been changed");
   } else {
-    error(res, "Profile  not updated please try again later ", 209, 1);
+    res.statusCode=304;
+    error(res, "Profile  not updated please try again later ");
   }
 }
 async function otpverify(req, res) {
@@ -252,7 +259,9 @@ async function otpverify(req, res) {
   const verification_code = req.body.verification_code;
 
   if (verification_code == null || verification_code == "") {
-    error(res, "Enter your number", 1);
+    console.log(res.statusCode)
+    res.statusCode= 209
+    return error(res, "Enter your Verification Code");
   }
 
   let otpFindQuery = await tableNames.Otp.findOne({
@@ -263,17 +272,18 @@ async function otpverify(req, res) {
   });
 
   if (otpFindQuery == null) {
-    error(res, "Otp not inserted", 409, 1);
+    res.statusCode= 404
+    error(res, "Otp/cerification code not matched");
   } else if (otpFindQuery["otp_active_status"] == 1) {
-    error(res, "Otp already verified", 404, 1);
-  } else if (otpFindQuery["otp_code"] != otp || otpFindQuery["verification_code"] != verification_code) {
-    error(res, "Otp not match", 404, 1);
+    res.statusCode= 400
+    error(res, "Otp already verified");
   } else {
     var otpTimestamp = otpFindQuery["otp_creation_dt"];
     var isExpired = await otpTimeValidation(otpTimestamp);
     if (isExpired) {
       console.log("OTP has expired");
-      error(res, "OTP has expired", 410, 1);
+      res.statusCode= 404
+      error(res, "OTP has expired");
     } else {
       var data = otpFindQuery.toJSON();
 
@@ -311,7 +321,8 @@ async function otpverify(req, res) {
           });
 
           if (!token) {
-            error(res, "Token not generated", 409, 1);
+            res.statusCode= 409;
+            error(res, "Token not generated");
           } else {
             let tokeninfo = {
               user_id: user["user_id"],
@@ -320,7 +331,8 @@ async function otpverify(req, res) {
             };
             const accessTokensGenInsetQuery = await tableNames.accessTokens.create(tokeninfo);
             if (!accessTokensGenInsetQuery) {
-              error(res, "Generated token not inserted into db", 404, 1);
+              res.statusCode= 409;
+              error(res, "Generated token not inserted into db");
             } else {
               const otpVerified = await tableNames.Otp.update(
                 {
@@ -330,7 +342,8 @@ async function otpverify(req, res) {
               );
 
               if (!otpVerified) {
-                error(res, "Otp not verified", 404, 1);
+                res.statusCode= 409;
+                error(res, "OTP not verified");
               } else {
                 // success1(res, "user has been logout", 200);
                 res.status(200).send({
@@ -375,7 +388,9 @@ async function otpverify(req, res) {
           });
 
           if (!token) {
-            error(res, "Token not generated", 404, 1);
+            
+            res.statusCode= 404
+            error(res, "Token not generated");
           } else {
             let tokeninfo = {
               user_id: userData["user_id"],
@@ -384,7 +399,8 @@ async function otpverify(req, res) {
             };
             const sqlquery1 = await tableNames.accessTokens.create(tokeninfo);
             if (!sqlquery1) {
-              error(res, "Generated token not inserted into db", 404);
+              res.statusCode= 404
+              error(res, "Generated token not inserted into db");
             } else {
               const otpVerified = await tableNames.Otp.update(
                 {
@@ -394,7 +410,8 @@ async function otpverify(req, res) {
               );
 
               if (!otpVerified) {
-                error(res, "Otp not verified", 404);
+                res.statusCode= 404
+                error(res, "Otp not verified");
               } else {
                 const userOnlineStatus = await tableNames.User.update(
                   {
@@ -403,7 +420,8 @@ async function otpverify(req, res) {
                   { where: { user_id: uuid } }
                 );
                 if (!userOnlineStatus) {
-                  error(res, "user online status not changes", 209);
+                  res.statusCode= 209
+                  error(res, "user online status not changes");
                 } else {
                   res.status(200).send({
                     status: 200,
@@ -430,7 +448,8 @@ async function otpverify(req, res) {
             }
           }
         } else {
-          error(res, "user not found", 404, 1);
+          res.statusCode= 404
+          error(res, "user not found");
         }
       }
     }
@@ -452,7 +471,8 @@ async function logout(req, res) {
     if (updateQuery != null) {
       success1(res, "user has been logout", 200);
     } else {
-      error(res, "unable to logout please try again later ", 209);
+      res.statusCode= 209
+      error(res, "unable to logout please try again later ");
     }
   } catch (error) {
     error(res, error, 500);
@@ -472,12 +492,14 @@ async function tokenReGenerate(req, res) {
   if (findUser) {
     userData = findUser.toJSON();
     if (userData["user_delete_flag"] == 1) {
-      error(res, "you account has been deactivated", 404);
+      res.statusCode= 404
+      error(res, "you account has been deactivated");
     }
   }
 
   if (userData == null || userData == "") {
-    error(res, "User Not Found", 404);
+    res.statusCode= 404
+    error(res, "User Not Found");
   } else {
     const privatekey = process.env.privateKey;
     let params = {
@@ -489,7 +511,8 @@ async function tokenReGenerate(req, res) {
     });
 
     if (!token) {
-      error(res, "Token not generated", 404);
+      res.statusCode= 404;
+      error(res, "Token not generated");
     } else {
       let tokeninfo = {
         user_id: userData["user_id"],
@@ -498,7 +521,8 @@ async function tokenReGenerate(req, res) {
       };
       const sqlquery1 = await tableNames.gen_token.create(tokeninfo);
       if (!sqlquery1) {
-        error(res, "Generated token not inserted into db", 404);
+        res.statusCode= 400;
+        error(res, "Generated token not inserted into db");
       } else {
         res.status(200).send({
           status: 200,

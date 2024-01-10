@@ -10,7 +10,15 @@ exports.success = (res, respSuccessMsg) => {
 exports.resetpasswordsucess = (res, respSuccessMsg) => {
   return [
     res.status(res.statusCode).send({
-      status: 200,
+      status: 250,
+      message: respSuccessMsg,
+    }),
+  ];
+};
+exports.resetpassworderror = (res, respSuccessMsg) => {
+  return [
+    res.status(res.statusCode).send({
+      status: 550,
       message: respSuccessMsg,
     }),
   ];
@@ -41,7 +49,7 @@ exports.successWithdata = (
 };
 
 exports.error = (res, Msg, errormsg, condition) => {
-  const codes = [200, 201, 400, 401, 404, 403, 422, 500, 209];
+  const codes = [200, 304,201, 400, 401, 404, 403, 422, 500, 209];
   const findCode = codes.find((code) => code == res.statusCode);
 
   if (!findCode) res.statusCode = 500;

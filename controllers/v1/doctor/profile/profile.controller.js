@@ -7,16 +7,19 @@ const {
 } = require("../../../../utils/responseApi");
 const editParameterQuery = require("../../../../utils/edit_query");
 const { s3Upload } = require("../../../../utils/s3_file_upload");
+const { where } = require("sequelize");
+const bcrypt = require("bcrypt");
+
 
 async function userProfileUpdate(req, res) {
-  try {
+  // try {
     var doctor_id = req.params.doctor_id;
     var doctor_photo = req.body.photo;
     var category_id = req.body.category_id;
 
-    if (doctor_photo != "") {
-      doctor_photo = await s3Upload(doctor_photo);
-    }
+    // if (doctor_photo != "") {
+    //   doctor_photo = await s3Upload(doctor_photo);
+    // }
 
     let profileUpdateInfo = {
       state_id: req.body.state_id,
@@ -24,7 +27,7 @@ async function userProfileUpdate(req, res) {
       doctor_name: req.body.doctor_name,
       doctor_email: req.body.doctor_email,
       doctor_number: req.body.doctor_number,
-      photo: req.body.photo,
+      photo: doctor_photo,
       password:  bcrypt.hashSync(String(req.body.password), 10),
       doctor_occupation: req.body.doctor_occupation,
       doctor_specialist: req.body.doctor_specialist,
@@ -46,15 +49,33 @@ async function userProfileUpdate(req, res) {
         doctor_id: doctor_id,
         category_id: category_id,
       };
-      const doctorCategoryInsertQuery = tableNames.doctorCategory.create(doctorCategoryInfo);
-      success(res, "Profile has been updated", 200, 1);
+      const doctorCategory = await tableNames.doctorCategory.findOne({
+        where: {doctor_id: doctor_id},
+      })
+      if(doctorCategory){
+        const updateDoctorCategory = await tableNames.doctorCategory.update(
+          doctorCategoryInfo,
+          {
+            where: {
+              doctor_id: doctor_id,
+            },
+          }
+        );
+      }else{
+        const doctorCategoryInsertQuery = tableNames.doctorCategory.create(doctorCategoryInfo);
+      }
+      // const doctorCategoryInsertQuery = tableNames.doctorCategory.create(doctorCategoryInfo);
+      const updatedUserData = await tableNames.doctorUser.findOne({
+        where: {doctor_id: doctor_id},
+      })
+      successWithdata(res, "Profile has been updated", 200, updatedUserData.toJSON());
     } else {
       res.statusCode= 404;
       error(res, "Profile  not updated please try again later ");
     }
-  } catch (err) {
-    error(res, err, 500);
-  }
+  // } catch (err) {
+  //   error(res, err, 500);
+  // }
 }
 
 async function getUserProfile(req, res) {

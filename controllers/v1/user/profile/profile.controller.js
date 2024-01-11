@@ -14,9 +14,9 @@ async function userProfileUpdate(req, res) {
     var user_id = req.params.user_id;
     var user_avatar = req.body.avatar;
 
-    if (user_avatar != "") {
-      user_avatar = await s3Upload(user_avatar);
-    }
+    // if (user_avatar != "") {
+    //   user_avatar = await s3Upload(user_avatar);
+    // }
 
     let profileUpdateInfo = {
       role_id: req.body.role_id,
@@ -40,7 +40,10 @@ async function userProfileUpdate(req, res) {
       }
     );
     if (userProfileupdateQuery != null) {
-      success(res, "Profile has been updated", 200, 1);
+      const updatedUserData = await tableNames.User.findOne({
+        where: {user_id: user_id},
+      })
+      successWithdata(res, "Profile has been updated", 200, updatedUserData.toJSON());
     } else {
       res.statusCode= 404
       error(res, "Profile  not updated please try again later ");

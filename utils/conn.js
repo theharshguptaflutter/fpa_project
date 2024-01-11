@@ -74,9 +74,9 @@ db.inbox = require("../models/chat/inbox.model.js")(sequelize, DataTypes);
 
 db.role = require("../models/resource/role.model.js")(sequelize, DataTypes);
 
-// db.sequelize.sync({ force: false }).then(() => {
-//   console.log("yes re-sync done!");
-// });
+db.sequelize.sync({ force: false }).then(() => {
+  console.log("yes re-sync done!");
+});
 
 //access toekn tb link
 db.access_token.belongsTo(db.users, {

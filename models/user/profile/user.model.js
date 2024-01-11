@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: null,
       },
       password: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         defaultValue: null,
       },
       city_id: {

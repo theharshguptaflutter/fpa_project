@@ -12,10 +12,84 @@ async function login(req, res) {
   const doctor_number = req.body.number;
   const doctor_email = req.body.email;
   const pwd = req.body.password;
+
+  if (!doctor_number && !doctor_email) {
+    res.statusCode = 404;
+    return error(res, "Please provide either email or phone number");
+  }
+
   if (String(doctor_number).length < 10 && doctor_number !=undefined) {
     res.statusCode=404;
     return error(res, "Please enter correct phone number");
   }
+
+
+
+  if(doctor_email && pwd){
+
+    let user = await tableNames.doctorUser.findOne({
+      where: { doctor_email: doctor_email },
+    });
+    if (!user || !user.password) {
+      res.statusCode = 404;
+      return error(res, "User not found or password not set. Please signUp.");
+    }
+    const passChk = await bcrypt.compare(String(pwd), user.password);
+    if (!passChk) {
+      res.statusCode = 404;
+      return error(res, "Incorrect Password!");
+    }
+    //Generating JWT token and sending user data
+    const privatekey = process.env.privateKey;
+    let params = {
+      doctor_id: user["doctor_id"],
+      doctor_number: user["doctor_number"]
+    };
+    const token = await jwt.sign(params, privatekey, {
+      expiresIn: "365d"
+    });
+
+    if (!token) {
+      res.statusCode = 409;
+      error(res, "Token not generated");
+    } else {
+      let tokeninfo = {
+        doctor_id: user["doctor_id"],
+      doctor_number: user["doctor_number"],
+        gen_token: token,
+      };
+      const accessTokensGenInsetQuery = await tableNames.accessTokens.create(
+        tokeninfo
+      );
+      if (!accessTokensGenInsetQuery) {
+        res.statusCode = 409;
+        error(res, "Generated token not inserted into db");
+      } else {
+        return res.status(200).send({
+          status: 200,
+          isuserfound: true,
+          message: "Login successful",
+          doctor_details: [
+            {
+              doctor_id: user["doctor_id"],
+              doctor_name: user["doctor_name"] ?? " ",
+              avatar: user["avatar"] ?? " ",
+              doctor_email: user["doctor_email"] ?? " ",
+              doctor_number: user["doctor_number"] ?? " ",
+              city_id: user["city_id"] ?? " ",
+              state_id: user["state_id"] ?? " ",
+              doctor_online_status: user["doctor_online_status"],
+              doctor_delete_flag: user["doctor_delete_flag"],
+              token: token ?? " ",
+            },
+          ],
+        });
+      }
+    }
+
+  }else{
+
+  
   let SqlQuery = await tableNames.doctorUser.findOne({
     where: {
       ...(doctor_number
@@ -128,6 +202,7 @@ async function login(req, res) {
     res.statusCode=401;
     return error(res, "Passwords do not match! Login failed.");
   }
+}
 }
 
 async function verifyemail(req, res) {

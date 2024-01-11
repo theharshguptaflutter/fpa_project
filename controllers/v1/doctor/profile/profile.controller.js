@@ -12,7 +12,7 @@ const bcrypt = require("bcrypt");
 
 
 async function userProfileUpdate(req, res) {
-  // try {
+  try {
     var doctor_id = req.params.doctor_id;
     var doctor_photo = req.body.photo;
     var category_id = req.body.category_id;
@@ -73,9 +73,9 @@ async function userProfileUpdate(req, res) {
       res.statusCode= 404;
       error(res, "Profile  not updated please try again later ");
     }
-  // } catch (err) {
-  //   error(res, err, 500);
-  // }
+  } catch (err) {
+    error(res, err, 500);
+  }
 }
 
 async function getUserProfile(req, res) {

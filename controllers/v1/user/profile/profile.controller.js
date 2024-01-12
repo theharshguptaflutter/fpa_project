@@ -10,6 +10,8 @@ const { s3Upload } = require("../../../../utils/s3_file_upload");
 const bcrypt = require("bcrypt");
 
 async function userProfileUpdate(req, res) {
+
+
   try {
     var user_id = req.params.user_id;
     var user_avatar = req.body.avatar;

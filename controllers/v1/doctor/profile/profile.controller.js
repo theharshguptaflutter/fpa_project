@@ -36,7 +36,7 @@ async function userProfileUpdate(req, res) {
     var userProfileUpdateParamiter = await editParameterQuery(
       profileUpdateInfo
     );
-    const userProfileupdateQuery = tableNames.doctorUser.update(
+    const userProfileupdateQuery = await tableNames.doctorUser.update(
       userProfileUpdateParamiter,
       {
         where: {

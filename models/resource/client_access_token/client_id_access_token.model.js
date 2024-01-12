@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         defaultValue: null,
       },
-      cliend_id: {
+      client_id: {
         type: DataTypes.STRING,
         defaultValue: null,
       },

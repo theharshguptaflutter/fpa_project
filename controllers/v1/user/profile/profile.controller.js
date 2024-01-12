@@ -31,7 +31,7 @@ async function userProfileUpdate(req, res) {
     var userProfileUpdateParamiter = await editParameterQuery(
       profileUpdateInfo
     );
-    const userProfileupdateQuery = tableNames.User.update(
+    const userProfileupdateQuery = await tableNames.User.update(
       userProfileUpdateParamiter,
       {
         where: {

@@ -79,9 +79,9 @@ db.client_access_token =
     DataTypes
   );
 
-db.sequelize.sync({ force: false }).then(() => {
-  console.log("yes re-sync done!");
-});
+// db.sequelize.sync({ force: false }).then(() => {
+//   console.log("yes re-sync done!");
+// });
 
 //access toekn tb link
 db.access_token.belongsTo(db.users, {

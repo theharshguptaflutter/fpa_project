@@ -73,15 +73,15 @@ db.booking_status =
 db.inbox = require("../models/chat/inbox.model.js")(sequelize, DataTypes);
 
 db.role = require("../models/resource/role.model.js")(sequelize, DataTypes);
-db.cliend_access_token =
-  require("../models/resource/cliend_access_token/cliend_id_access_token.model.js")(
+db.client_access_token =
+  require("../models/resource/client_access_token/client_id_access_token.model.js")(
     sequelize,
     DataTypes
   );
 
-// db.sequelize.sync({ force: false }).then(() => {
-//   console.log("yes re-sync done!");
-// });
+db.sequelize.sync({ force: false }).then(() => {
+  console.log("yes re-sync done!");
+});
 
 //access toekn tb link
 db.access_token.belongsTo(db.users, {
@@ -217,12 +217,12 @@ db.booking_status.hasMany(db.appointment_booking, {
 });
 
 //cliend access code
-db.cliend_access_token.belongsTo(db.users, {
+db.client_access_token.belongsTo(db.users, {
   foreignKey: "user_id", // foreign table
   targetKey: "user_id", // primary table
 });
 
-db.cliend_access_token.belongsTo(db.doctor_user, {
+db.client_access_token.belongsTo(db.doctor_user, {
   foreignKey: "doctor_id", // foreign table
   targetKey: "doctor_id", // primary table
 });

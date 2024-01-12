@@ -1,8 +1,8 @@
 module.exports = (sequelize, DataTypes) => {
-  const cliend_access_token = sequelize.define(
-    "cliend_access_token",
+  const client_access_token = sequelize.define(
+    "client_access_token",
     {
-      cliend_access_token: {
+      client_access_token: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
@@ -26,5 +26,5 @@ module.exports = (sequelize, DataTypes) => {
       updatedAt: false,
     }
   );
-  return cliend_access_token;
+  return client_access_token;
 };

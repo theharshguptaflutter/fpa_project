@@ -16,7 +16,7 @@ tableNames = {
   chatMessagesLog: db.chat_message_log,
   appointmentBooking:db.appointment_booking,
   bookingStatus:db.booking_status,
-  cliendAccessToken:db.cliend_access_token,
+  clientAccessToken:db.client_access_token,
 };
 
 module.exports = Object.freeze(tableNames);

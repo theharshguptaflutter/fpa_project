@@ -26,7 +26,7 @@ async function userProfileUpdate(req, res) {
       email: req.body.email,
       avatar: user_avatar,
       user_profile_update: 1,
-      password:  bcrypt.hashSync(String(req.body.password), 10)
+      password: bcrypt.hashSync(String(req.body.password), 10),
     };
     var userProfileUpdateParamiter = await editParameterQuery(
       profileUpdateInfo
@@ -39,13 +39,22 @@ async function userProfileUpdate(req, res) {
         },
       }
     );
-    if (userProfileupdateQuery != null) {
+   
+    if (userProfileupdateQuery != 0) {
       const updatedUserData = await tableNames.User.findOne({
-        where: {user_id: user_id},
-      })
-      successWithdata(res, "Profile has been updated", 200, updatedUserData.toJSON());
+        where: { user_id: user_id },
+      });
+
+      console.log(updatedUserData);
+
+      successWithdata(
+        res,
+        "Profile has been updated",
+        200,
+        updatedUserData.toJSON()
+      );
     } else {
-      res.statusCode= 404
+      res.statusCode = 404;
       error(res, "Profile  not updated please try again later ");
     }
   } catch (err) {

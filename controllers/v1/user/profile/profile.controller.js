@@ -13,11 +13,13 @@ async function userProfileUpdate(req, res) {
   try {
     var user_id = req.params.user_id;
     var user_avatar = req.body.avatar;
-
+    var password = req.body.password;
     // if (user_avatar != "") {
     //   user_avatar = await s3Upload(user_avatar);
     // }
-
+    if (password){
+      password = bcrypt.hashSync(String(password), 10);
+    }
     let profileUpdateInfo = {
       role_id: req.body.role_id,
       state_id: req.body.state_id,
@@ -26,7 +28,7 @@ async function userProfileUpdate(req, res) {
       email: req.body.email,
       avatar: user_avatar,
       user_profile_update: 1,
-      password: bcrypt.hashSync(String(req.body.password), 10),
+      password: password,
     };
     var userProfileUpdateParamiter = await editParameterQuery(
       profileUpdateInfo

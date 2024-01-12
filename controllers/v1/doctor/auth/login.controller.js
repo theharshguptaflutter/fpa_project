@@ -12,6 +12,7 @@ async function login(req, res) {
   const doctor_number = req.body.number;
   const doctor_email = req.body.email;
   const pwd = req.body.password;
+  const client_id = req.body.clientId;
 
   if (!doctor_number && !doctor_email) {
     res.statusCode = 404;
@@ -65,6 +66,19 @@ async function login(req, res) {
         res.statusCode = 409;
         error(res, "Generated token not inserted into db");
       } else {
+        let checkClientId = await tableNames.clientAccessToken.findOne({
+          where: { doctor_id: user["doctor_id"], client_id: client_id },
+        });
+        if (checkClientId === null) {
+          const cliendIdInsertQuery = await tableNames.clientAccessToken.create({
+            doctor_id: user["doctor_id"],
+            client_id: client_id,
+          });
+          if(!cliendIdInsertQuery){
+            res.statusCode = 409;
+            error(res, "Client Id not inserted into DB!")
+          }
+        }
         return res.status(200).send({
           status: 200,
           isuserfound: true,
@@ -78,6 +92,7 @@ async function login(req, res) {
               doctor_number: user["doctor_number"] ?? " ",
               city_id: user["city_id"] ?? " ",
               state_id: user["state_id"] ?? " ",
+              client_id: client_id ?? " ",
               doctor_online_status: user["doctor_online_status"],
               doctor_delete_flag: user["doctor_delete_flag"],
               token: token ?? " ",

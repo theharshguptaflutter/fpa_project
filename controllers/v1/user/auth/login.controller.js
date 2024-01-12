@@ -21,6 +21,7 @@ async function login(req, res) {
   const email = req.body.email;
   const pwd = req.body.password;
   const guest = req.body.guest;
+  const client_id = req.body.clientId;
   console.log(mobile_number);
 
   if (!mobile_number && !email) {
@@ -72,6 +73,19 @@ async function login(req, res) {
         res.statusCode = 409;
         error(res, "Generated token not inserted into db");
       } else {
+        let checkClientId = await tableNames.clientAccessToken.findOne({
+          where: { user_id: user["user_id"], client_id: client_id },
+        });
+        if (checkClientId === null) {
+          const cliendIdInsertQuery = await tableNames.clientAccessToken.create({
+            user_id: user["user_id"],
+            client_id: client_id,
+          });
+          if(!cliendIdInsertQuery){
+            res.statusCode = 409;
+            error(res, "Client Id not inserted into DB!")
+          }
+        }
         return res.status(200).send({
           status: 200,
           isuserfound: true,
@@ -87,6 +101,7 @@ async function login(req, res) {
               state_id: user["state_id"] ?? " ",
               user_online_status: user["user_online_status"],
               user_delete_flag: user["user_delete_flag"],
+              client_id: client_id ?? " ",
               token: token ?? " ",
             },
           ],

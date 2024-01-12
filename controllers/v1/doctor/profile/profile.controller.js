@@ -16,10 +16,13 @@ async function userProfileUpdate(req, res) {
     var doctor_id = req.params.doctor_id;
     var doctor_photo = req.body.photo;
     var category_id = req.body.category_id;
-
-    // if (doctor_photo != "") {
-    //   doctor_photo = await s3Upload(doctor_photo);
+    var password = req.body.password;
+    // if (user_avatar != "") {
+    //   user_avatar = await s3Upload(user_avatar);
     // }
+    if (password){
+      password = bcrypt.hashSync(String(password), 10);
+    }
 
     let profileUpdateInfo = {
       state_id: req.body.state_id,
@@ -28,7 +31,7 @@ async function userProfileUpdate(req, res) {
       doctor_email: req.body.doctor_email,
       doctor_number: req.body.doctor_number,
       photo: doctor_photo,
-      password:  bcrypt.hashSync(String(req.body.password), 10),
+      password:  password,
       doctor_occupation: req.body.doctor_occupation,
       doctor_specialist: req.body.doctor_specialist,
       doctor_profile_update: 1,

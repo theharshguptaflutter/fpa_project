@@ -73,11 +73,27 @@ db.booking_status =
 db.inbox = require("../models/chat/inbox.model.js")(sequelize, DataTypes);
 
 db.role = require("../models/resource/role.model.js")(sequelize, DataTypes);
+
 db.client_access_token =
   require("../models/resource/client_access_token/client_id_access_token.model.js")(
     sequelize,
     DataTypes
   );
+db.user_analytics =
+  require("../models/user/user_analytics/user_analytics.model")(
+    sequelize,
+    DataTypes
+  );
+
+db.event_types = require("../models/resource/event_type/event_types.model.js")(
+  sequelize,
+  DataTypes
+);
+
+db.doctor_analytics = require("../models/doctor/doctor_analytics/doctor_analytics.model.js")(
+  sequelize,
+  DataTypes
+);
 
 // db.sequelize.sync({ force: false }).then(() => {
 //   console.log("yes re-sync done!");
@@ -227,4 +243,13 @@ db.client_access_token.belongsTo(db.doctor_user, {
   targetKey: "doctor_id", // primary table
 });
 
+//user_analytics
+db.user_analytics.belongsTo(db.users, {
+  foreignKey: "user_id", // foreign table
+  targetKey: "user_id", // primary table
+});
+db.user_analytics.belongsTo(db.event_types, {
+  foreignKey: "event_types_id", // foreign table
+  targetKey: "event_types_id", // primary table
+});
 module.exports = { db, sequelize };

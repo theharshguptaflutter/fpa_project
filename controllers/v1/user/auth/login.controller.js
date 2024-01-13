@@ -172,7 +172,7 @@ async function login(req, res) {
           res.statusCode = 401;
           return error(
             res,
-            "your password/email not added yet or you are already user"
+            "User already exists!"
           );
         }
       } else {

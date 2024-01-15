@@ -23,7 +23,6 @@ async function userProfileUpdate(req, res) {
       password = bcrypt.hashSync(String(password), 10);
     }
     let profileUpdateInfo = {
-      role_id: req.body.role_id,
       state_id: req.body.state_id,
       city_id: req.body.city_id,
       name: req.body.name,

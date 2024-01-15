@@ -93,6 +93,7 @@ async function login(req, res) {
           user_details: [
             {
               user_id: user["user_id"],
+              role_id: user["role_id"] ?? " ",
               name: user["name"] ?? " ",
               avatar: user["avatar"] ?? " ",
               email: user["email"] ?? " ",
@@ -459,6 +460,7 @@ async function otpverify(req, res) {
                   user_details: [
                     {
                       user_id: user["user_id"],
+                      role_id: user["role_id"] ?? " ",
                       name: user["name"] ?? " ",
                       avatar: user["avatar"] ?? " ",
                       email: user["email"] ?? " ",

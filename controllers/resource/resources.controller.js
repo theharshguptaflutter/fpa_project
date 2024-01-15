@@ -1,6 +1,7 @@
 const tableNames = require("../../utils/table_name");
 const { success, error } = require("../../utils/responseApi");
-
+const operatorsAliases = require("../../utils/operator_aliases");
+const moment = require("moment");
 async function getState(req, res) {
   try {
     findQuery = await tableNames.State.findAll({
@@ -108,9 +109,39 @@ async function getRole(req, res) {
     });
   }
 }
+
+async function getAppointmentList(req, res) {
+  // moment
+
+  const currentDate = moment().startOf("day").format("YYYY-MM-DD");
+  const threeMonthsLater = moment()
+    .add(3, "months")
+    .startOf("day")
+    .format("YYYY-MM-DD");
+
+  console.log("tesyyyy=>", currentDate, threeMonthsLater);
+  tableNames.appointmentBooking
+    .findAll({
+      attributes: ["booked_current_date", "booked_current_time"],
+      where: {
+        booked_current_date: {
+          [operatorsAliases.$between]: [currentDate, threeMonthsLater],
+        },
+      },
+      raw: true,
+    })
+    .then((appointments) => {
+      res.send({ status: 200, appointments });
+      console.log("appointments===>", appointments);
+    })
+    .catch((error) => {
+      console.error("Error fetching appointments:", error);
+    });
+}
 module.exports = {
   getState,
   getCity,
   getCategory,
   getRole,
+  getAppointmentList,
 };

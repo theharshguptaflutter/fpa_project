@@ -4,7 +4,8 @@ const {
   getState,
   getCity,
   getCategory,
-  getRole
+  getRole,
+  getAppointmentList,
 } = require("../../controllers/resource/resources.controller");
 
 router.get("/get-state", (req, res) => {
@@ -19,6 +20,11 @@ router.get("/get-category", (req, res) => {
 });
 
 router.get("/get-role", (req, res) => {
-    getRole(req, res);
-  });
+  getRole(req, res);
+});
+
+router.get("/get-appointmentlist", (req, res) => {
+  console.log("test============>");
+  getAppointmentList(req, res);
+});
 module.exports = router;

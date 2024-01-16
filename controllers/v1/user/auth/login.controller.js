@@ -197,35 +197,35 @@ async function login(req, res) {
     if (result === true || result === "not found") {
       //const otpcode = Math.floor(1000 + Math.random() * 9000);
       const otpcode = 4444;
-      // if (email) {
-      //   const transporter = nodemailer.createTransport({
-      //     host: process.env.HOST_MAIL,
-      //     port: process.env.PORT_MAIL,
-      //     secure: false,
-      //     auth: {
-      //       user: process.env.USER_MAIL,
-      //       pass: process.env.PASSWORD_MAIL,
-      //     },
-      //   });
-      //   const mailOptions = {
-      //     from: process.env.USER_MAIL,
-      //     to: email,
-      //     subject: "Validation mail",
-      //     html: `
-      //   <html>
-      //     <head></head>
-      //     <body>
-      //       <h1>Hello!</h1>
-      //       <p>This is a validation mail.</p>
-      //       <p>Your Email Otp is ${otpcode}</p>
+      if (email) {
+        const transporter = nodemailer.createTransport({
+          host: process.env.HOST_MAIL,
+          port: process.env.PORT_MAIL,
+          secure: false,
+          auth: {
+            user: process.env.USER_MAIL,
+            pass: process.env.PASSWORD_MAIL,
+          },
+        });
+        const mailOptions = {
+          from: process.env.USER_MAIL,
+          to: email,
+          subject: "Validation mail",
+          html: `
+        <html>
+          <head></head>
+          <body>
+            <h1>Hello!</h1>
+            <p>This is a validation mail.</p>
+            <p>Your Email Otp is ${otpcode}</p>
             
-      //     </body>
-      //   </html>
-      // `,
-      //   };
+          </body>
+        </html>
+      `,
+        };
 
-      //   await transporter.sendMail(mailOptions);
-      // }
+        await transporter.sendMail(mailOptions);
+      }
       const vvcode = uuidv4();
       var data = null;
       if (SqlQuery) {

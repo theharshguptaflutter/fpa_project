@@ -7,7 +7,7 @@ const editParameterQuery = require("../../../../utils/edit_query");
 const {
   success,
   error,
-  successWithdata,
+  successWithdata, 
   success1,
   resetpasswordsucess,
   resetpassworderror,
@@ -73,6 +73,10 @@ async function login(req, res) {
         res.statusCode = 409;
         error(res, "Generated token not inserted into db");
       } else {
+        if(!client_id){
+          res.statusCode = 409;
+          error(res, "Please provide client Id")
+        }
         let checkClientId = await tableNames.clientAccessToken.findOne({
           where: { user_id: user["user_id"], client_id: client_id },
         });
@@ -97,6 +101,7 @@ async function login(req, res) {
               name: user["name"] ?? " ",
               avatar: user["avatar"] ?? " ",
               email: user["email"] ?? " ",
+              gender: user["gender"] ?? " ",
               user_number: user["user_number"] ?? " ",
               city_id: user["city_id"] ?? " ",
               state_id: user["state_id"] ?? " ",
@@ -463,6 +468,7 @@ async function otpverify(req, res) {
                       role_id: user["role_id"] ?? " ",
                       name: user["name"] ?? " ",
                       avatar: user["avatar"] ?? " ",
+                      gender: user["gender"] ?? " ",
                       email: user["email"] ?? " ",
                       user_number: user["user_number"] ?? " ",
                       city_id: user["city_id"] ?? " ",
@@ -539,6 +545,7 @@ async function otpverify(req, res) {
                         user_id: userData["user_id"],
                         name: userData["name"] ?? " ",
                         avatar: userData["avatar"] ?? " ",
+                        gender: userData["gender"] ?? " ",
                         user_photo: userData["user_photo"] ?? " ",
                         email: userData["email"] ?? " ",
                         user_number: userData["user_number"] ?? " ",

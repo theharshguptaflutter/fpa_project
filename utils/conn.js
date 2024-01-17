@@ -90,13 +90,11 @@ db.event_types = require("../models/resource/event_type/event_types.model.js")(
   DataTypes
 );
 
-db.doctor_analytics = require("../models/admin/analytics/doctor_analytics/doctor_analytics.model.js")(
-  sequelize,
-  DataTypes
-);
-
-
-
+db.doctor_analytics =
+  require("../models/admin/analytics/doctor_analytics/doctor_analytics.model.js")(
+    sequelize,
+    DataTypes
+  );
 
 // db.sequelize.sync({ force: false }).then(() => {
 //   console.log("yes re-sync done!");

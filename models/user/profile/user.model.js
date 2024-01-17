@@ -32,6 +32,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         defaultValue: null,
       },
+      gender:{
+        type: DataTypes.STRING,
+        defaultValue: null,
+      },
       email: {
         type: DataTypes.STRING,
         defaultValue: null,

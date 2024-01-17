@@ -10,17 +10,16 @@ const { s3Upload } = require("../../../../utils/s3_file_upload");
 const { where } = require("sequelize");
 const bcrypt = require("bcrypt");
 
-
 async function userProfileUpdate(req, res) {
   try {
     var doctor_id = req.params.doctor_id;
-    var doctor_photo = req.body.photo;
+    var avatar = req.body.avatar;
     var category_id = req.body.category_id;
     var password = req.body.password;
     // if (user_avatar != "") {
     //   user_avatar = await s3Upload(user_avatar);
     // }
-    if (password){
+    if (password) {
       password = bcrypt.hashSync(String(password), 10);
     }
 
@@ -30,8 +29,8 @@ async function userProfileUpdate(req, res) {
       doctor_name: req.body.doctor_name,
       doctor_email: req.body.doctor_email,
       doctor_number: req.body.doctor_number,
-      photo: doctor_photo,
-      password:  password,
+      avatar: avatar,
+      password: password,
       doctor_occupation: req.body.doctor_occupation,
       doctor_specialist: req.body.doctor_specialist,
       doctor_profile_update: 1,
@@ -53,9 +52,9 @@ async function userProfileUpdate(req, res) {
         category_id: category_id,
       };
       const doctorCategory = await tableNames.doctorCategory.findOne({
-        where: {doctor_id: doctor_id},
-      })
-      if(doctorCategory){
+        where: { doctor_id: doctor_id },
+      });
+      if (doctorCategory) {
         const updateDoctorCategory = await tableNames.doctorCategory.update(
           doctorCategoryInfo,
           {
@@ -64,16 +63,22 @@ async function userProfileUpdate(req, res) {
             },
           }
         );
-      }else{
-        const doctorCategoryInsertQuery = tableNames.doctorCategory.create(doctorCategoryInfo);
+      } else {
+        const doctorCategoryInsertQuery =
+          tableNames.doctorCategory.create(doctorCategoryInfo);
       }
       // const doctorCategoryInsertQuery = tableNames.doctorCategory.create(doctorCategoryInfo);
       const updatedUserData = await tableNames.doctorUser.findOne({
-        where: {doctor_id: doctor_id},
-      })
-      successWithdata(res, "Profile has been updated", 200, updatedUserData.toJSON());
+        where: { doctor_id: doctor_id },
+      });
+      successWithdata(
+        res,
+        "Profile has been updated",
+        200,
+        updatedUserData.toJSON()
+      );
     } else {
-      res.statusCode= 404;
+      res.statusCode = 404;
       error(res, "Profile  not updated please try again later ");
     }
   } catch (err) {

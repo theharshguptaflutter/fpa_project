@@ -31,7 +31,11 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BIGINT,
         defaultValue: null,
       },
-      photo: {
+      gender:{
+        type: DataTypes.STRING,
+        defaultValue: null,
+      },
+      avatar: {
         type: DataTypes.STRING,
         defaultValue: null,
       },

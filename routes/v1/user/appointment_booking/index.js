@@ -3,7 +3,8 @@ const router = express.Router();
 const {
   addAppointment,
   checkAppointmentAvailability,
-  getAppointmentUserHistory
+  getAppointmentUserHistory,
+  addClientHistoryCard
  
 } = require("../../../../controllers/v1/user/appointment_booking/appointment_booking.controller.js");
 
@@ -21,4 +22,9 @@ router.get("/check_availability/", (req, res) => {
 router.get("/get_appointment_history/:user_id", (req, res) => {
   getAppointmentUserHistory(req, res);
 });
+
+router.post("/add_client_card/:user_id", (req, res) => {
+  addClientHistoryCard(req, res);
+});
+
 module.exports = router;

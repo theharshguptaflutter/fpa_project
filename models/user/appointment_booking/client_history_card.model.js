@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: null,
       },
       dob: {
-        type: DataTypes.STRING,
+        type: DataTypes.DATEONLY,
         defaultValue: null,
       },
       age: {

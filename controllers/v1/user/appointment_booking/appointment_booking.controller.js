@@ -19,59 +19,59 @@ async function addAppointment(req, res) {
   var booked_current_time = req.body.booked_current_time;
   var order_status = req.body.order_status;
 
- try {
-  const addAppointmentInsert = await tableNames.appointmentBooking.create({
-    user_id: user_id,
-    doctor_id: doctor_id,
-    user_booking_price: user_booking_price,
-    total_booking_price: total_booking_price,
-    booked_current_date: booked_current_date,
-    booking_status_id: 1,
-    booked_current_time: booked_current_time,
-    order_status: order_status,
-  });
-
-  if (addAppointmentInsert != null) {
-    //success(res, "Appointment added", 200, 0);
-    //console.log(addAppointmentInsert["appointment_booking_id"]);
-
-    let userInboxCreateQuery = {
-      appointment_booking_id: addAppointmentInsert["appointment_booking_id"],
+  try {
+    const addAppointmentInsert = await tableNames.appointmentBooking.create({
       user_id: user_id,
       doctor_id: doctor_id,
-    };
+      user_booking_price: user_booking_price,
+      total_booking_price: total_booking_price,
+      booked_current_date: booked_current_date,
+      booking_status_id: 1,
+      booked_current_time: booked_current_time,
+      order_status: order_status,
+    });
 
-    const inboxCreateQuery = await tableNames.Inbox.create(
-      userInboxCreateQuery
-    );
-    if (inboxCreateQuery != null || inboxCreateQuery != "") {
-      //    success(res, inboxCreateQuery['inbox_id'], 200, 0);
-      let userchatCreateQuery1 = {
-        inbox_id: inboxCreateQuery["inbox_id"],
-        message: "Congratulations.. your appointment has been confirmed",
-        visibility: 1,
+    if (addAppointmentInsert != null) {
+      //success(res, "Appointment added", 200, 0);
+      //console.log(addAppointmentInsert["appointment_booking_id"]);
+
+      let userInboxCreateQuery = {
+        appointment_booking_id: addAppointmentInsert["appointment_booking_id"],
+        user_id: user_id,
+        doctor_id: doctor_id,
       };
 
-      let userchatCreateQuery2 = {
-        inbox_id: inboxCreateQuery["inbox_id"],
-        message: "Congratulations.. you got a new appointment",
-        visibility: 2,
-      };
-
-      const inboxCreateQuery1 = await tableNames.chatMessage.create(
-        userchatCreateQuery2
+      const inboxCreateQuery = await tableNames.Inbox.create(
+        userInboxCreateQuery
       );
+      if (inboxCreateQuery != null || inboxCreateQuery != "") {
+        //    success(res, inboxCreateQuery['inbox_id'], 200, 0);
+        let userchatCreateQuery1 = {
+          inbox_id: inboxCreateQuery["inbox_id"],
+          message: "Congratulations.. your appointment has been confirmed",
+          visibility: 1,
+        };
 
-      const inboxCreateQuery2 = await tableNames.chatMessage.create(
-        userchatCreateQuery1
-      );
-      success(res, "Appointment added", 200, 0);
+        let userchatCreateQuery2 = {
+          inbox_id: inboxCreateQuery["inbox_id"],
+          message: "Congratulations.. you got a new appointment",
+          visibility: 2,
+        };
+
+        const inboxCreateQuery1 = await tableNames.chatMessage.create(
+          userchatCreateQuery2
+        );
+
+        const inboxCreateQuery2 = await tableNames.chatMessage.create(
+          userchatCreateQuery1
+        );
+        success(res, "Appointment added", 200, 0);
+      } else {
+        error(res, "Inbox not created", 500);
+      }
     } else {
-      error(res, "Inbox not created", 500);
+      error(res, "Appointment not added", 500);
     }
-  } else {
-    error(res, "Appointment not added", 500);
-  }
   } catch (err) {
     error(res, err, 500);
   }
@@ -140,16 +140,11 @@ async function getAppointmentUserHistory(req, res) {
             "doctor_name",
             "doctor_email",
             "doctor_number",
-        
           ],
           model: tableNames.doctorUser,
         },
         {
-          attributes: [
-          
-            "booking_status_name",
-        
-          ],
+          attributes: ["booking_status_name"],
           model: tableNames.bookingStatus,
         },
       ],
@@ -184,26 +179,52 @@ async function getAppointmentUserHistory(req, res) {
   }
 }
 
-async function addClientHistoryCard(req, res)
-{
-  const addClientHistoryCardInserQuery = tableNames.clientHistoryCard.create(
-    {
-
-   }
-  );
-
+async function addClientHistoryCard(req, res) {
+  var user_id = req.params.user_id;
+  var name = req.body.name;
+  var mother_name = req.body.mother_name;
+  var reference = req.body.reference;
+  var dob = req.body.dob;
+  var age = req.body.age;
+  var religion = req.body.religion;
+  var residence = req.body.residence;
+  var education = req.body.education;
+  var marital_status = req.body.marital_status;
+  var disability = req.body.disability;
+  var gender = req.body.gender;
+  var sexuality = req.body.sexuality;
+  var blood_group = req.body.blood_group;
+  var height = req.body.height;
+  var weight = req.body.weight;
   try {
-    
+    const addClientHistoryCardInserQuery = tableNames.clientHistoryCard.create({
+      user_id: user_id,
+      name: name,
+      mother_name: mother_name,
+      reference: reference,
+      dob: dob,
+      age: age,
+      religion: religion,
+      residence: residence,
+      education: education,
+      marital_status: marital_status,
+      disability: disability,
+      gender: gender,
+      sexuality: sexuality,
+      blood_group: blood_group,
+      height: height,
+      weight: weight,
+    });
 
     successWithdata(
       res,
-      "User Client History Card found",
-      "User Client History Card not found",
+      "User Client History Card added",
+      "User Client History Card not add",
       addClientHistoryCardInserQuery,
-      0
+      1
     );
   } catch (err) {
-    error(res,"Server internal error");
+    error(res, "Server internal error");
   }
 }
 
@@ -211,5 +232,5 @@ module.exports = {
   addAppointment,
   checkAppointmentAvailability,
   getAppointmentUserHistory,
-  addClientHistoryCard
+  addClientHistoryCard,
 };

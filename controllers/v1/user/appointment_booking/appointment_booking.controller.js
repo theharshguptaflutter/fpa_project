@@ -80,18 +80,6 @@ async function addAppointment(req, res) {
 async function checkAppointmentAvailability(req, res) {
   const { date, time } = req.query;
 
-  // const datePartsStart = date.split(" ");
-  // const datePartsEnd = time.split(" ");
-
-  // const startDateInUTC = moment(date, "YYYY-MM-DD");
-  // const endDateInUTC = moment(date, "YYYY-MM-DD");
-
-  // const oneDayAgo = startDateInUTC.clone().subtract(1, "days");
-  // const oneDayLater = endDateInUTC.clone().add(1, "days");
-
-  // var checkAvailabilityStartDate = oneDayAgo.format("YYYY-MM-DD");
-  // var checkAvailabilityEndDate = oneDayLater.format("YYYY-MM-DD");
-
   if (
     date == "" ||
     date == 0 ||
@@ -195,8 +183,33 @@ async function getAppointmentUserHistory(req, res) {
     error(res, err, 500);
   }
 }
+
+async function addClientHistoryCard(req, res)
+{
+  const addClientHistoryCardInserQuery = tableNames.clientHistoryCard.create(
+    {
+
+   }
+  );
+
+  try {
+    
+
+    successWithdata(
+      res,
+      "User Client History Card found",
+      "User Client History Card not found",
+      addClientHistoryCardInserQuery,
+      0
+    );
+  } catch (err) {
+    error(res,"Server internal error");
+  }
+}
+
 module.exports = {
   addAppointment,
   checkAppointmentAvailability,
   getAppointmentUserHistory,
+  addClientHistoryCard
 };

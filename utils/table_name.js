@@ -20,6 +20,7 @@ tableNames = {
   userAnalytics: db.user_analytics,
   eventTypes: db.event_types,
   doctorAnalytics:db.doctor_analytics,
+  clientHistoryCard:db.client_history_card,
 };
 
 module.exports = Object.freeze(tableNames);

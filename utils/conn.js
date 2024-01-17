@@ -96,6 +96,12 @@ db.doctor_analytics =
     DataTypes
   );
 
+db.client_history_card =
+  require("../models/user/appointment_booking/client_history_card.model.js")(
+    sequelize,
+    DataTypes
+  );
+
 // db.sequelize.sync({ force: false }).then(() => {
 //   console.log("yes re-sync done!");
 // });
@@ -249,8 +255,14 @@ db.user_analytics.belongsTo(db.users, {
   foreignKey: "user_id", // foreign table
   targetKey: "user_id", // primary table
 });
+
 db.user_analytics.belongsTo(db.event_types, {
   foreignKey: "event_types_id", // foreign table
   targetKey: "event_types_id", // primary table
 });
+db.client_history_card.belongsTo(db.users, {
+  foreignKey: "user_id", // foreign table
+  targetKey: "user_id", // primary table
+});
+
 module.exports = { db, sequelize };

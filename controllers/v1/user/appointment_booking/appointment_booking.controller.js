@@ -228,9 +228,45 @@ async function addClientHistoryCard(req, res) {
   }
 }
 
+async function appointmentCancel(req, res) {
+  const appointment_booking_id = req.query.appointment_booking_id;
+  const user_id = req.params.user_id;
+
+ 
+  if (
+    appointment_booking_id == "" ||
+    appointment_booking_id == null ||
+    user_id == "" ||
+    user_id == null
+  ) {
+    return error(res, "Invalid parameters");
+  }
+
+  const appointmentCancelQuery = await tableNames.appointmentBooking.update(
+    {
+      booking_status_id: 4, // 4 means Appointment cancel
+      appointment_delete_flag: 1,
+    },
+    {
+      where: {
+        appointment_booking_id: appointment_booking_id,
+        user_id: user_id,
+      },
+    }
+  );
+  if (appointmentCancelQuery == [1]) {
+    success(res, "Your appointment has been canceled", 200, 0);
+  } else {
+    error(res, "Your appointment has not been canceled");
+  }
+
+  console.log(appointmentCancelQuery);
+}
+
 module.exports = {
   addAppointment,
   checkAppointmentAvailability,
   getAppointmentUserHistory,
   addClientHistoryCard,
+  appointmentCancel,
 };

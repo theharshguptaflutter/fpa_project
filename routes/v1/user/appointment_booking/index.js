@@ -5,7 +5,8 @@ const {
   checkAppointmentAvailability,
   getAppointmentUserHistory,
   addClientHistoryCard,
-  appointmentCancel
+  appointmentCancel,
+  appointmentReschedule
  
 } = require("../../../../controllers/v1/user/appointment_booking/appointment_booking.controller.js");
 
@@ -30,6 +31,9 @@ router.post("/add_client_card/:user_id", (req, res) => {
 
 router.patch("/cancel/:user_id", (req, res) => {
   appointmentCancel(req, res);
+});
+router.patch("/reschedule/:user_id", (req, res) => {
+  appointmentReschedule(req, res);
 });
 
 module.exports = router;

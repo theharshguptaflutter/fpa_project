@@ -232,7 +232,6 @@ async function appointmentCancel(req, res) {
   const appointment_booking_id = req.query.appointment_booking_id;
   const user_id = req.params.user_id;
 
- 
   if (
     appointment_booking_id == "" ||
     appointment_booking_id == null ||
@@ -254,7 +253,7 @@ async function appointmentCancel(req, res) {
       },
     }
   );
-  if (appointmentCancelQuery == [1]) {
+  if (appointmentCancelQuery[0] == 1) {
     success(res, "Your appointment has been canceled", 200, 0);
   } else {
     error(res, "Your appointment has not been canceled");
@@ -263,10 +262,47 @@ async function appointmentCancel(req, res) {
   console.log(appointmentCancelQuery);
 }
 
+async function appointmentReschedule(req, res) {
+  const appointment_booking_id = req.query.appointment_booking_id;
+  const user_id = req.params.user_id;
+  const booked_current_date = req.body.booked_current_date;
+  const booked_current_time = req.body.booked_current_time;
+
+  if (
+    appointment_booking_id == "" ||
+    appointment_booking_id == null ||
+    user_id == "" ||
+    user_id == null
+  ) {
+    return error(res, "Invalid parameters");
+  }
+
+  const appointmentRescheduleQuery = await tableNames.appointmentBooking.update(
+    {
+      booked_current_date: booked_current_date,
+      booked_current_time: booked_current_time,
+    },
+    {
+      where: {
+        appointment_booking_id: appointment_booking_id,
+        user_id: user_id,
+      },
+    }
+  );
+  if (appointmentRescheduleQuery[0] == 1) {
+    success(res, "Your appointment has been Reschedule", 200, 0);
+  } else {
+    error(res, "Your appointment has not been Reschedule");
+  }
+
+  console.log(appointmentRescheduleQuery);
+}
+
 module.exports = {
   addAppointment,
   checkAppointmentAvailability,
   getAppointmentUserHistory,
   addClientHistoryCard,
   appointmentCancel,
+  appointmentReschedule,
 };

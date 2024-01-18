@@ -89,7 +89,18 @@ async function updateUser(req, res) {
     var email = req.body.email;
     var user_avatar = req.body.avatar;
     var password = req.body.password;
+    const user = await tableNames.User.findOne({
+      where: { email: email },
+    });
 
+    if (!user) {
+      res.statusCode = 404;
+      return error(res, "User not found!");
+    }
+    if (user.role_id === 3) {
+      res.statusCode = 409;
+      return error(res, "You cant update an Admin!");
+    }
     if (password) {
       password = bcrypt.hashSync(String(password), 10);
     }
@@ -152,6 +163,10 @@ async function deleteUser(req, res) {
     if (!userToDelete) {
       res.statusCode = 404;
       return error(res, "User not found!");
+    }
+    if (userToDelete.role_id === 3) {
+      res.statusCode = 409;
+      return error(res, "You cant delete an Admin!");
     }
     var userDeleteParamiter = {
       user_delete_flag: 1,

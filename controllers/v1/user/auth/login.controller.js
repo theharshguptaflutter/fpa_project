@@ -38,6 +38,10 @@ async function login(req, res) {
     let user = await tableNames.User.findOne({
       where: { email: email },
     });
+    if(user.user_delete_flag === 1){
+      res.statusCode = 404;
+      return error(res, "Can't Login! User profile deleted");
+    }
     if (!user || !user.password) {
       res.statusCode = 404;
       return error(res, "User not found or password not set. Please signUp.");

@@ -10,8 +10,6 @@ const { s3Upload } = require("../../../../utils/s3_file_upload");
 const bcrypt = require("bcrypt");
 
 async function userProfileUpdate(req, res) {
-
-
   try {
     var user_id = req.params.user_id;
     var user_avatar = req.body.avatar;
@@ -19,6 +17,13 @@ async function userProfileUpdate(req, res) {
     // if (user_avatar != "") {
     //   user_avatar = await s3Upload(user_avatar);
     // }
+    let user = await tableNames.User.findOne({
+      where: { user_id: user_id },
+    });
+    if(user.user_delete_flag === 1){
+      res.statusCode = 404;
+      return error(res, "Can't Update profile! User already deleted");
+    }
     if (password){
       password = bcrypt.hashSync(String(password), 10);
     }
@@ -30,6 +35,7 @@ async function userProfileUpdate(req, res) {
       avatar: user_avatar,
       user_profile_update: 1,
       password: password,
+      gender: gender,
     };
     var userProfileUpdateParamiter = await editParameterQuery(
       profileUpdateInfo

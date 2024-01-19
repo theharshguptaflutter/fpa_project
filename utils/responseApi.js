@@ -10,7 +10,7 @@ exports.success = (res, respSuccessMsg) => {
 exports.resetpasswordsucess = (res, respSuccessMsg) => {
   return [
     res.status(res.statusCode).send({
-      status: 250,
+      status: 200,
       message: respSuccessMsg,
     }),
   ];

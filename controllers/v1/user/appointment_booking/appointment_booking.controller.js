@@ -196,6 +196,10 @@ async function addClientHistoryCard(req, res) {
   var blood_group = req.body.blood_group;
   var height = req.body.height;
   var weight = req.body.weight;
+
+  var male = req.body.male;
+  var female = req.body.female;
+  var transgender = req.body.transgender;
   try {
     const addClientHistoryCardInserQuery = tableNames.clientHistoryCard.create({
       user_id: user_id,
@@ -204,6 +208,9 @@ async function addClientHistoryCard(req, res) {
       reference: reference,
       dob: dob,
       age: age,
+      male: male,
+      female: female,
+      transgender: transgender,
       religion: religion,
       residence: residence,
       education: education,

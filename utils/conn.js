@@ -102,6 +102,11 @@ db.client_history_card =
     DataTypes
   );
 
+db.gallery = require("../models/resource/gallery/gallery.model.js")(
+  sequelize,
+  DataTypes
+);
+
 // db.sequelize.sync({ force: false }).then(() => {
 //   console.log("yes re-sync done!");
 // });

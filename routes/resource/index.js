@@ -6,6 +6,7 @@ const {
   getCategory,
   getRole,
   getAppointmentList,
+  getGallery
 } = require("../../controllers/resource/resources.controller");
 
 router.get("/get-state", (req, res) => {
@@ -26,5 +27,9 @@ router.get("/get-role", (req, res) => {
 router.get("/get-appointmentlist", (req, res) => {
   console.log("test============>");
   getAppointmentList(req, res);
+});
+router.get("/get-gallery", (req, res) => {
+  
+  getGallery(req, res);
 });
 module.exports = router;

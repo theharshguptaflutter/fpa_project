@@ -1,5 +1,5 @@
 const tableNames = require("../../utils/table_name");
-const { success, error } = require("../../utils/responseApi");
+const { success, error, successWithdata } = require("../../utils/responseApi");
 const operatorsAliases = require("../../utils/operator_aliases");
 const moment = require("moment");
 async function getState(req, res) {
@@ -138,10 +138,22 @@ async function getAppointmentList(req, res) {
       console.error("Error fetching appointments:", error);
     });
 }
+
+async function getGallery(req, res) {
+  const getGallery = await tableNames.Gallery.findAll({
+    where: {
+      delete_flag: 0,
+    },
+  });
+
+  successWithdata(res, "Gallery found", "Gallery not found", getGallery, 0);
+}
+
 module.exports = {
   getState,
   getCity,
   getCategory,
   getRole,
   getAppointmentList,
+  getGallery,
 };

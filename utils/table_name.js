@@ -21,6 +21,7 @@ tableNames = {
   eventTypes: db.event_types,
   doctorAnalytics:db.doctor_analytics,
   clientHistoryCard:db.client_history_card,
+  Gallery:db.gallery,
 };
 
 module.exports = Object.freeze(tableNames);

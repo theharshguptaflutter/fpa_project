@@ -6,7 +6,8 @@ const {
   getAppointmentUserHistory,
   addClientHistoryCard,
   appointmentCancel,
-  appointmentReschedule
+  appointmentReschedule,
+  getAppointmentByIdHistory
  
 } = require("../../../../controllers/v1/user/appointment_booking/appointment_booking.controller.js");
 
@@ -23,6 +24,9 @@ router.get("/check_availability/", (req, res) => {
 
 router.get("/get_appointment_history/:user_id", (req, res) => {
   getAppointmentUserHistory(req, res);
+});
+router.get("/get_appointment_details/:appointment_booking_id", (req, res) => {
+  getAppointmentByIdHistory(req, res);
 });
 
 router.post("/add_client_card/:user_id", (req, res) => {

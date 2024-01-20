@@ -149,7 +149,7 @@ async function getAppointmentUserHistory(req, res) {
         },
       ],
       where: {
-        booking_status_id: 1,
+       // booking_status_id: 1,
         user_id: user_id,
       },
     });
@@ -174,6 +174,45 @@ async function getAppointmentUserHistory(req, res) {
     //   // });
     //   successWithdata(res, "User appointment history found", 200,1);
     // }
+  } catch (err) {
+    error(res, err, 500);
+  }
+}
+
+async function getAppointmentByIdHistory(req, res) {
+  const { appointment_booking_id  } = req.params;
+
+  try {
+    const userAppointmentHistory = await tableNames.appointmentBooking.findOne({
+      include: [
+        {
+          attributes: [
+            "doctor_id",
+            "doctor_name",
+            "doctor_email",
+            "doctor_number",
+          ],
+          model: tableNames.doctorUser,
+        },
+        {
+          attributes: ["booking_status_name"],
+          model: tableNames.bookingStatus,
+        },
+      ],
+      where: {
+       // booking_status_id: 1,
+        appointment_booking_id
+      },
+    });
+    successWithdata(
+      res,
+      "User appointment history found",
+      "User appointment history not found",
+      userAppointmentHistory,
+      0
+    );
+
+   
   } catch (err) {
     error(res, err, 500);
   }
@@ -312,4 +351,5 @@ module.exports = {
   addClientHistoryCard,
   appointmentCancel,
   appointmentReschedule,
+  getAppointmentByIdHistory
 };

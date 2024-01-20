@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
       },
       event_types_name: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         defaultValue: null,
       },
     },

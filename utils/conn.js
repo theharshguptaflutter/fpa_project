@@ -270,4 +270,15 @@ db.client_history_card.belongsTo(db.users, {
   targetKey: "user_id", // primary table
 });
 
+//doctor analytics
+db.doctor_analytics.belongsTo(db.doctor_user, {
+  foreignKey: "doctor_id", // foreign table
+  targetKey: "doctor_id", // primary table
+});
+
+db.doctor_analytics.belongsTo(db.event_types, {
+  foreignKey: "event_types_id", // foreign table
+  targetKey: "event_types_id", // primary table
+});
+
 module.exports = { db, sequelize };

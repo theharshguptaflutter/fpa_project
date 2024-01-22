@@ -133,13 +133,20 @@ async function getAppointmentUserHistory(req, res) {
 
   try {
     const userAppointmentHistory = await tableNames.appointmentBooking.findAll({
+      attributes: [
+        "appointment_booking_id",
+        "total_booking_price",
+        "booked_current_date",
+        "booked_current_time",
+      ],
       include: [
         {
           attributes: [
             "doctor_id",
             "doctor_name",
-            "doctor_email",
-            "doctor_number",
+            "avatar",
+            // "doctor_email",
+            // "doctor_number",
           ],
           model: tableNames.doctorUser,
         },
@@ -191,6 +198,7 @@ async function getAppointmentByIdHistory(req, res) {
             "doctor_name",
             "doctor_email",
             "doctor_number",
+            "doctor_specialist",
           ],
           model: tableNames.doctorUser,
         },

@@ -35,7 +35,7 @@ async function userProfileUpdate(req, res) {
       avatar: user_avatar,
       user_profile_update: 1,
       password: password,
-      gender: gender,
+      gender: req.body.gender,
     };
     var userProfileUpdateParamiter = await editParameterQuery(
       profileUpdateInfo

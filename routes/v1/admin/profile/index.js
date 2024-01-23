@@ -1,13 +1,16 @@
 const express = require("express");
 const router = express.Router();
 const {
- 
-  
- 
-} = require("../../../../controllers/v1/admin/profile/profile.controller.js");
+  userProfileUpdate,
+  getUserProfile
+} = require("../../../../controllers/v1/admin/profile/profile.controller");
 
-router.post("/t/:user_id", (req, res) => {
+router.patch("/update/:user_id", (req, res) => {
+  userProfileUpdate(req, res);
 });
 
+router.get("/get/:user_id", (req, res) => {
+  getUserProfile(req, res);
+});
 
 module.exports = router;

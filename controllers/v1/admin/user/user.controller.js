@@ -1,4 +1,3 @@
-//manage users and doctors
 const tableNames = require("../../../../utils/table_name");
 const bcrypt = require("bcrypt");
 const {
@@ -12,75 +11,121 @@ const {
 } = require("../../../../utils/responseApi");
 
 async function createUser(req, res) {
-  const email = req.body.email;
-  const name = req.body.name;
-  var password = req.body.password;
-  const role_id = req.body.role_id;
-
-  if (!email || !name || !password || !role_id) {
-    res.statusCode = 404;
-    return error(res, "Please provide email, name, password and role Id! ");
-  }
-
-  if (![1, 2].includes(role_id)) {
-    res.statusCode = 404;
-    return error(res, "Invalid role id selected. Allowed values are 1 & 2.");
-  }
-
   try {
-    const checkExistingUser = await tableNames.User.findOne({
-      where: { email: email },
+    const admin_id = req.params.admin_id;
+    const email = req.body.email;
+    const name = req.body.name;
+    var password = req.body.password;
+    const role_id = req.body.role_id;
+
+    const adminCheckQuery = await tableNames.User.findOne({
+      where: { user_id: admin_id },
     });
 
-    if (checkExistingUser) {
-      res.statusCode = 409;
-      return error(res, "User with this email already exists!");
-    }
+    if (adminCheckQuery.role_id !== 3) {
+      res.statusCode = 403;
+      return error(res, "Unauthorized Access! Admin Only!");
+    } else {
+      if (!email || !name || !password || !role_id) {
+        res.statusCode = 404;
+        return error(res, "Please provide email, name, password and role Id! ");
+      }
 
-    if (password) {
-      password = bcrypt.hashSync(String(password), 10);
-    }
-    let userInfo = {
-      email: email,
-      name: name,
-      password: password,
-      role_id: role_id,
-    };
-    const newUser = await tableNames.User.create(userInfo);
+      if (![1, 2].includes(role_id)) {
+        res.statusCode = 404;
+        return error(
+          res,
+          "Invalid role id selected. Allowed values are 1 & 2."
+        );
+      }
+      const checkExistingUser = await tableNames.User.findOne({
+        where: { email: email },
+      });
 
-    return res.status(201).send({
-      status: 201,
-      message: "User created successfully",
-      user_details: [
-        {
-          user_id: newUser.user_id,
-          role_id: newUser.role_id,
-          name: newUser.name,
-          email: newUser.email,
-          password: newUser.password,
-        },
-      ],
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
+      if (checkExistingUser) {
+        res.statusCode = 409;
+        return error(res, "User with this email already exists!");
+      }
+
+      if (password) {
+        password = bcrypt.hashSync(String(password), 10);
+      }
+      let userInfo = {
+        email: email,
+        name: name,
+        password: password,
+        role_id: role_id,
+      };
+      const newUser = await tableNames.User.create(userInfo);
+
+      return res.status(201).send({
+        status: 201,
+        message: "User created successfully",
+        user_details: [
+          {
+            user_id: newUser.user_id,
+            role_id: newUser.role_id,
+            name: newUser.name,
+            email: newUser.email,
+            password: newUser.password,
+          },
+        ],
+      });
+    }
+  } catch (err) {
+    error(res, err, 500);
   }
 }
 
 async function getUser(req, res) {
-  const email = req.body.email;
+  try {
+    const admin_id = req.params.admin_id;
+    const email = req.body.email;
+    const adminCheckQuery = await tableNames.User.findOne({
+      where: { user_id: admin_id },
+    });
+    if (adminCheckQuery.role_id !== 3) {
+      res.statusCode = 403;
+      return error(res, "Unauthorized Access! Admin Only!");
+    } else {
+      const user = await tableNames.User.findOne({
+        where: { email: email },
+      });
+      if (user != null || user != "") {
+        successWithdata(
+          res,
+          "User profle details found",
+          "User not found!!",
+          user,
+          0
+        );
+      }
+    }
+  } catch (err) {
+    error(res, err, 500);
+  }
+}
 
-  const user = await tableNames.User.findOne({
-    where: { email: email },
-  });
-  if (user != null || user != "") {
-    successWithdata(
-      res,
-      "User profle details found",
-      "User not found!!",
-      user,
-      0
-    );
+async function getAllUser(req, res) {
+  try {
+    const admin_id = req.params.admin_id;
+    const adminCheckQuery = await tableNames.User.findOne({
+      where: { user_id: admin_id },
+    });
+    if (adminCheckQuery.role_id !== 3) {
+      res.statusCode = 403;
+      return error(res, "Unauthorized Access! Admin Only!");
+    } else {
+      const allUsers = await tableNames.User.findAll();
+
+      if (allUsers.length > 0) {
+        successWithdata(res, "All Users found", "No User found!", allUsers, 0);
+      } else {
+        successWithdata(res, "All Users found", "No User found!", [], 0);
+      }
+    }
+  } catch (err) {
+    error(res, err, 500);
   }
 }
 
@@ -89,58 +134,74 @@ async function updateUser(req, res) {
     var email = req.body.email;
     var user_avatar = req.body.avatar;
     var password = req.body.password;
-    const user = await tableNames.User.findOne({
-      where: { email: email },
+    var role_id = req.body.role_id;
+    const admin_id = req.params.admin_id;
+    const adminCheckQuery = await tableNames.User.findOne({
+      where: { user_id: admin_id },
     });
-
-    if (!user) {
-      res.statusCode = 404;
-      return error(res, "User not found!");
-    }
-    if (user.role_id === 3) {
-      res.statusCode = 409;
-      return error(res, "You cant update an Admin!");
-    }
-    if (password) {
-      password = bcrypt.hashSync(String(password), 10);
-    }
-    let profileUpdateInfo = {
-      state_id: req.body.state_id,
-      city_id: req.body.city_id,
-      name: req.body.name,
-      email: req.body.email,
-      password: password,
-      gender: gender,
-      avatar: user_avatar,
-      role_id: role_id,
-      user_profile_update: 1,
-    };
-    var userProfileUpdateParamiter = await editParameterQuery(
-      profileUpdateInfo
-    );
-    const userProfileupdateQuery = await tableNames.User.update(
-      userProfileUpdateParamiter,
-      {
-        where: {
-          email: email,
-        },
-      }
-    );
-
-    if (userProfileupdateQuery != 0) {
-      const updatedUserData = await tableNames.User.findOne({
+    if (adminCheckQuery.role_id !== 3) {
+      res.statusCode = 403;
+      return error(res, "Unauthorized Access! Admin Only!");
+    } else {
+      const user = await tableNames.User.findOne({
         where: { email: email },
       });
 
-      successWithdata(
-        res,
-        "Profile has been updated",
-        200,
-        updatedUserData.toJSON()
+      if (!user) {
+        res.statusCode = 404;
+        return error(res, "User not found!");
+      }
+      if (user.role_id === 3) {
+        res.statusCode = 409;
+        return error(res, "You cant update an Admin!");
+      }
+      if(role_id){
+        if(role_id === 3){
+          res.statusCode = 409;
+          return error(res, "You can't update User's role to Admin!");
+        }
+      }
+      if (password) {
+        password = bcrypt.hashSync(String(password), 10);
+      }
+      let profileUpdateInfo = {
+        state_id: req.body.state_id,
+        city_id: req.body.city_id,
+        name: req.body.name,
+        email: req.body.email,
+        password: password,
+        gender: req.body.gender,
+        avatar: user_avatar,
+        role_id: role_id,
+        user_profile_update: 1,
+      };
+      var userProfileUpdateParamiter = await editParameterQuery(
+        profileUpdateInfo
       );
-    } else {
-      res.statusCode = 404;
-      error(res, "Profile  not updated please try again later ");
+      const userProfileupdateQuery = await tableNames.User.update(
+        userProfileUpdateParamiter,
+        {
+          where: {
+            email: email,
+          },
+        }
+      );
+
+      if (userProfileupdateQuery != 0) {
+        const updatedUserData = await tableNames.User.findOne({
+          where: { email: email },
+        });
+
+        successWithdata(
+          res,
+          "Profile has been updated",
+          200,
+          updatedUserData.toJSON()
+        );
+      } else {
+        res.statusCode = 404;
+        error(res, "Profile  not updated please try again later ");
+      }
     }
   } catch (err) {
     error(res, err, 500);
@@ -148,49 +209,66 @@ async function updateUser(req, res) {
 }
 
 async function deleteUser(req, res) {
-  const email = req.body.email;
-
-  if (!email) {
-    res.statusCode(404);
-    return error(res, "Please provide email!");
-  }
-
   try {
-    const userToDelete = await tableNames.User.findOne({
-      where: { email: email },
+    const email = req.body.email;
+    const admin_id = req.params.admin_id;
+    const adminCheckQuery = await tableNames.User.findOne({
+      where: { user_id: admin_id },
     });
-
-    if (!userToDelete) {
-      res.statusCode = 404;
-      return error(res, "User not found!");
-    }
-    if (userToDelete.role_id === 3) {
-      res.statusCode = 409;
-      return error(res, "You cant delete an Admin!");
-    }
-    var userDeleteParamiter = {
-      user_delete_flag: 1,
-    };
-    const deleteUserQuery = await tableNames.User.update(userDeleteParamiter, {
-      where: {
-        email: email,
-      },
-    });
-
-    if (deleteUserQuery) {
-      const updatedUserData = await tableNames.User.findOne({
+    if (adminCheckQuery.role_id !== 3) {
+      res.statusCode = 403;
+      return error(res, "Unauthorized Access! Admin Only!");
+    } else {
+      if (!email) {
+        res.statusCode(404);
+        return error(res, "Please provide email!");
+      }
+      const userToDelete = await tableNames.User.findOne({
         where: { email: email },
       });
 
-      successWithdata(
-        res,
-        "Profile has been deleted",
-        200,
-        updatedUserData.toJSON()
+      if (!userToDelete) {
+        res.statusCode = 404;
+        return error(res, "User not found!");
+      }
+      if (userToDelete.role_id === 3) {
+        res.statusCode = 409;
+        return error(res, "You cant delete an Admin!");
+      }
+      var userDeleteParamiter = {
+        user_delete_flag: 1,
+      };
+      const deleteUserQuery = await tableNames.User.update(
+        userDeleteParamiter,
+        {
+          where: {
+            email: email,
+          },
+        }
       );
+
+      if (deleteUserQuery) {
+        const updatedUserData = await tableNames.User.findOne({
+          where: { email: email },
+        });
+
+        successWithdata(
+          res,
+          "Profile has been deleted",
+          200,
+          updatedUserData.toJSON()
+        );
+      }
     }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
+  } catch (err) {
+    error(res, err, 500);
   }
 }
+
+module.exports = {
+  createUser,
+  getUser,
+  getAllUser,
+  updateUser,
+  deleteUser,
+};

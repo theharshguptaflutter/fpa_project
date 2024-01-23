@@ -106,6 +106,10 @@ db.gallery = require("../models/resource/gallery/gallery.model.js")(
   sequelize,
   DataTypes
 );
+db.booking_feedback = require("../models/resource/feedback/feedback.model.js")(
+  sequelize,
+  DataTypes
+);
 
 // db.sequelize.sync({ force: false }).then(() => {
 //   console.log("yes re-sync done!");
@@ -279,6 +283,20 @@ db.doctor_analytics.belongsTo(db.doctor_user, {
 db.doctor_analytics.belongsTo(db.event_types, {
   foreignKey: "event_types_id", // foreign table
   targetKey: "event_types_id", // primary table
+});
+
+//feedback section
+db.booking_feedback.belongsTo(db.appointment_booking, {
+  foreignKey: "appointment_booking_id", // foreign table
+  targetKey: "appointment_booking_id", // primary table
+});
+db.booking_feedback.belongsTo(db.users, {
+  foreignKey: "user_id", // foreign table
+  targetKey: "user_id", // primary table
+});
+db.booking_feedback.belongsTo(db.doctor_user, {
+  foreignKey: "doctor_id", // foreign table
+  targetKey: "doctor_id", // primary table
 });
 
 module.exports = { db, sequelize };

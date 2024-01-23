@@ -49,7 +49,7 @@ exports.successWithdata = (
 };
 
 exports.error = (res, Msg, errormsg, condition) => {
-  const codes = [200, 304,201, 400, 401, 404, 403, 422, 500, 209];
+  const codes = [200, 304,201, 400, 401, 404, 403, 422, 500, 209,409];
   const findCode = codes.find((code) => code == res.statusCode);
 
   if (!findCode) res.statusCode = 500;

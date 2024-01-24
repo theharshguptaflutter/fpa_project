@@ -4,7 +4,7 @@ const {
   getNotes,
 } = require("../../../../controllers/v1/admin/notes/notes.controller.js");
 
-router.get("/get/", (req, res) => {
+router.get("/get", (req, res) => {
   getNotes(req, res);
 });
 

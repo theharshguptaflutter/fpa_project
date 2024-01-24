@@ -5,7 +5,7 @@ const {
   getDoctor,
   getAllDoctor,
   updateDoctor,
-  deleteDoctor,
+  deleteDoctor
 } = require("../../../../controllers/v1/admin/doctor/doctor.controller");
 
 router.post("/create/:admin_id", (req, res) => {

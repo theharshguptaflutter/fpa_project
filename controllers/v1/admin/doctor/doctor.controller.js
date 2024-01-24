@@ -21,7 +21,7 @@ async function createDoctor(req, res) {
       where: { user_id: admin_id },
     });
 
-    if (adminCheckQuery.role_id !== 3) {
+    if (adminCheckQuery.role_id !== 1) {
       res.statusCode = 403;
       return error(res, "Unauthorized Access! Admin Only!");
     } else {
@@ -74,7 +74,7 @@ async function getDoctor(req, res) {
       where: { user_id: admin_id },
     });
 
-    if (adminCheckQuery.role_id !== 3) {
+    if (adminCheckQuery.role_id !== 1) {
       res.statusCode = 403;
       return error(res, "Unauthorized Access! Admin Only!");
     } else {
@@ -101,7 +101,7 @@ async function getAllDoctor(req, res) {
       where: { user_id: admin_id },
     });
 
-    if (adminCheckQuery.role_id !== 3) {
+    if (adminCheckQuery.role_id !== 1) {
       res.statusCode = 403;
       return error(res, "Unauthorized Access! Admin Only!");
     } else {
@@ -134,7 +134,7 @@ async function updateDoctor(req, res) {
       where: { user_id: admin_id },
     });
 
-    if (adminCheckQuery.role_id !== 3) {
+    if (adminCheckQuery.role_id !== 1) {
       res.statusCode = 403;
       return error(res, "Unauthorized Access! Admin Only!");
     } else {
@@ -200,7 +200,7 @@ async function deleteDoctor(req, res) {
       where: { user_id: admin_id },
     });
 
-    if (adminCheckQuery.role_id !== 3) {
+    if (adminCheckQuery.role_id !== 1) {
       res.statusCode = 403;
       return error(res, "Unauthorized Access! Admin Only!");
     } else {

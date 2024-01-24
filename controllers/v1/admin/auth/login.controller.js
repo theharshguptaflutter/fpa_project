@@ -24,7 +24,7 @@ async function login(req, res) {
     return error(res, "Please provide both email and password");
   }
 
-  if (email && pwd && (user_role === 1 || user_role === 2)) {
+  if (user_role !== 1 && user_role !== 2) {
     let user = await tableNames.User.findOne({
       where: { email: email },
     });
@@ -151,8 +151,8 @@ async function logout(req, res) {
       res.statusCode = 209;
       error(res, "unable to logout please try again later ");
     }
-  } catch (error) {
-    error(res, error, 500);
+  } catch (err) {
+    error(res, err, 500);
   }
 }
 

@@ -22,7 +22,7 @@ async function createUser(req, res) {
       where: { user_id: admin_id },
     });
 
-    if (adminCheckQuery.role_id !== 3) {
+    if (adminCheckQuery.role_id !== 1) {
       res.statusCode = 403;
       return error(res, "Unauthorized Access! Admin Only!");
     } else {
@@ -31,11 +31,11 @@ async function createUser(req, res) {
         return error(res, "Please provide email, name, password and role Id! ");
       }
 
-      if (![1, 2].includes(role_id)) {
+      if (![3, 2].includes(role_id)) {
         res.statusCode = 404;
         return error(
           res,
-          "Invalid role id selected. Allowed values are 1 & 2."
+          "Invalid role id selected. Allowed values are 2 & 3."
         );
       }
       const checkExistingUser = await tableNames.User.findOne({
@@ -84,7 +84,7 @@ async function getUser(req, res) {
     const adminCheckQuery = await tableNames.User.findOne({
       where: { user_id: admin_id },
     });
-    if (adminCheckQuery.role_id !== 3) {
+    if (adminCheckQuery.role_id !== 1) {
       res.statusCode = 403;
       return error(res, "Unauthorized Access! Admin Only!");
     } else {
@@ -112,7 +112,7 @@ async function getAllUser(req, res) {
     const adminCheckQuery = await tableNames.User.findOne({
       where: { user_id: admin_id },
     });
-    if (adminCheckQuery.role_id !== 3) {
+    if (adminCheckQuery.role_id !== 1) {
       res.statusCode = 403;
       return error(res, "Unauthorized Access! Admin Only!");
     } else {
@@ -139,7 +139,7 @@ async function updateUser(req, res) {
     const adminCheckQuery = await tableNames.User.findOne({
       where: { user_id: admin_id },
     });
-    if (adminCheckQuery.role_id !== 3) {
+    if (adminCheckQuery.role_id !== 1) {
       res.statusCode = 403;
       return error(res, "Unauthorized Access! Admin Only!");
     } else {
@@ -151,12 +151,12 @@ async function updateUser(req, res) {
         res.statusCode = 404;
         return error(res, "User not found!");
       }
-      if (user.role_id === 3) {
+      if (user.role_id === 1) {
         res.statusCode = 409;
         return error(res, "You cant update an Admin!");
       }
       if(role_id){
-        if(role_id === 3){
+        if(role_id === 1){
           res.statusCode = 409;
           return error(res, "You can't update User's role to Admin!");
         }
@@ -215,7 +215,7 @@ async function deleteUser(req, res) {
     const adminCheckQuery = await tableNames.User.findOne({
       where: { user_id: admin_id },
     });
-    if (adminCheckQuery.role_id !== 3) {
+    if (adminCheckQuery.role_id !== 1) {
       res.statusCode = 403;
       return error(res, "Unauthorized Access! Admin Only!");
     } else {
@@ -231,7 +231,7 @@ async function deleteUser(req, res) {
         res.statusCode = 404;
         return error(res, "User not found!");
       }
-      if (userToDelete.role_id === 3) {
+      if (userToDelete.role_id === 1) {
         res.statusCode = 409;
         return error(res, "You cant delete an Admin!");
       }

@@ -199,6 +199,7 @@ async function getAppointmentByIdHistory(req, res) {
             "doctor_email",
             "doctor_number",
             "doctor_specialist",
+            "avatar",
           ],
           model: tableNames.doctorUser,
         },

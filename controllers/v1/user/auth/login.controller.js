@@ -312,9 +312,9 @@ async function verifyemail(req, res) {
           <h1>Hello!</h1>
           <p>This is a test recovery email.</p>
           <p> to change the password use the link below</p>
-          <a href="http://localhost:3000/virtualclinic-createnewpassword?userId=${verification_status.data}">Reset Password (localhost)</a>
+          <a href="http://localhost:3000/create-new-password?userId=${verification_status.data}">Reset Password (localhost)</a>
           <br>
-          <a href="https://fpaindia.netlify.app/virtualclinic-createnewpassword?userId=${verification_status.data}">Reset Password (netlify)</a>
+          <a href="https://virtual.fpaclinic.world/create-new-password?userId=${verification_status.data}">Reset Password (virtual)</a>
         </body>
       </html>
     `,

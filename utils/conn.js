@@ -110,6 +110,10 @@ db.booking_feedback = require("../models/resource/feedback/feedback.model.js")(
   sequelize,
   DataTypes
 );
+db.notes = require("../models/doctor/notes/notes.model.js")(
+  sequelize,
+  DataTypes
+);
 
 // db.sequelize.sync({ force: false }).then(() => {
 //   console.log("yes re-sync done!");
@@ -297,6 +301,11 @@ db.booking_feedback.belongsTo(db.users, {
 db.booking_feedback.belongsTo(db.doctor_user, {
   foreignKey: "doctor_id", // foreign table
   targetKey: "doctor_id", // primary table
+});
+
+db.notes.belongsTo(db.appointment_booking, {
+  foreignKey: "appointment_booking_id", // foreign table
+  targetKey: "appointment_booking_id", // primary table
 });
 
 module.exports = { db, sequelize };

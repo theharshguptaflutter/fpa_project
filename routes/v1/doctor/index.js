@@ -8,6 +8,7 @@ const profile = require("../doctor/profile");
 const appointment = require("../doctor/appointment");
 const analytics = require("../doctor/analytics");
 const feedback = require("../doctor/feedback");
+const notes = require("../doctor/notes");
 
 
 
@@ -16,5 +17,6 @@ router.use("/auth", auth);
 router.use("/profile", authJWT, profile);
 router.use("/appointment", authJWT, appointment);
 router.use("/feedback", authJWT, feedback);
+router.use("/notes", authJWT, notes);
 
 module.exports = router;

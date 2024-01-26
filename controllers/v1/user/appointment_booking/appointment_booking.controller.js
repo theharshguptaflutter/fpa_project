@@ -65,7 +65,14 @@ async function addAppointment(req, res) {
         const inboxCreateQuery2 = await tableNames.chatMessage.create(
           userchatCreateQuery1
         );
-        success(res, "Appointment added", 200, 0);
+        //  success(res, "Appointment added", 200, 1);
+        successWithdata(
+          res,
+          "Appointment added",
+          "Appointment not added",
+          [{appointment_booking_id:addAppointmentInsert.appointment_booking_id}],
+          0
+        );
       } else {
         error(res, "Inbox not created", 500);
       }
@@ -156,7 +163,7 @@ async function getAppointmentUserHistory(req, res) {
         },
       ],
       where: {
-       // booking_status_id: 1,
+        // booking_status_id: 1,
         user_id: user_id,
       },
     });
@@ -187,7 +194,7 @@ async function getAppointmentUserHistory(req, res) {
 }
 
 async function getAppointmentByIdHistory(req, res) {
-  const { appointment_booking_id  } = req.params;
+  const { appointment_booking_id } = req.params;
 
   try {
     const userAppointmentHistory = await tableNames.appointmentBooking.findOne({
@@ -209,8 +216,8 @@ async function getAppointmentByIdHistory(req, res) {
         },
       ],
       where: {
-       // booking_status_id: 1,
-        appointment_booking_id
+        // booking_status_id: 1,
+        appointment_booking_id,
       },
     });
     successWithdata(
@@ -220,8 +227,6 @@ async function getAppointmentByIdHistory(req, res) {
       userAppointmentHistory,
       0
     );
-
-   
   } catch (err) {
     error(res, err, 500);
   }
@@ -360,5 +365,5 @@ module.exports = {
   addClientHistoryCard,
   appointmentCancel,
   appointmentReschedule,
-  getAppointmentByIdHistory
+  getAppointmentByIdHistory,
 };

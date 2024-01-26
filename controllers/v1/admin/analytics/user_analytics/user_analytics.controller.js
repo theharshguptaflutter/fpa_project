@@ -1,6 +1,7 @@
 // update admin and staff profiles
 const tableNames = require("../../../../../utils/table_name");
-
+const moment = require("moment-timezone");
+const operatorsAliases = require("../../../../../utils/operator_aliases");
 const {
   success,
   error,
@@ -45,14 +46,39 @@ async function galleryUpdate(req, res) {
   }
 }
 
-async function getGallery(req, res) {
-  const getGallery = await tableNames.Gallery.findAll({
+async function getUserAnalytics(req, res) {
+  var currentDate = req.body.current_date;
+  var futureDate = req.body.future_date;
+  var event_types_id = req.body.event_types_id;
+
+  const userAnalyticsFindQuery = await tableNames.userAnalytics.findAll({
+    attributes: ["event_types_id", "total_clicks"],
+    include: [
+      {
+        attributes: ["event_types_name"],
+        model: tableNames.eventTypes,
+      },
+    ],
     where: {
-      delete_flag: 0,
+      ...(currentDate
+        ? {
+            createdAt: {
+              [operatorsAliases.$between]: [currentDate, futureDate],
+            },
+          }
+        : {}),
+
+      ...(event_types_id ? { event_types_id: event_types_id } : {}),
     },
   });
 
-  successWithdata(res, "Gallery found", "Gallery not found", getGallery, 0);
+  successWithdata(
+    res,
+    "User analytics found",
+    "User analytics not found",
+    userAnalyticsFindQuery,
+    0
+  );
 }
 
 async function galleryDelete(req, res) {
@@ -88,7 +114,7 @@ async function galleryDelete(req, res) {
 }
 
 module.exports = {
-  getGallery,
+  getUserAnalytics,
   galleryUpdate,
   galleryDelete,
 };

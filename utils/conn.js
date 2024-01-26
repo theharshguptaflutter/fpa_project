@@ -273,6 +273,9 @@ db.user_analytics.belongsTo(db.event_types, {
   foreignKey: "event_types_id", // foreign table
   targetKey: "event_types_id", // primary table
 });
+db.event_types.hasMany(db.user_analytics, {
+  foreignKey: "event_types_id",
+});
 db.client_history_card.belongsTo(db.users, {
   foreignKey: "user_id", // foreign table
   targetKey: "user_id", // primary table
@@ -308,4 +311,5 @@ db.notes.belongsTo(db.appointment_booking, {
   targetKey: "appointment_booking_id", // primary table
 });
 
+//
 module.exports = { db, sequelize };

@@ -113,30 +113,73 @@ async function getRole(req, res) {
 async function getAppointmentList(req, res) {
   // moment
 
-  const currentDate = moment().startOf("day").format("YYYY-MM-DD");
-  const threeMonthsLater = moment()
-    .add(3, "months")
-    .startOf("day")
-    .format("YYYY-MM-DD");
+  // const currentDate = moment().startOf("day").format("YYYY-MM-DD");
+  // const threeMonthsLater = moment()
+  //   .add(3, "months")
+  //   .startOf("day")
+  //   .format("YYYY-MM-DD");
 
-  tableNames.appointmentBooking
-    .findAll({
-      attributes: ["booked_current_date"],
-      where: {
-        booked_current_date: {
-          [operatorsAliases.$between]: [currentDate, threeMonthsLater],
-        },
-        booking_status_id: 1,
+  // tableNames.appointmentBooking
+  //   .findAll({
+  //     attributes: ["booked_current_date"],
+  //     where: {
+  //       booked_current_date: {
+  //         [operatorsAliases.$between]: [currentDate, threeMonthsLater],
+  //       },
+  //       booking_status_id: 1,
+  //     },
+  //     raw: true,
+  //   })
+  //   .then((appointments) => {
+  //     res.send({ status: 200, appointments });
+  //     console.log("appointments===>", appointments);
+  //   })
+  //   .catch((error) => {
+  //     console.error("Error fetching appointments:", error);
+  //   });
+
+  const currentDate = moment().startOf("day").format("YYYY-MM-DD");
+const threeMonthsLater = moment()
+  .add(3, "months")
+  .startOf("day")
+  .format("YYYY-MM-DD");
+
+tableNames.appointmentBooking
+  .findAll({
+    attributes: ["booked_current_date", "booked_current_time"], // Include booked_current_time
+    where: {
+      booked_current_date: {
+        [operatorsAliases.$between]: [currentDate, threeMonthsLater],
       },
-      raw: true,
-    })
-    .then((appointments) => {
-      res.send({ status: 200, appointments });
-      console.log("appointments===>", appointments);
-    })
-    .catch((error) => {
-      console.error("Error fetching appointments:", error);
+      booking_status_id: 1,
+    },
+    raw: true,
+  })
+  .then((appointments) => {
+    // Group appointments by booked_current_date
+    const groupedAppointments = {};
+    appointments.forEach((appointment) => {
+      const date = appointment.booked_current_date;
+      if (!groupedAppointments[date]) {
+        groupedAppointments[date] = {
+          booked_current_date: date,
+          booked_current_time: [],
+        };
+      }
+      groupedAppointments[date].booked_current_time.push({
+        booked_current_time: appointment.booked_current_time,
+      });
     });
+
+    // Convert the object back to an array
+    const result = Object.values(groupedAppointments);
+
+    res.send({ status: 200, appointments: result });
+    console.log("appointments===>", result);
+  })
+  .catch((error) => {
+    console.error("Error fetching appointments:", error);
+  });
 }
 
 async function getAppointmentTimeList(req, res) {

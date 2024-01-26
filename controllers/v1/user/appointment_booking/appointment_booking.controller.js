@@ -47,8 +47,8 @@ async function addAppointment(req, res) {
     });
 
     if (findquery != "") {
-      res.status(404).send({
-        status: 404,
+      res.status(205).send({
+        status: 205,
         appointment_booking_status: false,
         message: "Appointment already booked",
       });

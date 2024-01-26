@@ -139,6 +139,36 @@ async function getAppointmentList(req, res) {
     });
 }
 
+async function getAppointmentTimeList(req, res) {
+  // moment
+  var booked_current_date = req.body.booked_current_date;
+  const currentDate = moment().startOf("day").format("YYYY-MM-DD");
+  const threeMonthsLater = moment()
+    .add(3, "months")
+    .startOf("day")
+    .format("YYYY-MM-DD");
+
+  tableNames.appointmentBooking
+    .findAll({
+      attributes: ["booked_current_time"],
+      where: {
+        booked_current_date: {
+          [operatorsAliases.$between]: [currentDate, threeMonthsLater],
+        },
+        booking_status_id: 1,
+        booked_current_date:booked_current_date
+      },
+      raw: true,
+    })
+    .then((appointments) => {
+      res.send({ status: 200, appointments });
+      console.log("appointments===>", appointments);
+    })
+    .catch((error) => {
+      console.error("Error fetching appointments:", error);
+    });
+}
+
 async function getGallery(req, res) {
   const getGallery = await tableNames.Gallery.findAll({
     where: {
@@ -156,4 +186,5 @@ module.exports = {
   getRole,
   getAppointmentList,
   getGallery,
+  getAppointmentTimeList,
 };

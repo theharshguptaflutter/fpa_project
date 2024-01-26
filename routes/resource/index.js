@@ -6,7 +6,8 @@ const {
   getCategory,
   getRole,
   getAppointmentList,
-  getGallery
+  getGallery,
+  getAppointmentTimeList
 } = require("../../controllers/resource/resources.controller");
 
 router.get("/get-state", (req, res) => {
@@ -27,6 +28,10 @@ router.get("/get-role", (req, res) => {
 router.get("/get-appointmentlist", (req, res) => {
   console.log("test============>");
   getAppointmentList(req, res);
+});
+router.get("/get-appointment-time", (req, res) => {
+ 
+  getAppointmentTimeList(req, res);
 });
 router.get("/get-gallery", (req, res) => {
   

@@ -127,6 +127,7 @@ async function getAppointmentList(req, res) {
         booked_current_date: {
           [operatorsAliases.$between]: [currentDate, threeMonthsLater],
         },
+        
       },
       raw: true,
     })

@@ -29,14 +29,14 @@ async function addAppointment(req, res) {
   ) {
     return error(res, "Date time is empty", 200);
   }
-  try {
+ // try {
     const findquery = await tableNames.appointmentBooking.findAll({
       where: {
         [operatorsAliases.$and]: [
           {
             [operatorsAliases.$and]: [
-              literal(`appointment_booking.booked_current_date = '${date}'`),
-              literal(`appointment_booking.booked_current_time = '${time}'`),
+              literal(`appointment_booking.booked_current_date = '${booked_current_date}'`),
+              literal(`appointment_booking.booked_current_time = '${booked_current_time}'`),
             ],
           },
           {
@@ -125,9 +125,9 @@ async function addAppointment(req, res) {
         error(res, err, 500);
       }
     }
-  } catch (err) {
-    error(res, err, 500);
-  }
+  // } catch (err) {
+  //   error(res, err, 500);
+  // }
 }
 
 async function checkAppointmentAvailability(req, res) {

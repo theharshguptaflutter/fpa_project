@@ -119,15 +119,14 @@ async function getAppointmentList(req, res) {
     .startOf("day")
     .format("YYYY-MM-DD");
 
-  console.log("tesyyyy=>", currentDate, threeMonthsLater);
   tableNames.appointmentBooking
     .findAll({
-      attributes: ["booked_current_date", "booked_current_time"],
+      attributes: ["booked_current_date"],
       where: {
         booked_current_date: {
           [operatorsAliases.$between]: [currentDate, threeMonthsLater],
         },
-        
+        booking_status_id: 1,
       },
       raw: true,
     })

@@ -70,7 +70,11 @@ async function addAppointment(req, res) {
           res,
           "Appointment added",
           "Appointment not added",
-          [{appointment_booking_id:addAppointmentInsert.appointment_booking_id}],
+          {
+            
+              appointment_booking_id:addAppointmentInsert.appointment_booking_id
+            
+        },
           0
         );
       } else {

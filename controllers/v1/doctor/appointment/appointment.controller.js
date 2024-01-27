@@ -22,8 +22,14 @@ async function getAppointmentDoctorHistory(req, res) {
             model: tableNames.bookingStatus,
           },
           {
-            //attributes: ["booking_status_name"],
+            attributes: ["meeting_room_id"],
             model: tableNames.meetingRoom,
+            include: [
+              {
+                attributes: ["room_code"],
+                model: tableNames.Room,
+              },
+            ],
           },
         ],
         where: {
@@ -59,8 +65,14 @@ async function getAppointmentByIdHistory(req, res) {
           model: tableNames.bookingStatus,
         },
         {
-          //attributes: ["booking_status_name"],
+          attributes: ["meeting_room_id"],
           model: tableNames.meetingRoom,
+          include: [
+            {
+              attributes: ["room_code"],
+              model: tableNames.Room,
+            },
+          ],
         },
       ],
       where: {

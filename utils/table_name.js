@@ -23,6 +23,7 @@ tableNames = {
   clientHistoryCard:db.client_history_card,
   Gallery:db.gallery,
   bookingFeedback:db.booking_feedback,
+  Notes:db.notes,
 };
 
 module.exports = Object.freeze(tableNames);

@@ -202,10 +202,10 @@ async function login(req, res) {
       }
     }
     //comparing the password of the registered user
-    console.log("result===>", result);
+   
     if (result === true || result === "not found") {
-      //const otpcode = Math.floor(1000 + Math.random() * 9000);
-      const otpcode = 4444;
+      const otpcode = Math.floor(1000 + Math.random() * 9000);
+      //const otpcode = 4444;
       if (email) {
         const transporter = nodemailer.createTransport({
           host: process.env.HOST_MAIL,

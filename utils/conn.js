@@ -334,7 +334,7 @@ db.meeting_room.belongsTo(db.room, {
   targetKey: "room_id", // primary table
 });
 
-db.appointment_booking.hasMany(db.meeting_room, {
+db.appointment_booking.hasOne(db.meeting_room, {
   foreignKey: "appointment_booking_id",
 });
 

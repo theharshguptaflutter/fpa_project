@@ -14,7 +14,7 @@ async function getAppointmentDoctorHistory(req, res) {
       await tableNames.appointmentBooking.findAll({
         include: [
           {
-            attributes: ["user_id", "name", "email", "user_number", , "avatar"],
+            attributes: ["user_id", "name", "email", "user_number", "avatar"],
             model: tableNames.User,
           },
           {

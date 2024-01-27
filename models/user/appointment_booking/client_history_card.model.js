@@ -27,6 +27,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATEONLY,
         defaultValue: null,
       },
+      age: {
+        type: DataTypes.BIGINT,
+        defaultValue: null,
+      },
       male: {
         type: DataTypes.BIGINT,
         defaultValue: null,
@@ -44,6 +48,10 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: null,
       },
       residence: {
+        type: DataTypes.STRING,
+        defaultValue: null,
+      },
+      address: {
         type: DataTypes.STRING,
         defaultValue: null,
       },

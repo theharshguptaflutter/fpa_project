@@ -316,6 +316,7 @@ async function addClientHistoryCard(req, res) {
   var age = req.body.age;
   var religion = req.body.religion;
   var residence = req.body.residence;
+  var address = req.body.address;
   var education = req.body.education;
   var marital_status = req.body.marital_status;
   var disability = req.body.disability;
@@ -341,6 +342,7 @@ async function addClientHistoryCard(req, res) {
       transgender: transgender,
       religion: religion,
       residence: residence,
+      address: address,
       education: education,
       marital_status: marital_status,
       disability: disability,

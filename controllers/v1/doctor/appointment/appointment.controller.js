@@ -21,13 +21,16 @@ async function getAppointmentDoctorHistory(req, res) {
             attributes: ["booking_status_name"],
             model: tableNames.bookingStatus,
           },
+          {
+            //attributes: ["booking_status_name"],
+            model: tableNames.meetingRoom,
+          },
         ],
         where: {
           booking_status_id: 1,
           doctor_id: doctor_id,
         },
       });
-
 
     successWithdata(
       res,
@@ -36,8 +39,6 @@ async function getAppointmentDoctorHistory(req, res) {
       doctorAppointmentHistory,
       0
     );
-
-    
   } catch (err) {
     error(res, err, 500);
   }

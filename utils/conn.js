@@ -114,6 +114,16 @@ db.notes = require("../models/doctor/notes/notes.model.js")(
   sequelize,
   DataTypes
 );
+db.meeting_room =
+  require("../models/resource/meeting_room/meeting_room.model.js")(
+    sequelize,
+    DataTypes
+  );
+
+db.room = require("../models/resource/meeting_room/room_model.js")(
+  sequelize,
+  DataTypes
+);
 
 // db.sequelize.sync({ force: false }).then(() => {
 //   console.log("yes re-sync done!");
@@ -312,4 +322,15 @@ db.notes.belongsTo(db.appointment_booking, {
 });
 
 //
+
+//meeting room
+db.meeting_room.belongsTo(db.appointment_booking, {
+  foreignKey: "appointment_booking_id", // foreign table
+  targetKey: "appointment_booking_id", // primary table
+});
+
+db.meeting_room.belongsTo(db.room, {
+  foreignKey: "room_id", // foreign table
+  targetKey: "room_id", // primary table
+});
 module.exports = { db, sequelize };

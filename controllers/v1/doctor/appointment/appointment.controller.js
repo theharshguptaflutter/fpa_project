@@ -27,6 +27,8 @@ async function getAppointmentDoctorHistory(req, res) {
           doctor_id: doctor_id,
         },
       });
+
+
     successWithdata(
       res,
       "Doctor appointment history found",
@@ -34,6 +36,8 @@ async function getAppointmentDoctorHistory(req, res) {
       doctorAppointmentHistory,
       0
     );
+
+    
   } catch (err) {
     error(res, err, 500);
   }

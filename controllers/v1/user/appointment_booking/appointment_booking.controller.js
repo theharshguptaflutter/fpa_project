@@ -287,6 +287,10 @@ async function getAppointmentByIdHistory(req, res) {
           attributes: ["booking_status_name"],
           model: tableNames.bookingStatus,
         },
+        {
+          //attributes: ["booking_status_name"],
+          model: tableNames.meetingRoom,
+        },
       ],
       where: {
         // booking_status_id: 1,

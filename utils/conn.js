@@ -333,4 +333,8 @@ db.meeting_room.belongsTo(db.room, {
   foreignKey: "room_id", // foreign table
   targetKey: "room_id", // primary table
 });
+
+db.appointment_booking.hasMany(db.meeting_room, {
+  foreignKey: "appointment_booking_id",
+});
 module.exports = { db, sequelize };

@@ -58,7 +58,7 @@ async function addAppointment(req, res) {
     //   message: "Appointment already booked",
     // });
   } else {
-    try {
+    //try {
       const addAppointmentInsert = await tableNames.appointmentBooking.create({
         user_id: user_id,
         doctor_id: doctor_id,
@@ -78,81 +78,76 @@ async function addAppointment(req, res) {
             room_active: 0,
           },
         });
+        var data = {
+          appointment_booking_id: addAppointmentInsert.appointment_booking_id,
+          room_id: fondroomIDs.room_id,
+          meeting_room_active: 1,
+        };
 
-        const fondroodmIDs = await tableNames.meetingRoom.create({
-          where: {
-            room_active: 0,
-          },
-        });
+        console.log(data);
+
+        const user = await tableNames.meetingRoom.create(data);
+
+        //const fondroodmIDs = await tableNames.meetingRoom.create(data);
+
+        console.log(user);
+
         console.log("/////harsh");
         console.log(fondroomIDs.room_code);
         console.log("////harsh");
-        // let userInboxCreateQuery = {
-        //   appointment_booking_id:
-        //     addAppointmentInsert["appointment_booking_id"],
-        //   user_id: user_id,
-        //   doctor_id: doctor_id,
-        // };
+        let userInboxCreateQuery = {
+          appointment_booking_id:
+            addAppointmentInsert["appointment_booking_id"],
+          user_id: user_id,
+          doctor_id: doctor_id,
+        };
 
-        // const inboxCreateQuery = await tableNames.Inbox.create(
-        //   userInboxCreateQuery
-        // );
-        // if (inboxCreateQuery != null || inboxCreateQuery != "") {
-        //   //    success(res, inboxCreateQuery['inbox_id'], 200, 0);
-        //   let userchatCreateQuery1 = {
-        //     inbox_id: inboxCreateQuery["inbox_id"],
-        //     message: "Congratulations.. your appointment has been confirmed",
-        //     visibility: 1,
-        //   };
-
-        //   let userchatCreateQuery2 = {
-        //     inbox_id: inboxCreateQuery["inbox_id"],
-        //     message: "Congratulations.. you got a new appointment",
-        //     visibility: 2,
-        //   };
-
-        //   const inboxCreateQuery1 = await tableNames.chatMessage.create(
-        //     userchatCreateQuery2
-        //   );
-
-        //   const inboxCreateQuery2 = await tableNames.chatMessage.create(
-        //     userchatCreateQuery1
-        //   );
-        //   //  success(res, "Appointment added", 200, 1);
-        //   successWithdata(
-        //     res,
-        //     "Appointment added",
-        //     "Appointment not added",
-        //     [
-        //       {
-        //         appointment_booking_id:
-        //           addAppointmentInsert.appointment_booking_id,
-        //       },
-        //     ],
-        //     0
-        //   );
-        // } else {
-        //   error(res, "Inbox not created", 500);
-        // }
-
-        successWithdata(
-          res,
-          "Appointment added",
-          "Appointment not added",
-          [
-            {
-              appointment_booking_id:
-                addAppointmentInsert.appointment_booking_id,
-            },
-          ],
-          0
+        const inboxCreateQuery = await tableNames.Inbox.create(
+          userInboxCreateQuery
         );
+        if (inboxCreateQuery != null || inboxCreateQuery != "") {
+          //    success(res, inboxCreateQuery['inbox_id'], 200, 0);
+          let userchatCreateQuery1 = {
+            inbox_id: inboxCreateQuery["inbox_id"],
+            message: "Congratulations.. your appointment has been confirmed",
+            visibility: 1,
+          };
+
+          let userchatCreateQuery2 = {
+            inbox_id: inboxCreateQuery["inbox_id"],
+            message: "Congratulations.. you got a new appointment",
+            visibility: 2,
+          };
+
+          const inboxCreateQuery1 = await tableNames.chatMessage.create(
+            userchatCreateQuery2
+          );
+
+          const inboxCreateQuery2 = await tableNames.chatMessage.create(
+            userchatCreateQuery1
+          );
+          //  success(res, "Appointment added", 200, 1);
+          successWithdata(
+            res,
+            "Appointment added",
+            "Appointment not added",
+            [
+              {
+                appointment_booking_id:
+                  addAppointmentInsert.appointment_booking_id,
+              },
+            ],
+            0
+          );
+        } else {
+          error(res, "Inbox not created", 500);
+        }
       } else {
         error(res, "Appointment not added", 500);
       }
-    } catch (err) {
-      error(res, err, 500);
-    }
+    // } catch (err) {
+    //   error(res, err, 500);
+    // }
   }
   // } catch (err) {
   //   error(res, err, 500);
@@ -236,6 +231,11 @@ async function getAppointmentUserHistory(req, res) {
           attributes: ["booking_status_name"],
           model: tableNames.bookingStatus,
         },
+        {
+          //attributes: ["booking_status_name"],
+          model: tableNames.meetingRoom,
+        }
+        ,
       ],
       where: {
         // booking_status_id: 1,

@@ -338,7 +338,7 @@ db.appointment_booking.hasMany(db.meeting_room, {
   foreignKey: "appointment_booking_id",
 });
 
-db.room.hasMany(db.meeting_room, {
+db.room.hasOne(db.meeting_room, {
   foreignKey: "room_id",
 });
 

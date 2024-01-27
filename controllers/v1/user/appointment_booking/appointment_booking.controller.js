@@ -87,20 +87,22 @@ async function addAppointment(req, res) {
       console.log(data);
 
       const user = await tableNames.meetingRoom.create(data);
-      const roomIdUpdateQuery = await tableNames.Room.update({
-        room_active: 1,
-        where: {
-          room_id: fondroomIDs.room_id,
-        },
-      });
 
-      //const fondroodmIDs = await tableNames.meetingRoom.create(data);
+      console.log("user");
+      console.log(user.meeting_room_id);
+      console.log("user");
+      const roomIdUpdateQuery = await tableNames.Room.update(
+       { room_active: 1,},
+       { where: {
+          room_id: user.meeting_room_id,
+        },}
+      );
 
-      console.log(user);
+     
 
-      console.log("/////harsh");
-      console.log(fondroomIDs.room_code);
-      console.log("////harsh");
+      // console.log("/////harsh");
+      // console.log(fondroomIDs.room_code);
+      // console.log("////harsh");
       let userInboxCreateQuery = {
         appointment_booking_id: addAppointmentInsert["appointment_booking_id"],
         user_id: user_id,

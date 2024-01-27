@@ -87,6 +87,12 @@ async function addAppointment(req, res) {
       console.log(data);
 
       const user = await tableNames.meetingRoom.create(data);
+      const roomIdUpdateQuery = await tableNames.Room.update({
+        room_active: 1,
+        where: {
+          room_id: fondroomIDs.room_id,
+        },
+      });
 
       //const fondroodmIDs = await tableNames.meetingRoom.create(data);
 

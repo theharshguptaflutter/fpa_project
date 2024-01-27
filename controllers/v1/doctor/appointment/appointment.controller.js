@@ -46,7 +46,7 @@ async function getAppointmentByIdHistory(req, res) {
     const userAppointmentHistory = await tableNames.appointmentBooking.findOne({
       include: [
         {
-          attributes: ["user_id", "name", "email", "user_number"],
+          attributes: ["user_id", "name", "email", "user_number","avatar"],
           model: tableNames.User,
         },
         {

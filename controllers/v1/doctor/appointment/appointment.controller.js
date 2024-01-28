@@ -154,14 +154,14 @@ async function appointmentComplete(req, res) {
                 },
               });
           } else {
-            return error(res, "Your room has not been canceled");
+            return error(res, "Your room has not been update");
           }
         }
       }
 
       success(res, "Your appointment has been completed", 200, 0);
     } else {
-      error(res, "Your appointment has not been canceled");
+      error(res, "Your appointment has not been completed");
     }
 
     console.log(appointmentCancelQuery);

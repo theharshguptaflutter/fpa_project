@@ -95,23 +95,23 @@ async function getAppointmentByIdHistory(req, res) {
 async function appointmentComplete(req, res) {
   try {
     const appointment_booking_id = req.params.appointment_booking_id;
-    const email = req.body.email;
-    const user = await tableNames.doctorUser.findOne({
-      where: { doctor_email: email },
-    });
-    if (!user) {
-      res.statusCode = 404;
-      return error(res, "User not found!");
-    }
-    var doctor_id = user.doctor_id;
-    if (
-      appointment_booking_id == "" ||
-      appointment_booking_id == null ||
-      doctor_id == "" ||
-      doctor_id == null
-    ) {
-      return error(res, "Invalid parameters");
-    }
+    // const email = req.body.email;
+    // const user = await tableNames.doctorUser.findOne({
+    //   where: { doctor_email: email },
+    // });
+    // if (!user) {
+    //   res.statusCode = 404;
+    //   return error(res, "User not found!");
+    // }
+    // var doctor_id = user.doctor_id;
+    // if (
+    //   appointment_booking_id == "" ||
+    //   appointment_booking_id == null ||
+    //   doctor_id == "" ||
+    //   doctor_id == null
+    // ) {
+    //   return error(res, "Invalid parameters");
+    // }
 
     const appointmentCancelQuery = await tableNames.appointmentBooking.update(
       {
@@ -121,7 +121,7 @@ async function appointmentComplete(req, res) {
       {
         where: {
           appointment_booking_id: appointment_booking_id,
-          doctor_id: doctor_id,
+          // doctor_id: doctor_id,
         },
       }
     );

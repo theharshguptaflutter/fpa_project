@@ -33,6 +33,7 @@ async function userProfileUpdate(req, res) {
       name: req.body.name,
       email: req.body.email,
       avatar: user_avatar,
+      user_number:req.body.number,
       user_profile_update: 1,
       password: password,
       gender: req.body.gender,

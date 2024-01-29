@@ -332,16 +332,25 @@ async function getAppointmentByIdHistory(req, res) {
 async function addClientHistoryCard(req, res) {
   var user_id = req.params.user_id;
   var name = req.body.name;
+
   var mother_name = req.body.mother_name;
-  var reference = req.body.reference;
   var dob = req.body.dob;
+
   var age = req.body.age;
   var religion = req.body.religion;
   var residence = req.body.residence;
   var address = req.body.address;
+  var reference = req.body.reference;
+
+  var city = req.body.city;
+  var state = req.body.state;
+  var pin_code = req.body.pin_code;
   var education = req.body.education;
   var marital_status = req.body.marital_status;
   var disability = req.body.disability;
+  var occupation = req.body.occupation;
+
+  var pin_code = req.body.pin_code;
   var gender = req.body.gender;
   var sexuality = req.body.sexuality;
   var blood_group = req.body.blood_group;

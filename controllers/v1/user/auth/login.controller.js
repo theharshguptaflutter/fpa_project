@@ -7,7 +7,7 @@ const editParameterQuery = require("../../../../utils/edit_query");
 const {
   success,
   error,
-  successWithdata, 
+  successWithdata,
   success1,
   resetpasswordsucess,
   resetpassworderror,
@@ -34,11 +34,11 @@ async function login(req, res) {
     return error(res, "Please enter correct phone number");
   }
 
-  if (email && pwd) {
+  if (mobile_number && pwd) {
     let user = await tableNames.User.findOne({
-      where: { email: email },
+      where: { user_number: mobile_number },
     });
-    if(user.user_delete_flag === 1){
+    if (user.user_delete_flag === 1) {
       res.statusCode = 404;
       return error(res, "Can't Login! User profile deleted");
     }
@@ -77,21 +77,109 @@ async function login(req, res) {
         res.statusCode = 409;
         error(res, "Generated token not inserted into db");
       } else {
-        if(!client_id){
+        if (!client_id) {
           res.statusCode = 409;
-          error(res, "Please provide client Id")
+          error(res, "Please provide client Id");
         }
         let checkClientId = await tableNames.clientAccessToken.findOne({
           where: { user_id: user["user_id"], client_id: client_id },
         });
         if (checkClientId === null) {
-          const cliendIdInsertQuery = await tableNames.clientAccessToken.create({
-            user_id: user["user_id"],
-            client_id: client_id,
-          });
-          if(!cliendIdInsertQuery){
+          const cliendIdInsertQuery = await tableNames.clientAccessToken.create(
+            {
+              user_id: user["user_id"],
+              client_id: client_id,
+            }
+          );
+          if (!cliendIdInsertQuery) {
             res.statusCode = 409;
-            error(res, "Client Id not inserted into DB!")
+            error(res, "Client Id not inserted into DB!");
+          }
+        }
+        return res.status(200).send({
+          status: 200,
+          isuserfound: true,
+          message: "Login successful",
+          user_details: [
+            {
+              user_id: user["user_id"],
+              role_id: user["role_id"] ?? " ",
+              name: user["name"] ?? " ",
+              avatar: user["avatar"] ?? " ",
+              email: user["email"] ?? " ",
+              gender: user["gender"] ?? " ",
+              user_number: user["user_number"] ?? " ",
+              city_id: user["city_id"] ?? " ",
+              state_id: user["state_id"] ?? " ",
+              user_online_status: user["user_online_status"],
+              user_delete_flag: user["user_delete_flag"],
+              client_id: client_id ?? " ",
+              token: token ?? " ",
+            },
+          ],
+        });
+      }
+    }
+  } else if (email && pwd) {
+    let user = await tableNames.User.findOne({
+      where: { email: email },
+    });
+    if (user.user_delete_flag === 1) {
+      res.statusCode = 404;
+      return error(res, "Can't Login! User profile deleted");
+    }
+    if (!user || !user.password) {
+      res.statusCode = 404;
+      return error(res, "User not found or password not set. Please signUp.");
+    }
+    const passChk = await bcrypt.compare(String(pwd), user.password);
+    if (!passChk) {
+      res.statusCode = 404;
+      return error(res, "Incorrect Password!");
+    }
+    //Generating JWT token and sending user data
+    const privatekey = process.env.privateKey;
+    let params = {
+      user_id: user["user_id"],
+      user_number: user["user_number"],
+    };
+    const token = await jwt.sign(params, privatekey, {
+      expiresIn: "365d",
+    });
+
+    if (!token) {
+      res.statusCode = 409;
+      error(res, "Token not generated");
+    } else {
+      let tokeninfo = {
+        user_id: user["user_id"],
+        user_number: user["user_number"],
+        gen_token: token,
+      };
+      const accessTokensGenInsetQuery = await tableNames.accessTokens.create(
+        tokeninfo
+      );
+      if (!accessTokensGenInsetQuery) {
+        res.statusCode = 409;
+        error(res, "Generated token not inserted into db");
+      } else {
+        if (!client_id) {
+          res.statusCode = 409;
+          error(res, "Please provide client Id");
+        }
+        let checkClientId = await tableNames.clientAccessToken.findOne({
+          where: { user_id: user["user_id"], client_id: client_id },
+        });
+        if (checkClientId === null) {
+          const cliendIdInsertQuery = await tableNames.clientAccessToken.create(
+            {
+              user_id: user["user_id"],
+              client_id: client_id,
+            }
+          );
+          if (!cliendIdInsertQuery) {
+            res.statusCode = 409;
+            error(res, "Client Id not inserted into DB!");
           }
         }
         return res.status(200).send({
@@ -180,10 +268,7 @@ async function login(req, res) {
           result = await bcrypt.compare(String(pwd), SqlQuery?.password);
         } else {
           res.statusCode = 401;
-          return error(
-            res,
-            "User already exists!"
-          );
+          return error(res, "User already exists!");
         }
       } else {
         if (!verification_status && pwd) {
@@ -202,7 +287,7 @@ async function login(req, res) {
       }
     }
     //comparing the password of the registered user
-   
+
     if (result === true || result === "not found") {
       const otpcode = Math.floor(1000 + Math.random() * 9000);
       //const otpcode = 4444;

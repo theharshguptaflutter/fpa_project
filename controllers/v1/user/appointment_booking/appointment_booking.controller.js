@@ -92,13 +92,13 @@ async function addAppointment(req, res) {
       console.log(user.meeting_room_id);
       console.log("user");
       const roomIdUpdateQuery = await tableNames.Room.update(
-       { room_active: 1,},
-       { where: {
-          room_id: user.meeting_room_id,
-        },}
+        { room_active: 1 },
+        {
+          where: {
+            room_id: user.meeting_room_id,
+          },
+        }
       );
-
-     
 
       // console.log("/////harsh");
       // console.log(fondroomIDs.room_code);
@@ -350,13 +350,20 @@ async function addClientHistoryCard(req, res) {
   var disability = req.body.disability;
   var occupation = req.body.occupation;
 
-  var pin_code = req.body.pin_code;
-  var gender = req.body.gender;
-  var sexuality = req.body.sexuality;
+  var yourself = req.body.yourself;
   var blood_group = req.body.blood_group;
   var height = req.body.height;
   var weight = req.body.weight;
 
+  var medical_history = req.body.medical_history;
+  var social_history = req.body.social_history;
+  var surgical_history = req.body.surgical_history;
+
+  var current_medicaton = req.body.current_medicaton;
+  var family_medical_history = req.body.family_medical_history;
+
+  var gender = req.body.gender;
+  var sexuality = req.body.sexuality;
   var male = req.body.male;
   var female = req.body.female;
   var transgender = req.body.transgender;
@@ -382,6 +389,18 @@ async function addClientHistoryCard(req, res) {
       blood_group: blood_group,
       height: height,
       weight: weight,
+      medical_history: medical_history,
+      social_history: social_history,
+      surgical_history: surgical_history,
+
+      current_medicaton: current_medicaton,
+      family_medical_history: family_medical_history,
+
+      city: city,
+      state: state,
+      pin_code: pin_code,
+      occupation: occupation,
+      yourself: yourself,
     });
 
     successWithdata(

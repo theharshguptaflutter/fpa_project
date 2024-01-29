@@ -87,6 +87,20 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         defaultValue: null,
       },
+
+      city: { type: DataTypes.STRING, defaultValue: null },
+      state: { type: DataTypes.STRING, defaultValue: null },
+      pin_code: { type: DataTypes.BIGINT, defaultValue: null },
+      occupation: {type: DataTypes.STRING, defaultValue: null},
+      yourself: {type: DataTypes.STRING, defaultValue: null},
+
+      medical_history: {type: DataTypes.STRING, defaultValue: null},
+      social_history: {type: DataTypes.STRING, defaultValue: null},
+      surgical_history: {type: DataTypes.STRING, defaultValue: null},
+
+      current_medicaton: {type: DataTypes.STRING, defaultValue: null},
+      family_medical_history: {type: DataTypes.STRING, defaultValue: null},
+
       client_history_card_delete_flag: {
         type: DataTypes.TINYINT,
         defaultValue: 0,

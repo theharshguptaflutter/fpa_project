@@ -367,6 +367,20 @@ async function addClientHistoryCard(req, res) {
   var male = req.body.male;
   var female = req.body.female;
   var transgender = req.body.transgender;
+
+  var Lmp = req.body.Lmp;
+  var cycle = req.body.cycle;
+  var length = req.body.length;
+  var obstetric_history = req.body.obstetric_history;
+  var currently_pregnant = req.body.currently_pregnant;
+  var no_previous_pregnancies = req.body.no_previous_pregnancies;
+  var no_currently_children_total = req.body.no_currently_children_total;
+  var clc_male = req.body.clc_male;
+  var clc_female = req.body.clc_female;
+  var clc_other = req.body.clc_other;
+  var abortions = req.body.abortions;
+  var stillbirth = req.body.stillbirth;
+  var age_of_youngest_living_child = req.body.age_of_youngest_living_child;
   try {
     const addClientHistoryCardInserQuery = tableNames.clientHistoryCard.create({
       user_id: user_id,
@@ -401,6 +415,19 @@ async function addClientHistoryCard(req, res) {
       pin_code: pin_code,
       occupation: occupation,
       yourself: yourself,
+      Lmp: Lmp,
+      cycle: cycle,
+      length: length,
+      obstetric_history: obstetric_history,
+      currently_pregnant: currently_pregnant,
+      no_previous_pregnancies: no_previous_pregnancies,
+      no_currently_children_total: no_currently_children_total,
+      clc_male: clc_male,
+      clc_female: clc_female,
+      clc_other: clc_other,
+      abortions: abortions,
+      stillbirth: stillbirth,
+      age_of_youngest_living_child: age_of_youngest_living_child,
     });
 
     successWithdata(

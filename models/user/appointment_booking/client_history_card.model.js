@@ -91,19 +91,72 @@ module.exports = (sequelize, DataTypes) => {
       city: { type: DataTypes.STRING, defaultValue: null },
       state: { type: DataTypes.STRING, defaultValue: null },
       pin_code: { type: DataTypes.BIGINT, defaultValue: null },
-      occupation: {type: DataTypes.STRING, defaultValue: null},
-      yourself: {type: DataTypes.STRING, defaultValue: null},
+      occupation: { type: DataTypes.STRING, defaultValue: null },
+      yourself: { type: DataTypes.STRING, defaultValue: null },
 
-      medical_history: {type: DataTypes.STRING, defaultValue: null},
-      social_history: {type: DataTypes.STRING, defaultValue: null},
-      surgical_history: {type: DataTypes.STRING, defaultValue: null},
+      medical_history: { type: DataTypes.STRING, defaultValue: null },
+      social_history: { type: DataTypes.STRING, defaultValue: null },
+      surgical_history: { type: DataTypes.STRING, defaultValue: null },
 
-      current_medicaton: {type: DataTypes.STRING, defaultValue: null},
-      family_medical_history: {type: DataTypes.STRING, defaultValue: null},
+      current_medicaton: { type: DataTypes.STRING, defaultValue: null },
+      family_medical_history: { type: DataTypes.STRING, defaultValue: null },
 
       client_history_card_delete_flag: {
         type: DataTypes.TINYINT,
         defaultValue: 0,
+      },
+
+      lmp: {
+        type: DataTypes.DATEONLY,
+        defaultValue: null,
+      },
+      cycle: {
+        type: DataTypes.STRING,
+        defaultValue: null,
+      },
+      length: {
+        type: DataTypes.BIGINT,
+        defaultValue: null,
+      },
+      obstetric_history: {
+        type: DataTypes.STRING,
+        defaultValue: null,
+      },
+      currently_pregnant: {
+        type: DataTypes.STRING,
+        defaultValue: null,
+      },
+      no_previous_pregnancies: {
+        type: DataTypes.BIGINT,
+        defaultValue: null,
+      },
+      no_currently_children_total: {
+        type: DataTypes.BIGINT,
+        defaultValue: null,
+      },
+      clc_male: {
+        type: DataTypes.BIGINT,
+        defaultValue: null,
+      },
+      clc_female: {
+        type: DataTypes.BIGINT,
+        defaultValue: null,
+      },
+      clc_other: {
+        type: DataTypes.BIGINT,
+        defaultValue: null,
+      },
+      abortions: {
+        type: DataTypes.BIGINT,
+        defaultValue: null,
+      },
+      stillbirth: {
+        type: DataTypes.BIGINT,
+        defaultValue: null,
+      },
+      age_of_youngest_living_child: {
+        type: DataTypes.DATEONLY,
+        defaultValue: null,
       },
     },
     {

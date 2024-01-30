@@ -368,7 +368,7 @@ async function addClientHistoryCard(req, res) {
   var female = req.body.female;
   var transgender = req.body.transgender;
 
-  var Lmp = req.body.Lmp;
+  var lmp = req.body.lmp;
   var cycle = req.body.cycle;
   var length = req.body.length;
   var obstetric_history = req.body.obstetric_history;
@@ -415,7 +415,7 @@ async function addClientHistoryCard(req, res) {
       pin_code: pin_code,
       occupation: occupation,
       yourself: yourself,
-      Lmp: Lmp,
+      lmp: lmp,
       cycle: cycle,
       length: length,
       obstetric_history: obstetric_history,

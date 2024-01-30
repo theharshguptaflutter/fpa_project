@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
 const otpTimeValidation = require("../../../../utils/otp_time_checker");
 const editParameterQuery = require("../../../../utils/edit_query");
+const sendSms = require("../../../../utils/sms_getways");
 const {
   success,
   error,
@@ -38,6 +39,12 @@ async function login(req, res) {
     let user = await tableNames.User.findOne({
       where: { user_number: mobile_number },
     });
+
+    if (user == null || user == "") {
+      res.statusCode = 404;
+      return error(res, "User account not found");
+    }
+
     if (user.user_delete_flag === 1) {
       res.statusCode = 404;
       return error(res, "Can't Login! User profile deleted");
@@ -124,6 +131,14 @@ async function login(req, res) {
     let user = await tableNames.User.findOne({
       where: { email: email },
     });
+
+    console.log(`HarsH<===========> ${user}`);
+
+    if (user == null || user == "") {
+      res.statusCode = 404;
+      return error(res, "User account not found");
+    }
+
     if (user.user_delete_flag === 1) {
       res.statusCode = 404;
       return error(res, "Can't Login! User profile deleted");
@@ -259,10 +274,14 @@ async function login(req, res) {
       },
     });
     let result = true;
+
     // console.log("sql===>", SqlQuery.password);
-    let verification_status = await userverify(email);
+    if (email) {
+      var verification_status = await userverify(email);
+    }
+
     if (!mobile_number) {
-      console.log("qqqqqqqqqqq===>", SqlQuery);
+      // console.log("qqqqqqqqqqq===>", SqlQuery);
       if (SqlQuery) {
         if (SqlQuery?.password != null && pwd) {
           result = await bcrypt.compare(String(pwd), SqlQuery?.password);
@@ -291,6 +310,7 @@ async function login(req, res) {
     if (result === true || result === "not found") {
       const otpcode = Math.floor(1000 + Math.random() * 9000);
       //const otpcode = 4444;
+
       if (email) {
         const transporter = nodemailer.createTransport({
           host: process.env.HOST_MAIL,
@@ -319,6 +339,9 @@ async function login(req, res) {
         };
 
         await transporter.sendMail(mailOptions);
+      }
+      if (mobile_number) {
+        sendSms(mobile_number, otpcode);
       }
       const vvcode = uuidv4();
       var data = null;
@@ -432,7 +455,7 @@ async function userverify(email) {
       return false;
     }
   } catch (error) {
-    console.error("Error in Sequelize query===>", error);
+    console.error("Error in Sequelize query===> 12112", error);
   }
 }
 

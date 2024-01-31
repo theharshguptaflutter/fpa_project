@@ -375,7 +375,7 @@ async function login(req, res) {
         res.statusCode = 422;
         error(res, "Otp not send");
       } else {
-      //  await sendSms(mobile_number, otpcode);
+        await sendSms(mobile_number, otpcode);
         successWithdata(
           res,
           "Verification code Found",

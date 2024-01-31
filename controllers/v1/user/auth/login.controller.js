@@ -273,6 +273,12 @@ async function login(req, res) {
           : {}),
       },
     });
+    // console.log(SqlQuery);
+
+    if (SqlQuery != null || SqlQuery != "") {
+      res.statusCode = 404;
+      return error(res, "User already exists!");
+    }
     let result = true;
 
     // console.log("sql===>", SqlQuery.password);
@@ -340,7 +346,7 @@ async function login(req, res) {
 
         await transporter.sendMail(mailOptions);
       }
-    
+
       const vvcode = uuidv4();
       var data = null;
       if (SqlQuery) {

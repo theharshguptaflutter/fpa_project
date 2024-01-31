@@ -112,96 +112,94 @@ async function getRole(req, res) {
 }
 
 async function getAppointmentList(req, res) {
-  // const currentDate = moment().startOf("day").format("YYYY-MM-DD");
-  // const threeMonthsLater = moment()
-  //   .add(3, "months")
-  //   .startOf("day")
-  //   .format("YYYY-MM-DD");
+  const currentDate = moment().startOf("day").format("YYYY-MM-DD");
+  const threeMonthsLater = moment()
+    .add(3, "months")
+    .startOf("day")
+    .format("YYYY-MM-DD");
 
-  // tableNames.appointmentBooking
-  //   .findAll({
-  //     attributes: ["booked_current_date", "booked_current_time"], // Include booked_current_time
-  //     where: {
-  //       booked_current_date: {
-  //         [operatorsAliases.$between]: [currentDate, threeMonthsLater],
-  //       },
-  //       booking_status_id: 1,
-  //     },
-  //     raw: true,
-  //   })
-  //   .then((appointments) => {
-  //     // Group appointments by booked_current_date
-  //     const groupedAppointments = {};
-  //     appointments.forEach((appointment) => {
-  //       const date = appointment.booked_current_date;
-  //       if (!groupedAppointments[date]) {
-  //         groupedAppointments[date] = {
-  //           booked_current_date: date,
-  //           booked_current_time: [],
-  //         };
-  //       }
-  //       groupedAppointments[date].booked_current_time.push({
-  //         booked_current_time: appointment.booked_current_time,
-  //       });
-  //     });
-
-  //     // Convert the object back to an array
-  //     const result = Object.values(groupedAppointments);
-
-  //     const
-
-  //     res.send({ status: 200, appointments: result });
-  //     console.log("appointments===>", result);
-  //   })
-  //   .catch((error) => {
-  //     console.error("Error fetching appointments:", error);
-  //   });
-  try {
-    const currentDate = moment().startOf("day").format("YYYY-MM-DD");
-    const threeMonthsLater = moment()
-      .add(3, "months")
-      .startOf("day")
-      .format("YYYY-MM-DD");
-
-    const appointmentCounts = await tableNames.appointmentBooking.findAll({
-      attributes: [
-        "booked_current_date",
-        "booked_current_time",
-        [sequelize.fn("COUNT", "appointment_booking_id"), "appointment_count"],
-      ],
+  tableNames.appointmentBooking
+    .findAll({
+      attributes: ["booked_current_date", "booked_current_time"], // Include booked_current_time
       where: {
         booked_current_date: {
           [operatorsAliases.$between]: [currentDate, threeMonthsLater],
         },
         booking_status_id: 1,
-        appointment_delete_flag: 0,
       },
-      group: ["booked_current_date", "booked_current_time"],
       raw: true,
-    });
-
-    const totalDoctors = await tableNames.doctorUser.count({
-      where: { doctor_profile_update: 1, doctor_delete_flag: 0 },
-    });
-
-    const result = appointmentCounts
-      .filter((appointment) => appointment.appointment_count === totalDoctors)
-      .reduce((acc, appointment) => {
-        const { booked_current_date, booked_current_time } = appointment;
-        if (!acc[booked_current_date]) {
-          acc[booked_current_date] = [];
+    })
+    .then((appointments) => {
+      // Group appointments by booked_current_date
+      const groupedAppointments = {};
+      appointments.forEach((appointment) => {
+        const date = appointment.booked_current_date;
+        if (!groupedAppointments[date]) {
+          groupedAppointments[date] = {
+            booked_current_date: date,
+            booked_current_time: [],
+          };
         }
-        acc[booked_current_date].push(booked_current_time);
-        return acc;
-      }, {});
+        groupedAppointments[date].booked_current_time.push({
+          booked_current_time: appointment.booked_current_time,
+        });
+      });
+
+      // Convert the object back to an array
+      const result = Object.values(groupedAppointments);
+
+      res.send({ status: 200, appointments: result });
+      console.log("appointments===>", result);
+    })
+    .catch((error) => {
+      console.error("Error fetching appointments:", error);
+    });
+  // try {
+  //   const currentDate = moment().startOf("day").format("YYYY-MM-DD");
+  //   const threeMonthsLater = moment()
+  //     .add(3, "months")
+  //     .startOf("day")
+  //     .format("YYYY-MM-DD");
+
+  //   const appointmentCounts = await tableNames.appointmentBooking.findAll({
+  //     attributes: [
+  //       "booked_current_date",
+  //       "booked_current_time",
+  //       [sequelize.fn("COUNT", "appointment_booking_id"), "appointment_count"],
+  //     ],
+  //     where: {
+  //       booked_current_date: {
+  //         [operatorsAliases.$between]: [currentDate, threeMonthsLater],
+  //       },
+  //       booking_status_id: 1,
+  //       appointment_delete_flag: 0,
+  //     },
+  //     group: ["booked_current_date", "booked_current_time"],
+  //     raw: true,
+  //   });
+
+  //   const totalDoctors = await tableNames.doctorUser.count({
+  //     where: { doctor_profile_update: 1, doctor_delete_flag: 0 },
+  //   });
+
+  //   const result = appointmentCounts
+  //     .filter((appointment) => appointment.appointment_count === totalDoctors)
+  //     .reduce((acc, appointment) => {
+  //       const { booked_current_date, booked_current_time } = appointment;
+  //       if (!acc[booked_current_date]) {
+  //         acc[booked_current_date] = [];
+  //       }
+  //       acc[booked_current_date].push(booked_current_time);
+  //       return acc;
+  //     }, {});
 
     
 
-    res.send({ status: 200, appointments: result });
-    console.log("appointments===>", result);
-  } catch (err) {
-    error(res, err, 500);
-  }
+  //   res.send({ status: 200, appointments: result });
+  //   console.log("appointments===>", result);
+  // } catch (err) {
+  //   error(res, err, 500);
+  // }
 }
 
 async function getAppointmentTimeList(req, res) {

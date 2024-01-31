@@ -70,7 +70,8 @@ async function findAvailableDoctor(bookingDate, bookingTime) {
       attributes: ["doctor_id"],
     });
     if (availableDoctors.length > 0) {
-      return availableDoctors[0].doctor_id;
+      const randomIndex = Math.floor(Math.random() * availableDoctors.length);
+      return availableDoctors[randomIndex].doctor_id;
     } else {
       // No available doctors
       return null;

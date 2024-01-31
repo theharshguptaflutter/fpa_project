@@ -181,7 +181,7 @@ async function getAppointmentList(req, res) {
     });
 
     const totalDoctors = await tableNames.doctorUser.count({
-      where: { doctor_profile_update: 1 },
+      where: { doctor_profile_update: 1, doctor_delete_flag: 0 },
     });
 
     const result = appointmentCounts

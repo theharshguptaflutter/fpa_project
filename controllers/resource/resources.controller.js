@@ -186,10 +186,16 @@ async function getAppointmentList(req, res) {
 
     const result = appointmentCounts
       .filter((appointment) => appointment.appointment_count === totalDoctors)
-      .map((appointment) => ({
-        booked_current_date: appointment.booked_current_date,
-        booked_current_time: appointment.booked_current_time,
-      }));
+      .reduce((acc, appointment) => {
+        const { booked_current_date, booked_current_time } = appointment;
+        if (!acc[booked_current_date]) {
+          acc[booked_current_date] = [];
+        }
+        acc[booked_current_date].push(booked_current_time);
+        return acc;
+      }, {});
+
+    
 
     res.send({ status: 200, appointments: result });
     console.log("appointments===>", result);

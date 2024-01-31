@@ -340,9 +340,7 @@ async function login(req, res) {
 
         await transporter.sendMail(mailOptions);
       }
-      if (mobile_number) {
-        sendSms(mobile_number, otpcode);
-      }
+    
       const vvcode = uuidv4();
       var data = null;
       if (SqlQuery) {
@@ -377,6 +375,7 @@ async function login(req, res) {
         res.statusCode = 422;
         error(res, "Otp not send");
       } else {
+        await sendSms(mobile_number, otpcode);
         successWithdata(
           res,
           "Verification code Found",

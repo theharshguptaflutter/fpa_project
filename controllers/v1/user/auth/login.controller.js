@@ -259,7 +259,7 @@ async function login(req, res) {
       ],
     });
   } else {
-    let SqlQuery = await tableNames.User.findOne({
+    var SqlQuery = await tableNames.User.findOne({
       where: {
         ...(mobile_number
           ? {
@@ -273,9 +273,9 @@ async function login(req, res) {
           : {}),
       },
     });
-    // console.log(SqlQuery);
+    console.log(SqlQuery);
 
-    if (SqlQuery != null || SqlQuery != "") {
+    if (SqlQuery != null) {
       res.statusCode = 404;
       return error(res, "User already exists!");
     }
@@ -338,7 +338,7 @@ async function login(req, res) {
             <h1>Hello!</h1>
             <p>This is a validation mail.</p>
             <p>Your Email Otp is ${otpcode}</p>
-            
+
           </body>
         </html>
       `,

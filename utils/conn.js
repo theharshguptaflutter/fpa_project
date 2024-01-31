@@ -342,4 +342,8 @@ db.room.hasOne(db.meeting_room, {
   foreignKey: "room_id",
 });
 
+db.doctor_user.hasMany(db.appointment_booking, {
+  foreignKey: "doctor_id",
+});
+
 module.exports = { db, sequelize };

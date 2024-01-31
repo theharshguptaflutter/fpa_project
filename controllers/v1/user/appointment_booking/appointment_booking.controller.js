@@ -9,6 +9,7 @@ const {
 } = require("../../../../utils/responseApi");
 const editParameterQuery = require("../../../../utils/edit_query");
 const { s3Upload } = require("../../../../utils/s3_file_upload");
+const findAvailableDoctor = require("../../../../utils/doctor_allocation.js");
 
 async function addAppointment(req, res) {
   var user_id = req.params.user_id;
@@ -29,136 +30,148 @@ async function addAppointment(req, res) {
   ) {
     return error(res, "Date time is empty", 200);
   }
-  // try {
-  const findquery = await tableNames.appointmentBooking.findAll({
-    where: {
-      [operatorsAliases.$and]: [
-        {
-          [operatorsAliases.$and]: [
-            literal(
-              `appointment_booking.booked_current_date = '${booked_current_date}'`
-            ),
-            literal(
-              `appointment_booking.booked_current_time = '${booked_current_time}'`
-            ),
-          ],
-        },
-        {
-          booking_status_id: 1,
-        },
-      ],
-    },
-  });
 
-  if (findquery != "") {
-    error(res, "Appointment already booked", 205);
-    // res.status(205).send({
-    //   status: 205,
-    //   appointment_booking_status: false,
-    //   message: "Appointment already booked",
-    // });
-  } else {
-    //try {
-    const addAppointmentInsert = await tableNames.appointmentBooking.create({
-      user_id: user_id,
-      doctor_id: doctor_id,
-      user_booking_price: user_booking_price,
-      total_booking_price: total_booking_price,
-      booked_current_date: booked_current_date,
-      booking_status_id: 1,
-      booked_current_time: booked_current_time,
-      order_status: order_status,
+  var findAvailableDoctorQuery = await findAvailableDoctor(
+    booked_current_date,
+    booked_current_time
+  );
+
+  if (findAvailableDoctorQuery == null) {
+    res.statuscode = 404;
+    return error(res, "Doctor not found");
+  }
+
+  try {
+    const findquery = await tableNames.appointmentBooking.findAll({
+      where: {
+        [operatorsAliases.$and]: [
+          {
+            [operatorsAliases.$and]: [
+              literal(
+                `appointment_booking.booked_current_date = '${booked_current_date}'`
+              ),
+              literal(
+                `appointment_booking.booked_current_time = '${booked_current_time}'`
+              ),
+            ],
+          },
+          {
+            booking_status_id: 1,
+          },
+        ],
+      },
     });
 
-    if (addAppointmentInsert != null) {
-      //success(res, "Appointment added", 200, 0);
-      //console.log(addAppointmentInsert["appointment_booking_id"]);
-      const fondroomIDs = await tableNames.Room.findOne({
-        where: {
-          room_active: 0,
-        },
-      });
-      var data = {
-        appointment_booking_id: addAppointmentInsert.appointment_booking_id,
-        room_id: fondroomIDs.room_id,
-        meeting_room_active: 1,
-      };
-
-      console.log(data);
-
-      const user = await tableNames.meetingRoom.create(data);
-
-      console.log("user");
-      console.log(user.meeting_room_id);
-      console.log("user");
-      const roomIdUpdateQuery = await tableNames.Room.update(
-        { room_active: 1 },
-        {
-          where: {
-            room_id: user.meeting_room_id,
-          },
-        }
-      );
-
-      // console.log("/////harsh");
-      // console.log(fondroomIDs.room_code);
-      // console.log("////harsh");
-      let userInboxCreateQuery = {
-        appointment_booking_id: addAppointmentInsert["appointment_booking_id"],
-        user_id: user_id,
-        doctor_id: doctor_id,
-      };
-
-      const inboxCreateQuery = await tableNames.Inbox.create(
-        userInboxCreateQuery
-      );
-      if (inboxCreateQuery != null || inboxCreateQuery != "") {
-        //    success(res, inboxCreateQuery['inbox_id'], 200, 0);
-        let userchatCreateQuery1 = {
-          inbox_id: inboxCreateQuery["inbox_id"],
-          message: "Congratulations.. your appointment has been confirmed",
-          visibility: 1,
-        };
-
-        let userchatCreateQuery2 = {
-          inbox_id: inboxCreateQuery["inbox_id"],
-          message: "Congratulations.. you got a new appointment",
-          visibility: 2,
-        };
-
-        const inboxCreateQuery1 = await tableNames.chatMessage.create(
-          userchatCreateQuery2
-        );
-
-        const inboxCreateQuery2 = await tableNames.chatMessage.create(
-          userchatCreateQuery1
-        );
-        //  success(res, "Appointment added", 200, 1);
-        successWithdata(
-          res,
-          "Appointment added",
-          "Appointment not added",
-          [
-            {
-              appointment_booking_id:
-                addAppointmentInsert.appointment_booking_id,
-            },
-          ],
-          0
-        );
-      } else {
-        error(res, "Inbox not created", 500);
-      }
+    if (findquery != "") {
+      error(res, "Appointment already booked", 205);
+      // res.status(205).send({
+      //   status: 205,
+      //   appointment_booking_status: false,
+      //   message: "Appointment already booked",
+      // });
     } else {
-      error(res, "Appointment not added", 500);
+      //try {
+      const addAppointmentInsert = await tableNames.appointmentBooking.create({
+        user_id: user_id,
+        doctor_id: findAvailableDoctorQuery,
+        user_booking_price: user_booking_price,
+        total_booking_price: total_booking_price,
+        booked_current_date: booked_current_date,
+        booking_status_id: 1,
+        booked_current_time: booked_current_time,
+        order_status: order_status,
+      });
+
+      if (addAppointmentInsert != null) {
+        //success(res, "Appointment added", 200, 0);
+        //console.log(addAppointmentInsert["appointment_booking_id"]);
+        const fondroomIDs = await tableNames.Room.findOne({
+          where: {
+            room_active: 0,
+          },
+        });
+        var data = {
+          appointment_booking_id: addAppointmentInsert.appointment_booking_id,
+          room_id: fondroomIDs.room_id,
+          meeting_room_active: 1,
+        };
+
+        console.log(data);
+
+        const user = await tableNames.meetingRoom.create(data);
+
+        console.log("user");
+        console.log(user.meeting_room_id);
+        console.log("user");
+        const roomIdUpdateQuery = await tableNames.Room.update(
+          { room_active: 1 },
+          {
+            where: {
+              room_id: user.meeting_room_id,
+            },
+          }
+        );
+
+        // console.log("/////harsh");
+        // console.log(fondroomIDs.room_code);
+        // console.log("////harsh");
+        let userInboxCreateQuery = {
+          appointment_booking_id:
+            addAppointmentInsert["appointment_booking_id"],
+          user_id: user_id,
+          doctor_id: doctor_id,
+        };
+
+        const inboxCreateQuery = await tableNames.Inbox.create(
+          userInboxCreateQuery
+        );
+        if (inboxCreateQuery != null || inboxCreateQuery != "") {
+          //    success(res, inboxCreateQuery['inbox_id'], 200, 0);
+          let userchatCreateQuery1 = {
+            inbox_id: inboxCreateQuery["inbox_id"],
+            message: "Congratulations.. your appointment has been confirmed",
+            visibility: 1,
+          };
+
+          let userchatCreateQuery2 = {
+            inbox_id: inboxCreateQuery["inbox_id"],
+            message: "Congratulations.. you got a new appointment",
+            visibility: 2,
+          };
+
+          const inboxCreateQuery1 = await tableNames.chatMessage.create(
+            userchatCreateQuery2
+          );
+
+          const inboxCreateQuery2 = await tableNames.chatMessage.create(
+            userchatCreateQuery1
+          );
+          //  success(res, "Appointment added", 200, 1);
+          successWithdata(
+            res,
+            "Appointment added",
+            "Appointment not added",
+            [
+              {
+                appointment_booking_id:
+                  addAppointmentInsert.appointment_booking_id,
+              },
+            ],
+            0
+          );
+        } else {
+          error(res, "Inbox not created", 500);
+        }
+      } else {
+        error(res, "Appointment not added", 500);
+      }
+      // } catch (err) {
+      //   error(res, err, 500);
+      // }
     }
-    // } catch (err) {
-    //   error(res, err, 500);
-    // }
+  } catch (err) {
+    error(res, err, 500);
   }
-  // } catch (err) {
-  //   error(res, err, 500);
-  // }
 }
 
 async function checkAppointmentAvailability(req, res) {

@@ -180,7 +180,9 @@ async function getAppointmentList(req, res) {
       raw: true,
     });
 
-    const totalDoctors = await tableNames.doctorUser.count();
+    const totalDoctors = await tableNames.doctorUser.count({
+      where: { doctor_profile_update: 1 },
+    });
 
     const result = appointmentCounts
       .filter((appointment) => appointment.appointment_count === totalDoctors)

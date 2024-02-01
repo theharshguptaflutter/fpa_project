@@ -17,6 +17,8 @@ async function userProfileUpdate(req, res) {
     var avatar = req.body.avatar;
     var category_id = req.body.category_id;
     var password = req.body.password;
+    var email = req.body.doctor_email;
+    var number = req.body.doctor_number;
     // if (user_avatar != "") {
     //   user_avatar = await s3Upload(user_avatar);
     // }
@@ -27,25 +29,31 @@ async function userProfileUpdate(req, res) {
       res.statusCode = 404;
       return error(res, "Can't Update profile! Doctor already deleted");
     }
-    const existingUserWithEmail = await tableNames.doctorUser.findOne({
-      where: {
-        doctor_email: req.body.doctor_email,
-        doctor_id: { [operatorsAliases.$ne]: doctor_id }, // Exclude the current user from the check
-      },
-    });
-    if (existingUserWithEmail) {
-      return error(res, "Email is already in use", 400);
+
+    if(email){
+      const existingUserWithEmail = await tableNames.doctorUser.findOne({
+        where: {
+          doctor_email: req.body.doctor_email,
+          doctor_id: { [operatorsAliases.$ne]: doctor_id }, // Exclude the current user from the check
+        },
+      });
+      if (existingUserWithEmail) {
+        return error(res, "Email is already in use", 400);
+      }
     }
 
-    const existingUserWithNumber = await tableNames.doctorUser.findOne({
-      where: {
-        doctor_number: req.body.doctor_number,
-        doctor_id: { [operatorsAliases.$ne]: doctor_id }, // Exclude the current user from the check
-      },
-    });
-    if (existingUserWithNumber) {
-      return error(res, "Phone number is already in use", 400);
+    if(number){
+      const existingUserWithNumber = await tableNames.doctorUser.findOne({
+        where: {
+          doctor_number: req.body.doctor_number,
+          doctor_id: { [operatorsAliases.$ne]: doctor_id }, // Exclude the current user from the check
+        },
+      });
+      if (existingUserWithNumber) {
+        return error(res, "Phone number is already in use", 400);
+      }
     }
+    
     if (password) {
       password = bcrypt.hashSync(String(password), 10);
     }

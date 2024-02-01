@@ -86,6 +86,13 @@ async function addAppointment(req, res) {
             room_active: 0,
           },
         });
+
+        console.log(fondroomIDs);
+        if(fondroomIDs ==null ){
+                res.statusCode = 409;
+        return   error(res, "Room not available");
+        }
+
         var data = {
           appointment_booking_id: addAppointmentInsert.appointment_booking_id,
           room_id: fondroomIDs.room_id,

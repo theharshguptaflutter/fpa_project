@@ -15,6 +15,8 @@ async function userProfileUpdate(req, res) {
     var user_id = req.params.user_id;
     var user_avatar = req.body.avatar;
     var password = req.body.password;
+    var email = req.body.email;
+    var number = req.body.number;
     // if (user_avatar != "") {
     //   user_avatar = await s3Upload(user_avatar);
     // }
@@ -25,25 +27,31 @@ async function userProfileUpdate(req, res) {
       res.statusCode = 404;
       return error(res, "Can't Update profile! User already deleted");
     }
-    const existingUserWithEmail = await tableNames.User.findOne({
-      where: {
-        email: req.body.email,
-        user_id: { [operatorsAliases.$ne]: user_id }, // Exclude the current user from the check
-      },
-    });
-    if (existingUserWithEmail) {
-      return error(res, "Email is already in use", 400);
+
+    if(email){
+      const existingUserWithEmail = await tableNames.User.findOne({
+        where: {
+          email: req.body.email,
+          user_id: { [operatorsAliases.$ne]: user_id }, // Exclude the current user from the check
+        },
+      });
+      if (existingUserWithEmail) {
+        return error(res, "Email is already in use", 400);
+      }
     }
 
-    const existingUserWithNumber = await tableNames.User.findOne({
-      where: {
-        user_number: req.body.number,
-        user_id: { [operatorsAliases.$ne]: user_id }, // Exclude the current user from the check
-      },
-    });
-    if (existingUserWithNumber) {
-      return error(res, "Phone number is already in use", 400);
+    if(number){
+      const existingUserWithNumber = await tableNames.User.findOne({
+        where: {
+          user_number: req.body.number,
+          user_id: { [operatorsAliases.$ne]: user_id }, // Exclude the current user from the check
+        },
+      });
+      if (existingUserWithNumber) {
+        return error(res, "Phone number is already in use", 400);
+      }
     }
+
     if (password){
       password = bcrypt.hashSync(String(password), 10);
     }

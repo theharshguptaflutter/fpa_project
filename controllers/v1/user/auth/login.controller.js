@@ -5,6 +5,7 @@ const nodemailer = require("nodemailer");
 const otpTimeValidation = require("../../../../utils/otp_time_checker");
 const editParameterQuery = require("../../../../utils/edit_query");
 const sendSms = require("../../../../utils/sms_getways");
+const { Op } = require('sequelize');
 const {
   success,
   error,
@@ -262,30 +263,30 @@ async function login(req, res) {
     
     var SqlQuery = await tableNames.User.findOne({
       where: {
-        ...(mobile_number
+        [Op.or]: [
+        mobile_number
           ? {
               user_number: mobile_number,
             }
-          : {}),
-        ...(email
+          : {},
+        email
           ? {
               email: email,
             }
-          : {}),
+          : {},
+        ],
       },
     });
     console.log(SqlQuery);
 
-   
+    if (SqlQuery.user_number == mobile_number || SqlQuery.email == email) {
+      res.statusCode = 404;
+      return error(res, "User already exists!");
+    }
 
     if (SqlQuery != null) {
-      if (SqlQuery.user_number != mobile_number || SqlQuery.email != email) {
-        res.statusCode = 404;
-        return error(res, "User already exists!");
-      }
-
-    //  res.statusCode = 404;
-    //  return error(res, "User already exists!");
+      res.statusCode = 404;
+      return error(res, "User already exists!");
     }
     let result = true;
 

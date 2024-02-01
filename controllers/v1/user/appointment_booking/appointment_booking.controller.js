@@ -3,6 +3,7 @@ const { literal } = require("sequelize");
 const moment = require("moment-timezone");
 const operatorsAliases = require("../../../../utils/operator_aliases");
 const {
+
   success,
   error,
   successWithdata,
@@ -13,6 +14,7 @@ const findAvailableDoctor = require("../../../../utils/doctor_allocation.js");
 
 async function addAppointment(req, res) {
   var user_id = req.params.user_id;
+
   // var doctor_id = req.body.doctor_id;
   var user_booking_price = req.body.user_booking_price;
   var total_booking_price = req.body.total_booking_price;
@@ -34,7 +36,7 @@ async function addAppointment(req, res) {
     return error(res, "Doctor not found");
   }
 
-  try {
+ // try {
     const findquery = await tableNames.appointmentBooking.findAll({
       where: {
         [operatorsAliases.$and]: [
@@ -108,12 +110,13 @@ async function addAppointment(req, res) {
 
         // console.log("/////harsh");
         // console.log(fondroomIDs.room_code);
-        // console.log("////harsh");
+         console.log("////harsh");
+       //  console.log(doctor_id);
         let userInboxCreateQuery = {
           appointment_booking_id:
             addAppointmentInsert["appointment_booking_id"],
           user_id: user_id,
-          doctor_id: doctor_id,
+          doctor_id: findAvailableDoctorQuery,
         };
 
         const inboxCreateQuery = await tableNames.Inbox.create(
@@ -163,9 +166,9 @@ async function addAppointment(req, res) {
       //   error(res, err, 500);
       // }
     }
-  } catch (err) {
-    error(res, err, 500);
-  }
+  // } catch (err) {
+  //   error(res, err, 500);
+  // }
 }
 
 async function checkAppointmentAvailability(req, res) {

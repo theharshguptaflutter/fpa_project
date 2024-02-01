@@ -294,8 +294,9 @@ async function login(req, res) {
         email: email,
       },
     });
-    if (existingUserWithEmail) {
-      return error(res, "Email is already in use", 400);
+    if (existingUserWithEmail) { 
+      res.statusCode = 400;
+      return error(res, "Email is already in use", );
     }
 
     const existingUserWithNumber = await tableNames.User.findOne({
@@ -304,7 +305,8 @@ async function login(req, res) {
       },
     });
     if (existingUserWithNumber) {
-      return error(res, "Phone number is already in use", 400);
+      res.statusCode = 400;
+      return error(res, "Phone number is already in use");
     }
 
     // console.log("sql===>", SqlQuery.password);

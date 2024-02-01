@@ -274,7 +274,7 @@ async function login(req, res) {
           : {}),
       },
     });
-    console.log(SqlQuery);
+  //  console.log(SqlQuery);
 
    
 

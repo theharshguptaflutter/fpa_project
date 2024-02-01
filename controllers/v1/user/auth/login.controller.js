@@ -259,6 +259,7 @@ async function login(req, res) {
       ],
     });
   } else {
+    
     var SqlQuery = await tableNames.User.findOne({
       where: {
         ...(mobile_number
@@ -273,16 +274,18 @@ async function login(req, res) {
           : {}),
       },
     });
-    //console.log(SqlQuery);
+    console.log(SqlQuery);
 
-    if (SqlQuery.user_number == mobile_number || SqlQuery.email == email) {
-      res.statusCode = 404;
-      return error(res, "User already exists!");
-    }
+   
 
     if (SqlQuery != null) {
-      res.statusCode = 404;
-      return error(res, "User already exists!");
+      if (SqlQuery.user_number != mobile_number || SqlQuery.email != email) {
+        res.statusCode = 404;
+        return error(res, "User already exists!");
+      }
+
+    //  res.statusCode = 404;
+    //  return error(res, "User already exists!");
     }
     let result = true;
 

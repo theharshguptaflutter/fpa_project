@@ -96,9 +96,9 @@ async function addAppointment(req, res) {
 
         const user = await tableNames.meetingRoom.create(data);
 
-        console.log("user");
-        console.log(user.meeting_room_id);
-        console.log("user");
+        // console.log("user");
+        // console.log(user.meeting_room_id);
+        // console.log("user");
         const roomIdUpdateQuery = await tableNames.Room.update(
           { room_active: 1 },
           {

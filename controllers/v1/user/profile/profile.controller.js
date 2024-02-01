@@ -1,4 +1,5 @@
 const tableNames = require("../../../../utils/table_name");
+const operatorsAliases = require("../../../../utils/operator_aliases");
 
 const {
   success,
@@ -23,6 +24,25 @@ async function userProfileUpdate(req, res) {
     if(user.user_delete_flag === 1){
       res.statusCode = 404;
       return error(res, "Can't Update profile! User already deleted");
+    }
+    const existingUserWithEmail = await tableNames.User.findOne({
+      where: {
+        email: req.body.email,
+        user_id: { [operatorsAliases.$ne]: user_id }, // Exclude the current user from the check
+      },
+    });
+    if (existingUserWithEmail) {
+      return error(res, "Email is already in use", 400);
+    }
+
+    const existingUserWithNumber = await tableNames.User.findOne({
+      where: {
+        user_number: req.body.number,
+        user_id: { [Op.ne]: user_id }, // Exclude the current user from the check
+      },
+    });
+    if (existingUserWithNumber) {
+      return error(res, "Phone number is already in use", 400);
     }
     if (password){
       password = bcrypt.hashSync(String(password), 10);

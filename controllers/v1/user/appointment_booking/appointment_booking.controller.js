@@ -13,22 +13,15 @@ const findAvailableDoctor = require("../../../../utils/doctor_allocation.js");
 
 async function addAppointment(req, res) {
   var user_id = req.params.user_id;
-  var doctor_id = req.body.doctor_id;
+  // var doctor_id = req.body.doctor_id;
   var user_booking_price = req.body.user_booking_price;
   var total_booking_price = req.body.total_booking_price;
   var booked_current_date = req.body.booked_current_date;
   var booked_current_time = req.body.booked_current_time;
   var order_status = req.body.order_status;
 
-  if (
-    booked_current_date == "" ||
-    booked_current_date == 0 ||
-    booked_current_date == null ||
-    booked_current_time == "" ||
-    booked_current_time == 0 ||
-    booked_current_time == null
-  ) {
-    return error(res, "Date time is empty", 200);
+  if (!booked_current_date || !booked_current_time) {
+    return error(res, "Date and time are required", 400);
   }
 
   var findAvailableDoctorQuery = await findAvailableDoctor(
@@ -56,6 +49,7 @@ async function addAppointment(req, res) {
             ],
           },
           {
+            doctor_id: findAvailableDoctorQuery,
             booking_status_id: 1,
           },
         ],
@@ -177,41 +171,27 @@ async function addAppointment(req, res) {
 async function checkAppointmentAvailability(req, res) {
   const { date, time } = req.query;
 
-  if (
-    date == "" ||
-    date == 0 ||
-    date == null ||
-    time == "" ||
-    time == 0 ||
-    time == null
-  ) {
-    return error(res, "Date time is empty", 200);
+  if (!date || !time) {
+    return error(res, "Date and time are required", 400);
   }
   try {
-    const findquery = await tableNames.appointmentBooking.findAll({
+    const totalDoctors = await tableNames.doctorUser.count({
+      where: { doctor_profile_update: 1, doctor_delete_flag: 0 },
+    });
+    const appointmentCount = await tableNames.appointmentBooking.count({
       where: {
-        [operatorsAliases.$and]: [
-          {
-            [operatorsAliases.$and]: [
-              literal(`appointment_booking.booked_current_date = '${date}'`),
-              literal(`appointment_booking.booked_current_time = '${time}'`),
-            ],
-          },
-          {
-            booking_status_id: 1,
-            // order_status: "0",
-            // product_id: product_id,
-            // booking_payments_status: [1, 2, 3, 4, 6],
-          },
-        ],
+        booked_current_date: date,
+        booked_current_time: time,
+        booking_status_id: 1,
+        appointment_delete_flag: 0,
       },
     });
 
-    if (findquery != "") {
+    if (appointmentCount === totalDoctors) {
       res.status(404).send({
         status: 404,
         appointment_booking_status: false,
-        message: "Appointment already booked",
+        message: "Appointment not available. All doctors are booked at this time.",
       });
     } else {
       res.status(200).send({

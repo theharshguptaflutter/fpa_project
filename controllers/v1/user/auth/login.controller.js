@@ -22,9 +22,9 @@ async function login(req, res) {
   const email = req.body.email;
   const pwd = req.body.password;
   const guest = req.body.guest;
-  const client_id = req.body.clientId;
+  const client_id = req.body.clientId; 
   console.log(mobile_number);
-
+ 
   if (!mobile_number && !email) {
     res.statusCode = 404;
     return error(res, "Please provide either email or phone number");
@@ -289,6 +289,24 @@ async function login(req, res) {
     }
     let result = true;
 
+    const existingUserWithEmail = await tableNames.User.findOne({
+      where: {
+        email: email,
+      },
+    });
+    if (existingUserWithEmail) {
+      return error(res, "Email is already in use", 400);
+    }
+
+    const existingUserWithNumber = await tableNames.User.findOne({
+      where: {
+        user_number: mobile_number,
+      },
+    });
+    if (existingUserWithNumber) {
+      return error(res, "Phone number is already in use", 400);
+    }
+
     // console.log("sql===>", SqlQuery.password);
     if (email) {
       var verification_status = await userverify(email);
@@ -314,7 +332,7 @@ async function login(req, res) {
           if (verification_status && pwd) {
             result = null;
           } else {
-            result = "not found";
+            result = "not found"; 
           }
         }
       }
@@ -323,7 +341,7 @@ async function login(req, res) {
 
     if (result === true || result === "not found") {
       const otpcode = Math.floor(1000 + Math.random() * 9000);
-      //const otpcode = 4444;
+      //const otpcode = 4444; 
 
       if (email) {
         const transporter = nodemailer.createTransport({
@@ -389,7 +407,7 @@ async function login(req, res) {
         res.statusCode = 422;
         error(res, "Otp not send");
       } else {
-        await sendSms(mobile_number, otpcode);
+        // await sendSms(mobile_number, otpcode);
         successWithdata(
           res,
           "Verification code Found",

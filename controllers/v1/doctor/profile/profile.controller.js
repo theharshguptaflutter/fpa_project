@@ -1,4 +1,5 @@
 const tableNames = require("../../../../utils/table_name");
+const operatorsAliases = require("../../../../utils/operator_aliases");
 
 const {
   success,
@@ -19,6 +20,32 @@ async function userProfileUpdate(req, res) {
     // if (user_avatar != "") {
     //   user_avatar = await s3Upload(user_avatar);
     // }
+    let doctor = await tableNames.doctorUser.findOne({
+      where: { doctor_id: doctor_id },
+    });
+    if(doctor.user_delete_flag === 1){
+      res.statusCode = 404;
+      return error(res, "Can't Update profile! Doctor already deleted");
+    }
+    const existingUserWithEmail = await tableNames.doctorUser.findOne({
+      where: {
+        doctor_email: req.body.doctor_email,
+        doctor_id: { [operatorsAliases.$ne]: doctor_id }, // Exclude the current user from the check
+      },
+    });
+    if (existingUserWithEmail) {
+      return error(res, "Email is already in use", 400);
+    }
+
+    const existingUserWithNumber = await tableNames.doctorUser.findOne({
+      where: {
+        doctor_number: req.body.doctor_number,
+        doctor_id: { [operatorsAliases.$ne]: doctor_id }, // Exclude the current user from the check
+      },
+    });
+    if (existingUserWithNumber) {
+      return error(res, "Phone number is already in use", 400);
+    }
     if (password) {
       password = bcrypt.hashSync(String(password), 10);
     }

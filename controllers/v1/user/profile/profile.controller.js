@@ -38,7 +38,7 @@ async function userProfileUpdate(req, res) {
     const existingUserWithNumber = await tableNames.User.findOne({
       where: {
         user_number: req.body.number,
-        user_id: { [Op.ne]: user_id }, // Exclude the current user from the check
+        user_id: { [operatorsAliases.$ne]: user_id }, // Exclude the current user from the check
       },
     });
     if (existingUserWithNumber) {

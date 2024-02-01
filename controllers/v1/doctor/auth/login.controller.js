@@ -127,6 +127,11 @@ async function login(req, res) {
           : {}),
       },
     });
+
+    if (SqlQuery.doctor_number == doctor_number || SqlQuery.doctor_email == doctor_email) {
+      res.statusCode = 404;
+      return error(res, "Doctor already exists!");
+    }
     let result = true;
     if (!doctor_number) {
       let verification_status = await userverify(doctor_email);

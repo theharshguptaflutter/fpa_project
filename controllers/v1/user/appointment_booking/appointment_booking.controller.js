@@ -111,7 +111,7 @@ async function addAppointment(req, res) {
         // console.log("/////harsh");
         // console.log(fondroomIDs.room_code);
          console.log("////harsh");
-       //  console.log(doctor_id);
+       //P  console.log(doctor_id);
         let userInboxCreateQuery = {
           appointment_booking_id:
             addAppointmentInsert["appointment_booking_id"],

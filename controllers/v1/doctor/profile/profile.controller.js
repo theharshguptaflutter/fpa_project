@@ -25,12 +25,12 @@ async function userProfileUpdate(req, res) {
     let doctor = await tableNames.doctorUser.findOne({
       where: { doctor_id: doctor_id },
     });
-    if(doctor.user_delete_flag === 1){
+    if (doctor.user_delete_flag === 1) {
       res.statusCode = 404;
       return error(res, "Can't Update profile! Doctor already deleted");
     }
 
-    if(email){
+    if (email) {
       const existingUserWithEmail = await tableNames.doctorUser.findOne({
         where: {
           doctor_email: req.body.doctor_email,
@@ -38,11 +38,12 @@ async function userProfileUpdate(req, res) {
         },
       });
       if (existingUserWithEmail) {
-        return error(res, "Email is already in use", 400);
+        res.statusCode = 400;
+        return error(res, "Email is already in use");
       }
     }
 
-    if(number){
+    if (number) {
       const existingUserWithNumber = await tableNames.doctorUser.findOne({
         where: {
           doctor_number: req.body.doctor_number,
@@ -50,10 +51,11 @@ async function userProfileUpdate(req, res) {
         },
       });
       if (existingUserWithNumber) {
-        return error(res, "Phone number is already in use", 400);
+        res.statusCode = 400;
+        return error(res, "Phone number is already in use");
       }
     }
-    
+
     if (password) {
       password = bcrypt.hashSync(String(password), 10);
     }

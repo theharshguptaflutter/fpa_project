@@ -31,6 +31,54 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         defaultValue: null,
       },
+
+      menstrualHealth: {
+        type: DataTypes.STRING,
+        defaultValue: null,
+      },
+
+      contraceptive: {
+        type: DataTypes.STRING,
+        defaultValue: null,
+      },
+
+      sexualOrientationCounselling: {
+        type: DataTypes.STRING,
+        defaultValue: null,
+      },
+        relationshipCounselling: {
+        type: DataTypes.STRING,
+        defaultValue: null,
+      },
+        obstetricService: {
+        type: DataTypes.STRING,
+        defaultValue: null,
+      },
+        gynecologyService: {
+        type: DataTypes.STRING,
+        defaultValue: null,
+      },
+        abortionService: {
+        type: DataTypes.STRING,
+        defaultValue: null,
+      },
+        stiRtiService: {
+        type: DataTypes.STRING,
+        defaultValue: null,
+      },
+        hivManagement: {
+        type: DataTypes.STRING,
+        defaultValue: null,
+      },
+        gbvSupport: {
+        type: DataTypes.STRING,
+        defaultValue: null,
+      },
+        other: {
+        type: DataTypes.STRING,
+        defaultValue: null,
+      },
+
       booked_current_date: {
         type: DataTypes.DATEONLY,
         defaultValue: null,

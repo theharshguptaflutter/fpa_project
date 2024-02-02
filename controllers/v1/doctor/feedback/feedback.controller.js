@@ -79,7 +79,7 @@ const {
 //   try {
 //     const findDoctorBookingFeedback = await tableNames.bookingFeedback.findAll({
 //       attributes: ["booking_feedback_id", "appointment_booking_id", "stars", "comment"],
-      
+
 //       include: [
 //         {
 //           attributes: ["user_id", "name", "email", "user_number"],
@@ -113,34 +113,26 @@ const {
 // }
 
 async function addDoctorFeedback(req, res) {
+
+
   var user_id = req.body.user_id;
-
   var appointment_booking_id = req.body.appointment_booking_id;
-
   var doctor_id = req.params.doctor_id;
 
-  console.log(doctor_id);
-  console.log(user_id);
-  console.log(appointment_booking_id);
 
-  var stars = req.body.stars;
-  var comment = req.body.comment;
 
-  var field1 = req.body.field1;
-  var field2 = req.body.field2;
-  var field3 = req.body.field3;
-  var field4 = req.body.field4;
-  var field5 = req.body.field5;
-  var field6 = req.body.field6;
-  var field7 = req.body.field7;
-  var field8 = req.body.field8;
-  var field9 = req.body.field9;
-  var field10 = req.body.field10;
+
+  var category = req.body.category;
+  var sub_category = req.body.sub_category;
+
+  var specific_notes = req.body.specific_notes;
+  var prescription_details = req.body.prescription_details;
+
 
   if (
-   
+
     appointment_booking_id == null ||
-    doctor_id == "" 
+    doctor_id == ""
   ) {
     res.statusCode = 409;
     return error(res, "Please fill up all fields");
@@ -150,8 +142,8 @@ async function addDoctorFeedback(req, res) {
     const findUserBookingFeedback = await tableNames.doctorBookingFeedback.findOne({
       where: {
         appointment_booking_id: appointment_booking_id,
-        doctor_id:doctor_id
-        
+        doctor_id: doctor_id
+
       },
     });
 
@@ -160,18 +152,10 @@ async function addDoctorFeedback(req, res) {
         appointment_booking_id: appointment_booking_id,
         user_id: user_id,
         doctor_id: doctor_id,
-        field1: field1,
-        field2: field2,
-        field3: field3,
-        field4: field4,
-        field5: field5,
-        field6: field6,
-        field7: field7,
-        field8: field8,
-        field9: field9,
-        field10: field10,
-        stars: stars,
-        comment: comment,
+        category: category,
+        sub_category: sub_category,
+        specific_notes: specific_notes,
+        prescription_details: prescription_details
       });
 
       if (addBookingFeedbackInsert != null) {
@@ -179,9 +163,9 @@ async function addDoctorFeedback(req, res) {
         const addAppointmentBookingInsert =
           await tableNames.appointmentBooking.update(
             {
-              user_review_flag: 1,
+              doctor_review_flag: 1,
             },
-            { where: { appointment_booking_id: appointment_booking_id ,user_id:user_id} }
+            { where: { appointment_booking_id: appointment_booking_id, doctor_id: doctor_id } }
           );
         if (addAppointmentBookingInsert != null) {
           success(res, "User booking feedback added", 200, 0);
@@ -209,18 +193,18 @@ async function getDoctorFeedback(req, res) {
 
   try {
     const findUserBookingFeedback = await tableNames.doctorBookingFeedback.findAll({
-     // attributes: ["doctor_booking_feedback","doctor_id","user_id","appointment_booking_id", "stars", "comment"],
+      // attributes: ["doctor_booking_feedback","doctor_id","user_id","appointment_booking_id", "stars", "comment"],
 
       include: [
         {
           attributes: [
-            "doctor_id",
-            "doctor_name",
-            "doctor_email",
-            "doctor_number",
+            "user_id",
+            "name",
+            "email",
+            "user_number",
             "avatar"
           ],
-          model: tableNames.doctorUser,
+          model: tableNames.User,
         },
       ],
       where: {
@@ -250,28 +234,21 @@ async function getDoctorFeedback(req, res) {
 }
 
 async function updateDoctorfeedback(req, res) {
-  var doctor_booking_feedback_id   = req.params.doctor_booking_feedback_id;
+  var doctor_booking_feedback_id = req.params.doctor_booking_feedback_id;
 
   //var appointment_booking_id = req.body.appointment_booking_id;
 
- // var doctor_id = req.body.doctor_id;
+  // var doctor_id = req.body.doctor_id;
 
-  var stars = req.body.stars;
-  var comment = req.body.comment;
 
-  var field1 = req.body.field1;
-  var field2 = req.body.field2;
-  var field3 = req.body.field3;
-  var field4 = req.body.field4;
-  var field5 = req.body.field5;
-  var field6 = req.body.field6;
-  var field7 = req.body.field7;
-  var field8 = req.body.field8;
-  var field9 = req.body.field9;
-  var field10 = req.body.field10;
+  var category = req.body.category;
+  var sub_category = req.body.sub_category;
+
+  var specific_notes = req.body.specific_notes;
+  var prescription_details = req.body.prescription_details;
 
   if (
-    doctor_booking_feedback_id  == ""
+    doctor_booking_feedback_id == ""
   ) {
     res.statusCode = 409;
     return error(res, "Please fill up all fields");
@@ -279,42 +256,34 @@ async function updateDoctorfeedback(req, res) {
 
   // try {
 
-    let updateUserData = {
-    
-        field1: field1,
-        field2: field2,
-        field3: field3,
-        field4: field4,
-        field5: field5,
-        field6: field6,
-        field7: field7,
-        field8: field8,
-        field9: field9,
-        field10: field10,
-        stars: stars,
-        comment: comment,
-    };
-    var editfeedbackParamiter = await editParameterQuery(
-      updateUserData
-    );
-    const addBookingFeedbackInsert = await tableNames.doctorBookingFeedback.update(
-      editfeedbackParamiter,
-      {
-        where: {
-          doctor_booking_feedback_id: doctor_booking_feedback_id,
-        },
-      }
-    );
+  let updateUserData = {
 
-    if (addBookingFeedbackInsert != 0) {
-      res.statusCode = 200;
-      return error(res, "feedback edited");
-     
-    }else{
-      res.statusCode = 409;
-      return error(res, "feedback not edited");
+    category: category,
+    sub_category: category,
+    specific_notes: category,
+    prescription_details: category
+  };
+  var editfeedbackParamiter = await editParameterQuery(
+    updateUserData
+  );
+  const addBookingFeedbackInsert = await tableNames.doctorBookingFeedback.update(
+    editfeedbackParamiter,
+    {
+      where: {
+        doctor_booking_feedback_id: doctor_booking_feedback_id,
+      },
     }
-  
+  );
+
+  if (addBookingFeedbackInsert != 0) {
+    res.statusCode = 200;
+    return error(res, "feedback edited");
+
+  } else {
+    res.statusCode = 409;
+    return error(res, "feedback not edited");
+  }
+
   // } catch (err) {
   //   error(res, err, 500);
   // }

@@ -107,7 +107,7 @@ db.gallery = require("../models/resource/gallery/gallery.model.js")(
   sequelize,
   DataTypes
 );
-db.doctor_booking_feedback = require("../models/resource/feedback/feedback.model.js")(
+db.doctor_booking_feedback = require("../models/doctor/feedback/feedback.model.js")(
   sequelize,
   DataTypes
 );

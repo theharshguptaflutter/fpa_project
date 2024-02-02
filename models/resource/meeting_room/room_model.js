@@ -11,6 +11,10 @@ module.exports = (sequelize, DataTypes) => {
           type: DataTypes.STRING,
           defaultValue: null,
         },
+        doctor_id: {
+          type: DataTypes.INTEGER,
+          defaultValue: null,
+        },
         room_active: {
           type: DataTypes.TINYINT,
           defaultValue: 0,

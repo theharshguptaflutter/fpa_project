@@ -555,6 +555,7 @@ async function otpverify(req, res) {
 
         let userinfo = {
           user_number: u_number,
+          role_id: 3,
           guest_user: false,
           ...(u_email
             ? {

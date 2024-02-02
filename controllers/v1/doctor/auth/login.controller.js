@@ -128,7 +128,10 @@ async function login(req, res) {
       },
     });
 
-    if (SqlQuery.doctor_number == doctor_number || SqlQuery.doctor_email == doctor_email) {
+    if (
+      SqlQuery.doctor_number == doctor_number ||
+      SqlQuery.doctor_email == doctor_email
+    ) {
       res.statusCode = 404;
       return error(res, "Doctor already exists!");
     }
@@ -369,6 +372,17 @@ async function otpverify(req, res) {
 
       if (data["doctor_id"] == null) {
         console.log("userinfo==>", data);
+        const availableRoom = await tableNames.Room.findOne({
+          where: {
+            room_active: 0,
+            delete_flag: 0,
+          },
+        });
+
+        if (!availableRoom) {
+          res.statusCode = 400;
+          return error(res, "No available room found. Cannot create a doctor.");
+        }
         var otp_id = data["otp_id"];
         var otpActivate = 1;
         var doctor_number = data["number"];
@@ -388,9 +402,22 @@ async function otpverify(req, res) {
               }
             : {}),
         };
-
         const doctorUser = await tableNames.doctorUser.create(userinfo);
         if (doctorUser) {
+          const roomAssignment = await tableNames.Room.update(
+            {
+              doctor_id: doctorUser["doctor_id"],
+              room_active: 1,
+            },
+            {
+              where: { room_id: availableRoom.room_id },
+            }
+          );
+
+          if (!roomAssignment) {
+            res.statusCode = 500;
+            return error(res, "Error assigning room to the doctor.");
+          }
           const privatekey = process.env.privateKey;
           let params = {
             doctor_id: doctorUser["doctor_id"],

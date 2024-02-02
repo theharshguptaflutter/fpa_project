@@ -3,7 +3,6 @@ const { literal } = require("sequelize");
 const moment = require("moment-timezone");
 const operatorsAliases = require("../../../../utils/operator_aliases");
 const {
-
   success,
   error,
   successWithdata,
@@ -36,7 +35,7 @@ async function addAppointment(req, res) {
     return error(res, "Doctor not found");
   }
 
- // try {
+  try {
     const findquery = await tableNames.appointmentBooking.findAll({
       where: {
         [operatorsAliases.$and]: [
@@ -59,123 +58,141 @@ async function addAppointment(req, res) {
     });
 
     if (findquery != "") {
-      error(res, "Appointment already booked", 205);
+      res.statusCode = 205;
+      error(res, "Appointment already booked");
       // res.status(205).send({
       //   status: 205,
       //   appointment_booking_status: false,
       //   message: "Appointment already booked",
       // });
     } else {
-      //try {
-      const addAppointmentInsert = await tableNames.appointmentBooking.create({
-        user_id: user_id,
-        doctor_id: findAvailableDoctorQuery,
-        user_booking_price: user_booking_price,
-        total_booking_price: total_booking_price,
-        booked_current_date: booked_current_date,
-        booking_status_id: 1,
-        booked_current_time: booked_current_time,
-        order_status: order_status,
-      });
-
-      if (addAppointmentInsert != null) {
-        //success(res, "Appointment added", 200, 0);
-        //console.log(addAppointmentInsert["appointment_booking_id"]);
-        const fondroomIDs = await tableNames.Room.findOne({
-          where: {
-            room_active: 0,
-          },
-        });
-
-        console.log(fondroomIDs);
-        if(fondroomIDs ==null ){
-                res.statusCode = 409;
-        return   error(res, "Room not available");
-        }
-
-        var data = {
-          appointment_booking_id: addAppointmentInsert.appointment_booking_id,
-          room_id: fondroomIDs.room_id,
-          meeting_room_active: 1,
-        };
-
-        console.log(data);
-
-        const user = await tableNames.meetingRoom.create(data);
-
-        // console.log("user");
-        // console.log(user.meeting_room_id);
-        // console.log("user");
-        const roomIdUpdateQuery = await tableNames.Room.update(
-          { room_active: 1 },
+      try {
+        const addAppointmentInsert = await tableNames.appointmentBooking.create(
           {
-            where: {
-              room_id: user.meeting_room_id,
-            },
+            user_id: user_id,
+            doctor_id: findAvailableDoctorQuery,
+            user_booking_price: user_booking_price,
+            total_booking_price: total_booking_price,
+            booked_current_date: booked_current_date,
+            booking_status_id: 1,
+            booked_current_time: booked_current_time,
+            order_status: order_status,
+            menstrualHealth: req.body.menstrualHealth,
+            contraceptive: req.body.contraceptive,
+            sexualOrientationCounselling: req.body.sexualOrientationCounselling,
+            relationshipCounselling: req.body.relationshipCounselling,
+            obstetricService: req.body.obstetricService,
+            gynecologyService: req.body.gynecologyService,
+            abortionService: req.body.abortionService,
+            stiRtiService: req.body.stiRtiService,
+            hivManagement: req.body.hivManagement,
+            gbvSupport: req.body.gbvSupport,
+            other: req.body.other,
           }
         );
 
-        // console.log("/////harsh");
-        // console.log(fondroomIDs.room_code);
-         console.log("////harsh");
-       //P  console.log(doctor_id);
-        let userInboxCreateQuery = {
-          appointment_booking_id:
-            addAppointmentInsert["appointment_booking_id"],
-          user_id: user_id,
-          doctor_id: findAvailableDoctorQuery,
-        };
+        if (addAppointmentInsert != null) {
+          //success(res, "Appointment added", 200, 0);
+          //console.log(addAppointmentInsert["appointment_booking_id"]);
+          const fondroomIDs = await tableNames.Room.findOne({
+            where: {
+              doctor_id: findAvailableDoctorQuery,
+            },
+          });
 
-        const inboxCreateQuery = await tableNames.Inbox.create(
-          userInboxCreateQuery
-        );
-        if (inboxCreateQuery != null || inboxCreateQuery != "") {
-          //    success(res, inboxCreateQuery['inbox_id'], 200, 0);
-          let userchatCreateQuery1 = {
-            inbox_id: inboxCreateQuery["inbox_id"],
-            message: "Congratulations.. your appointment has been confirmed",
-            visibility: 1,
+          console.log(fondroomIDs);
+          if (fondroomIDs == null) {
+            res.statusCode = 409;
+            return error(res, "Room not available");
+          }
+
+          // var data = {
+          //   appointment_booking_id: addAppointmentInsert.appointment_booking_id,
+          //   room_id: fondroomIDs.room_id,
+          //   meeting_room_active: 1,
+          // };
+
+          // console.log(data);
+
+          // const user = await tableNames.meetingRoom.create(data);
+
+          // console.log("user");
+          // console.log(user.meeting_room_id);
+          // console.log("user");
+          // const roomIdUpdateQuery = await tableNames.Room.update(
+          //   { room_active: 1 },
+          //   {
+          //     where: {
+          //       room_id: user.meeting_room_id,
+          //     },
+          //   }
+          // );
+
+          // console.log("/////harsh");
+          // console.log(fondroomIDs.room_code);
+          console.log("////harsh");
+          //P  console.log(doctor_id);
+          let userInboxCreateQuery = {
+            appointment_booking_id:
+              addAppointmentInsert["appointment_booking_id"],
+            user_id: user_id,
+            doctor_id: findAvailableDoctorQuery,
           };
 
-          let userchatCreateQuery2 = {
-            inbox_id: inboxCreateQuery["inbox_id"],
-            message: "Congratulations.. you got a new appointment",
-            visibility: 2,
-          };
+          const inboxCreateQuery = await tableNames.Inbox.create(
+            userInboxCreateQuery
+          );
+          if (inboxCreateQuery != null || inboxCreateQuery != "") {
+            //    success(res, inboxCreateQuery['inbox_id'], 200, 0);
+            let userchatCreateQuery1 = {
+              inbox_id: inboxCreateQuery["inbox_id"],
+              message: "Congratulations.. your appointment has been confirmed",
+              visibility: 1,
+            };
 
-          const inboxCreateQuery1 = await tableNames.chatMessage.create(
-            userchatCreateQuery2
-          );
+            let userchatCreateQuery2 = {
+              inbox_id: inboxCreateQuery["inbox_id"],
+              message: "Congratulations.. you got a new appointment",
+              visibility: 2,
+            };
 
-          const inboxCreateQuery2 = await tableNames.chatMessage.create(
-            userchatCreateQuery1
-          );
-          //  success(res, "Appointment added", 200, 1);
-          successWithdata(
-            res,
-            "Appointment added",
-            "Appointment not added",
-            [
-              {
-                appointment_booking_id:
-                  addAppointmentInsert.appointment_booking_id,
-              },
-            ],
-            0
-          );
+            const inboxCreateQuery1 = await tableNames.chatMessage.create(
+              userchatCreateQuery2
+            );
+
+            const inboxCreateQuery2 = await tableNames.chatMessage.create(
+              userchatCreateQuery1
+            );
+            //  success(res, "Appointment added", 200, 1);
+            successWithdata(
+              res,
+              "Appointment added",
+              "Appointment not added",
+              [
+                {
+                  appointment_booking_id:
+                    addAppointmentInsert.appointment_booking_id,
+                },
+              ],
+              0
+            );
+          } else {
+            res.statusCode = 500;
+            error(res, "Inbox not created");
+          }
         } else {
-          error(res, "Inbox not created", 500);
+          res.statusCode = 500;
+          error(res, "Appointment not added");
         }
-      } else {
-        error(res, "Appointment not added", 500);
+      } catch (err) {
+        res.statusCode = 500;
+        error(res, err);
       }
-      // } catch (err) {
-      //   error(res, err, 500);
-      // }
     }
-  // } catch (err) {
-  //   error(res, err, 500);
-  // }
+  } catch (err) {
+    res.statusCode = 500;
+    error(res, err);
+  }
 }
 
 async function checkAppointmentAvailability(req, res) {
@@ -201,7 +218,8 @@ async function checkAppointmentAvailability(req, res) {
       res.status(404).send({
         status: 404,
         appointment_booking_status: false,
-        message: "Appointment not available. All doctors are booked at this time.",
+        message:
+          "Appointment not available. All doctors are booked at this time.",
       });
     } else {
       res.status(200).send({
@@ -225,6 +243,17 @@ async function getAppointmentUserHistory(req, res) {
         "total_booking_price",
         "booked_current_date",
         "booked_current_time",
+        "menstrualHealth",
+        "contraceptive",
+        "sexualOrientationCounselling",
+        "relationshipCounselling",
+        "obstetricService",
+        "gynecologyService",
+        "abortionService",
+        "stiRtiService",
+        "hivManagement",
+        "gbvSupport",
+        "other",
       ],
       include: [
         {
@@ -241,27 +270,85 @@ async function getAppointmentUserHistory(req, res) {
           attributes: ["booking_status_name"],
           model: tableNames.bookingStatus,
         },
-        {
-          attributes: ["meeting_room_id"],
-          model: tableNames.meetingRoom,
-          include: [
-            {
-              attributes: ["room_code"],
-              model: tableNames.Room,
-            },
-          ],
-        },
       ],
       where: {
         // booking_status_id: 1,
         user_id: user_id,
       },
     });
+
+    const appointmentsWithRoom = await Promise.all(
+      userAppointmentHistory.map(async (appointment) => {
+        // console.log(appointment)
+        const { doctor_id } = appointment.doctor;
+
+        const roomInfo = await tableNames.Room.findOne({
+          attributes: ["room_id", "room_code"],
+          where: {
+            doctor_id: doctor_id,
+            room_active: 1,
+            delete_flag: 0,
+          },
+        });
+
+        const {
+          menstrualHealth,
+          contraceptive,
+          sexualOrientationCounselling,
+          relationshipCounselling,
+          obstetricService,
+          gynecologyService,
+          abortionService,
+          stiRtiService,
+          hivManagement,
+          gbvSupport,
+          other,
+        } = appointment;
+
+        const {
+          appointment_booking_id,
+          total_booking_price,
+          booked_current_date,
+          booked_current_time,
+          doctor,
+          booking_statu,
+        } = appointment.toJSON();
+
+        const services = {
+          ...(menstrualHealth && { menstrualHealth: true }),
+          ...(contraceptive && { contraceptive: true }),
+          ...(sexualOrientationCounselling && {
+            sexualOrientationCounselling: true,
+          }),
+          ...(relationshipCounselling && { relationshipCounselling: true }),
+          ...(obstetricService && { obstetricService: true }),
+          ...(gynecologyService && { gynecologyService: true }),
+          ...(abortionService && { abortionService: true }),
+          ...(stiRtiService && { stiRtiService: true }),
+          ...(hivManagement && { hivManagement: true }),
+          ...(gbvSupport && { gbvSupport: true }),
+          ...(other && { other }),
+        };
+
+        const formattedAppointment = {
+          appointment_booking_id,
+          total_booking_price,
+          booked_current_date,
+          booked_current_time,
+          doctor,
+          booking_statu,
+          roomInfo: roomInfo || null,
+          services: services,
+        };
+
+        return formattedAppointment;
+      })
+    );
     successWithdata(
       res,
       "User appointment history found",
       "User appointment history not found",
-      userAppointmentHistory,
+      appointmentsWithRoom,
       0
     );
 
@@ -279,7 +366,8 @@ async function getAppointmentUserHistory(req, res) {
     //   successWithdata(res, "User appointment history found", 200,1);
     // }
   } catch (err) {
-    error(res, err, 500);
+    res.statusCode = 500;
+    error(res, err);
   }
 }
 
@@ -288,6 +376,23 @@ async function getAppointmentByIdHistory(req, res) {
 
   try {
     const userAppointmentHistory = await tableNames.appointmentBooking.findOne({
+      attributes: [
+        "appointment_booking_id",
+        "total_booking_price",
+        "booked_current_date",
+        "booked_current_time",
+        "menstrualHealth",
+        "contraceptive",
+        "sexualOrientationCounselling",
+        "relationshipCounselling",
+        "obstetricService",
+        "gynecologyService",
+        "abortionService",
+        "stiRtiService",
+        "hivManagement",
+        "gbvSupport",
+        "other",
+      ],
       include: [
         {
           attributes: [
@@ -304,31 +409,82 @@ async function getAppointmentByIdHistory(req, res) {
           attributes: ["booking_status_name"],
           model: tableNames.bookingStatus,
         },
-        {
-          attributes: ["meeting_room_id"],
-          model: tableNames.meetingRoom,
-          include: [
-            {
-              attributes: ["room_code"],
-              model: tableNames.Room,
-            },
-          ],
-        },
       ],
       where: {
         // booking_status_id: 1,
-        appointment_booking_id,
+        appointment_booking_id: appointment_booking_id,
       },
     });
+
+    const { doctor_id } = userAppointmentHistory.doctor;
+
+    const roomInfo = await tableNames.Room.findOne({
+      attributes: ["room_id", "room_code"],
+      where: {
+        doctor_id: doctor_id,
+        room_active: 1,
+        delete_flag: 0,
+      },
+    });
+
+    const {
+      menstrualHealth,
+      contraceptive,
+      sexualOrientationCounselling,
+      relationshipCounselling,
+      obstetricService,
+      gynecologyService,
+      abortionService,
+      stiRtiService,
+      hivManagement,
+      gbvSupport,
+      other,
+    } = userAppointmentHistory;
+
+    const {
+      total_booking_price,
+      booked_current_date,
+      booked_current_time,
+      doctor,
+      booking_statu,
+    } = userAppointmentHistory.toJSON();
+
+    const services = {
+      ...(menstrualHealth && { menstrualHealth: true }),
+      ...(contraceptive && { contraceptive: true }),
+      ...(sexualOrientationCounselling && {
+        sexualOrientationCounselling: true,
+      }),
+      ...(relationshipCounselling && { relationshipCounselling: true }),
+      ...(obstetricService && { obstetricService: true }),
+      ...(gynecologyService && { gynecologyService: true }),
+      ...(abortionService && { abortionService: true }),
+      ...(stiRtiService && { stiRtiService: true }),
+      ...(hivManagement && { hivManagement: true }),
+      ...(gbvSupport && { gbvSupport: true }),
+      ...(other && { other }),
+    };
+
+    const formattedAppointment = {
+      appointment_booking_id,
+      total_booking_price,
+      booked_current_date,
+      booked_current_time,
+      doctor,
+      booking_statu,
+      roomInfo: roomInfo || null,
+      services: services,
+    };
     successWithdata(
       res,
       "User appointment history found",
       "User appointment history not found",
-      userAppointmentHistory,
+      formattedAppointment,
       0
     );
   } catch (err) {
-    error(res, err, 500);
+    res.statusCode = 500;
+    error(res, err);
   }
 }
 

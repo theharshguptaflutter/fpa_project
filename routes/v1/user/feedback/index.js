@@ -3,11 +3,12 @@ const router = express.Router();
 const {
 
   getUserfeedback,
-  addUserfeedback
+  addUserfeedback,
+  updateDoctorfeedback
 } = require("../../../../controllers/v1/user/feedback/feedback.controller.js");
 
-router.patch("/update/:user_id", (req, res) => {
-  userProfileUpdate(req, res);
+router.patch("/update/:user_booking_feedback_id", (req, res) => {
+  updateDoctorfeedback(req, res);
 });
 
 router.get("/get/:user_id", (req, res) => {

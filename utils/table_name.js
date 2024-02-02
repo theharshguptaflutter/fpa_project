@@ -22,11 +22,13 @@ tableNames = {
   doctorAnalytics:db.doctor_analytics,
   clientHistoryCard:db.client_history_card,
   Gallery:db.gallery,
-  bookingFeedback:db.booking_feedback,
+  doctorBookingFeedback:db.doctor_booking_feedback,
   Notes:db.notes,
 
   meetingRoom:db.meeting_room,
   Room:db.room,
+
+  userBookingFeedback:db.user_booking_feedback,
 };
 
 module.exports = Object.freeze(tableNames);

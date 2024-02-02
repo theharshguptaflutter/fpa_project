@@ -1,8 +1,8 @@
 module.exports = (sequelize, DataTypes) => {
-  const doctor_booking_feedback = sequelize.define(
-    "doctor_booking_feedback",
+  const user_booking_feedback = sequelize.define(
+    "user_booking_feedback",
     {
-      doctor_booking_feedback_id: {
+      user_booking_feedback_id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
@@ -77,5 +77,5 @@ module.exports = (sequelize, DataTypes) => {
       updatedAt: false,
     }
   );
-  return doctor_booking_feedback;
+  return user_booking_feedback;
 };

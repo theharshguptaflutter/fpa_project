@@ -18,7 +18,7 @@ router.post("/add/:doctor_id", (req, res) => {
   addDoctorFeedback(req, res);
 });
 
-router.patch("/update/:user_booking_feedback_id", (req, res) => {
+router.patch("/update/:doctor_booking_feedback", (req, res) => {
   updateDoctorfeedback(req, res);
 });
 

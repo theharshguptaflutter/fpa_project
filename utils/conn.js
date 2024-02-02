@@ -107,7 +107,7 @@ db.gallery = require("../models/resource/gallery/gallery.model.js")(
   sequelize,
   DataTypes
 );
-db.user_booking_feedback = require("../models/resource/feedback/feedback.model.js")(
+db.doctor_booking_feedback = require("../models/resource/feedback/feedback.model.js")(
   sequelize,
   DataTypes
 );
@@ -306,17 +306,17 @@ db.doctor_analytics.belongsTo(db.event_types, {
 });
 
 //feedback section
-db.user_booking_feedback.belongsTo(db.appointment_booking, {
+db.doctor_booking_feedback.belongsTo(db.appointment_booking, {
   foreignKey: "appointment_booking_id", // foreign table
   targetKey: "appointment_booking_id", // primary table
 });
 
-db.user_booking_feedback.belongsTo(db.users, {
+db.doctor_booking_feedback.belongsTo(db.users, {
   foreignKey: "user_id", // foreign table
   targetKey: "user_id", // primary table
 });
 
-db.user_booking_feedback.belongsTo(db.doctor_user, {
+db.doctor_booking_feedback.belongsTo(db.doctor_user, {
   foreignKey: "doctor_id", // foreign table
   targetKey: "doctor_id", // primary table
 });

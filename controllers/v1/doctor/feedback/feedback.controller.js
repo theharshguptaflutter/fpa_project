@@ -209,7 +209,7 @@ async function getDoctorFeedback(req, res) {
 
   try {
     const findUserBookingFeedback = await tableNames.doctorBookingFeedback.findAll({
-     // attributes: ["user_booking_feedback_id","doctor_id","user_id","appointment_booking_id", "stars", "comment"],
+     // attributes: ["doctor_booking_feedback","doctor_id","user_id","appointment_booking_id", "stars", "comment"],
 
       include: [
         {
@@ -250,7 +250,7 @@ async function getDoctorFeedback(req, res) {
 }
 
 async function updateDoctorfeedback(req, res) {
-  var user_booking_feedback_id  = req.params.user_booking_feedback_id ;
+  var doctor_booking_feedback_id  = req.params.doctor_booking_feedback_id;
 
   //var appointment_booking_id = req.body.appointment_booking_id;
 
@@ -271,7 +271,7 @@ async function updateDoctorfeedback(req, res) {
   var field10 = req.body.field10;
 
   if (
-    user_booking_feedback_id  == ""
+    doctor_booking_feedback_id  == ""
    
   //  doctor_id == ""
     
@@ -305,7 +305,7 @@ async function updateDoctorfeedback(req, res) {
       editfeedbackParamiter,
       {
         where: {
-          user_booking_feedback_id: user_booking_feedback_id,
+          doctor_booking_feedback_id: doctor_booking_feedback_id,
         },
       }
     );

@@ -127,9 +127,9 @@ db.room = require("../models/resource/meeting_room/room_model.js")(
 );
 
 
-// db.sequelize.sync({ force: false }).then(() => {
-//   console.log("yes re-sync done!");
-// });
+db.sequelize.sync({ force: false }).then(() => {
+  console.log("yes re-sync done!");
+});
 
 
 //access toekn tb link

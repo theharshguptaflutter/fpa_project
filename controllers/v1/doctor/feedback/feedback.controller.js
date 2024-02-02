@@ -250,7 +250,7 @@ async function getDoctorFeedback(req, res) {
 }
 
 async function updateDoctorfeedback(req, res) {
-  var doctor_booking_feedback_id  = req.params.doctor_booking_feedback_id;
+  var doctor_booking_feedback_id   = req.params.doctor_booking_feedback_id;
 
   //var appointment_booking_id = req.body.appointment_booking_id;
 
@@ -272,19 +272,15 @@ async function updateDoctorfeedback(req, res) {
 
   if (
     doctor_booking_feedback_id  == ""
-   
-  //  doctor_id == ""
-    
   ) {
     res.statusCode = 409;
     return error(res, "Please fill up all fields");
   }
 
-  try {
+  // try {
 
     let updateUserData = {
-      //  appointment_booking_id: appointment_booking_id,
-       // doctor_id: doctor_id,
+    
         field1: field1,
         field2: field2,
         field3: field3,
@@ -319,9 +315,9 @@ async function updateDoctorfeedback(req, res) {
       return error(res, "feedback not edited");
     }
   
-  } catch (err) {
-    error(res, err, 500);
-  }
+  // } catch (err) {
+  //   error(res, err, 500);
+  // }
 }
 
 module.exports = {

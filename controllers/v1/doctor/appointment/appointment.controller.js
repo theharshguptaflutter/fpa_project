@@ -12,6 +12,23 @@ async function getAppointmentDoctorHistory(req, res) {
   try {
     const doctorAppointmentHistory =
       await tableNames.appointmentBooking.findAll({
+        attributes: [
+          "appointment_booking_id",
+          "total_booking_price",
+          "booked_current_date",
+          "booked_current_time",
+          "menstrualHealth",
+          "contraceptive",
+          "sexualOrientationCounselling",
+          "relationshipCounselling",
+          "obstetricService",
+          "gynecologyService",
+          "abortionService",
+          "stiRtiService",
+          "hivManagement",
+          "gbvSupport",
+          "other",
+        ],
         include: [
           {
             attributes: ["user_id", "name", "email", "user_number", "avatar"],
@@ -21,16 +38,6 @@ async function getAppointmentDoctorHistory(req, res) {
             attributes: ["booking_status_name"],
             model: tableNames.bookingStatus,
           },
-          {
-            attributes: ["meeting_room_id"],
-            model: tableNames.meetingRoom,
-            include: [
-              {
-                attributes: ["room_code"],
-                model: tableNames.Room,
-              },
-            ],
-          },
         ],
         where: {
           booking_status_id: 1,
@@ -38,15 +45,83 @@ async function getAppointmentDoctorHistory(req, res) {
         },
       });
 
+      const appointmentsWithRoom = await Promise.all(
+        doctorAppointmentHistory.map(async (appointment) => {
+          // console.log(appointment)
+  
+          const roomInfo = await tableNames.Room.findOne({
+            attributes: ["room_id", "room_code"],
+            where: {
+              doctor_id: doctor_id,
+              room_active: 1,
+              delete_flag: 0,
+            },
+          });
+  
+          const {
+            menstrualHealth,
+            contraceptive,
+            sexualOrientationCounselling,
+            relationshipCounselling,
+            obstetricService,
+            gynecologyService,
+            abortionService,
+            stiRtiService,
+            hivManagement,
+            gbvSupport,
+            other,
+          } = appointment;
+  
+          const {
+            appointment_booking_id,
+            total_booking_price,
+            booked_current_date,
+            booked_current_time,
+            user,
+            booking_statu,
+          } = appointment.toJSON();
+  
+          const services = {
+            ...(menstrualHealth && { menstrualHealth: true }),
+            ...(contraceptive && { contraceptive: true }),
+            ...(sexualOrientationCounselling && {
+              sexualOrientationCounselling: true,
+            }),
+            ...(relationshipCounselling && { relationshipCounselling: true }),
+            ...(obstetricService && { obstetricService: true }),
+            ...(gynecologyService && { gynecologyService: true }),
+            ...(abortionService && { abortionService: true }),
+            ...(stiRtiService && { stiRtiService: true }),
+            ...(hivManagement && { hivManagement: true }),
+            ...(gbvSupport && { gbvSupport: true }),
+            ...(other && { other }),
+          };
+  
+          const formattedAppointment = {
+            appointment_booking_id,
+            total_booking_price,
+            booked_current_date,
+            booked_current_time,
+            user,
+            booking_statu,
+            roomInfo: roomInfo || null,
+            services: services,
+          };
+  
+          return formattedAppointment;
+        })
+      );
+
     successWithdata(
       res,
       "Doctor appointment history found",
       "Doctor appointment history not found",
-      doctorAppointmentHistory,
+      appointmentsWithRoom,
       0
     );
   } catch (err) {
-    error(res, err, 500);
+    res.statusCode = 500;
+    error(res, err);
   }
 }
 
@@ -55,6 +130,24 @@ async function getAppointmentByIdHistory(req, res) {
 
   try {
     const userAppointmentHistory = await tableNames.appointmentBooking.findOne({
+      attributes: [
+        "appointment_booking_id",
+        "doctor_id",
+        "total_booking_price",
+        "booked_current_date",
+        "booked_current_time",
+        "menstrualHealth",
+        "contraceptive",
+        "sexualOrientationCounselling",
+        "relationshipCounselling",
+        "obstetricService",
+        "gynecologyService",
+        "abortionService",
+        "stiRtiService",
+        "hivManagement",
+        "gbvSupport",
+        "other",
+      ],
       include: [
         {
           attributes: ["user_id", "name", "email", "user_number", "avatar"],
@@ -64,27 +157,77 @@ async function getAppointmentByIdHistory(req, res) {
           attributes: ["booking_status_name"],
           model: tableNames.bookingStatus,
         },
-        {
-          attributes: ["meeting_room_id"],
-          model: tableNames.meetingRoom,
-          include: [
-            {
-              attributes: ["room_code"],
-              model: tableNames.Room,
-            },
-          ],
-        },
       ],
       where: {
         // booking_status_id: 1,
-        appointment_booking_id,
+        appointment_booking_id: appointment_booking_id,
       },
     });
+
+    const doctor_id = userAppointmentHistory.doctor_id;
+
+    const roomInfo = await tableNames.Room.findOne({
+      attributes: ["room_id", "room_code"],
+      where: {
+        doctor_id: doctor_id,
+        room_active: 1,
+        delete_flag: 0,
+      },
+    });
+
+    const {
+      menstrualHealth,
+      contraceptive,
+      sexualOrientationCounselling,
+      relationshipCounselling,
+      obstetricService,
+      gynecologyService,
+      abortionService,
+      stiRtiService,
+      hivManagement,
+      gbvSupport,
+      other,
+    } = userAppointmentHistory;
+
+    const {
+      total_booking_price,
+      booked_current_date,
+      booked_current_time,
+      user,
+      booking_statu,
+    } = userAppointmentHistory.toJSON();
+
+    const services = {
+      ...(menstrualHealth && { menstrualHealth: true }),
+      ...(contraceptive && { contraceptive: true }),
+      ...(sexualOrientationCounselling && {
+        sexualOrientationCounselling: true,
+      }),
+      ...(relationshipCounselling && { relationshipCounselling: true }),
+      ...(obstetricService && { obstetricService: true }),
+      ...(gynecologyService && { gynecologyService: true }),
+      ...(abortionService && { abortionService: true }),
+      ...(stiRtiService && { stiRtiService: true }),
+      ...(hivManagement && { hivManagement: true }),
+      ...(gbvSupport && { gbvSupport: true }),
+      ...(other && { other }),
+    };
+
+    const formattedAppointment = {
+      appointment_booking_id,
+      total_booking_price,
+      booked_current_date,
+      booked_current_time,
+      booking_statu,
+      user,
+      roomInfo: roomInfo || null,
+      services: services,
+    };
     successWithdata(
       res,
       "Doctor appointment history found",
       "Doctor appointment history not found",
-      userAppointmentHistory,
+      formattedAppointment,
       0
     );
   } catch (err) {

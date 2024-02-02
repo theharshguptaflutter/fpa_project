@@ -3,17 +3,18 @@ const router = express.Router();
 const {
 
   getUserfeedback,
-  addUserfeedback
+  addUserfeedback,
+  updateDoctorfeedback
 } = require("../../../../controllers/v1/user/feedback/feedback.controller.js");
 
-router.patch("/update/:user_id", (req, res) => {
-  userProfileUpdate(req, res);
+router.patch("/update/:user_booking_feedback_id", (req, res) => {
+  updateDoctorfeedback(req, res);
 });
 
-router.get("/get/:user_id", (req, res) => {
+router.get("/get/:doctor_id", (req, res) => {
   getUserfeedback(req, res);
 });
-router.post("/add/:user_id", (req, res) => {
+router.post("/add/:doctor_id", (req, res) => {
   addUserfeedback(req, res);
 });
 

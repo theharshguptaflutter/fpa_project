@@ -79,6 +79,7 @@ db.client_access_token =
     sequelize,
     DataTypes
   );
+
 db.user_analytics =
   require("../models/admin/analytics/user_analytics/user_analytics.model.js")(
     sequelize,
@@ -106,7 +107,7 @@ db.gallery = require("../models/resource/gallery/gallery.model.js")(
   sequelize,
   DataTypes
 );
-db.booking_feedback = require("../models/resource/feedback/feedback.model.js")(
+db.user_booking_feedback = require("../models/resource/feedback/feedback.model.js")(
   sequelize,
   DataTypes
 );
@@ -125,9 +126,11 @@ db.room = require("../models/resource/meeting_room/room_model.js")(
   DataTypes
 );
 
+
 // db.sequelize.sync({ force: false }).then(() => {
 //   console.log("yes re-sync done!");
 // });
+
 
 //access toekn tb link
 db.access_token.belongsTo(db.users, {
@@ -303,15 +306,17 @@ db.doctor_analytics.belongsTo(db.event_types, {
 });
 
 //feedback section
-db.booking_feedback.belongsTo(db.appointment_booking, {
+db.user_booking_feedback.belongsTo(db.appointment_booking, {
   foreignKey: "appointment_booking_id", // foreign table
   targetKey: "appointment_booking_id", // primary table
 });
-db.booking_feedback.belongsTo(db.users, {
+
+db.user_booking_feedback.belongsTo(db.users, {
   foreignKey: "user_id", // foreign table
   targetKey: "user_id", // primary table
 });
-db.booking_feedback.belongsTo(db.doctor_user, {
+
+db.user_booking_feedback.belongsTo(db.doctor_user, {
   foreignKey: "doctor_id", // foreign table
   targetKey: "doctor_id", // primary table
 });
@@ -329,10 +334,17 @@ db.meeting_room.belongsTo(db.appointment_booking, {
   targetKey: "appointment_booking_id", // primary table
 });
 
+
 db.meeting_room.belongsTo(db.room, {
   foreignKey: "room_id", // foreign table
   targetKey: "room_id", // primary table
 });
+
+db.doctor_user.belongsTo(db.room, {
+  foreignKey: "doctor_id", // foreign table
+  targetKey: "doctor_id", // primary table
+});
+
 
 db.appointment_booking.hasOne(db.meeting_room, {
   foreignKey: "appointment_booking_id",

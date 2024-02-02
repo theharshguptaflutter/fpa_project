@@ -4,6 +4,8 @@ const {
 
   addDoctorFeedback,
   getDoctorFeedback,
+
+  updateDoctorfeedback
 } = require("../../../../controllers/v1/doctor/feedback/feedback.controller.js");
 
 
@@ -11,8 +13,13 @@ const {
 router.get("/get/:doctor_id", (req, res) => {
   getDoctorFeedback(req, res);
 });
+
 router.post("/add/:doctor_id", (req, res) => {
   addDoctorFeedback(req, res);
+});
+
+router.patch("/update/:user_booking_feedback_id", (req, res) => {
+  updateDoctorfeedback(req, res);
 });
 
 

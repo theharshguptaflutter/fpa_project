@@ -27,6 +27,8 @@ tableNames = {
 
   meetingRoom:db.meeting_room,
   Room:db.room,
+
+  userBookingFeedback:db.user_booking_feedback,
 };
 
 module.exports = Object.freeze(tableNames);

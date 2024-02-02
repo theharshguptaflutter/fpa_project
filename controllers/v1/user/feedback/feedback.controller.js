@@ -7,11 +7,13 @@ const {
 } = require("../../../../utils/responseApi");
 
 async function addUserfeedback(req, res) {
-  var user_id = req.body.user_id;
+
+  var doctor_id = req.body.doctor_id;
+  var user_id = req.params.user_id;
 
   var appointment_booking_id = req.body.appointment_booking_id;
 
-  var doctor_id = req.params.doctor_id;
+  
 
   console.log(doctor_id);
   console.log(user_id);
@@ -41,16 +43,16 @@ async function addUserfeedback(req, res) {
   }
 
   //try {
-    const findUserBookingFeedback = await tableNames.bookingFeedback.findOne({
+    const findUserBookingFeedback = await tableNames.userBookingFeedback.findOne({
       where: {
         appointment_booking_id: appointment_booking_id,
-        doctor_id:doctor_id
+        user_id:user_id
         
       },
     });
 
     if (!findUserBookingFeedback) {
-      const addBookingFeedbackInsert = await tableNames.bookingFeedback.create({
+      const addBookingFeedbackInsert = await tableNames.userBookingFeedback.create({
         appointment_booking_id: appointment_booking_id,
         user_id: user_id,
         doctor_id: doctor_id,
@@ -96,13 +98,14 @@ async function addUserfeedback(req, res) {
   // }
 }
 
+
 async function getUserfeedback(req, res) {
-  var doctor_id = req.params.doctor_id;
+  var user_id = req.params.user_id;
 
   var appointment_booking_id = req.query.appointment_booking_id;
 
   try {
-    const findUserBookingFeedback = await tableNames.bookingFeedback.findAll({
+    const findUserBookingFeedback = await tableNames.userBookingFeedback.findAll({
      // attributes: ["user_booking_feedback_id","doctor_id","user_id","appointment_booking_id", "stars", "comment"],
 
       include: [
@@ -142,6 +145,7 @@ async function getUserfeedback(req, res) {
     error(res, err, 500);
   }
 }
+
 
 async function updateDoctorfeedback(req, res) {
   var user_booking_feedback_id  = req.params.user_booking_feedback_id ;
@@ -195,7 +199,7 @@ async function updateDoctorfeedback(req, res) {
     var editfeedbackParamiter = await editParameterQuery(
       updateUserData
     );
-    const addBookingFeedbackInsert = await tableNames.bookingFeedback.update(
+    const addBookingFeedbackInsert = await tableNames.userBookingFeedback.update(
       editfeedbackParamiter,
       {
         where: {

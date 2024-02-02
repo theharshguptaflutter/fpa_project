@@ -111,6 +111,12 @@ db.doctor_booking_feedback = require("../models/resource/feedback/feedback.model
   sequelize,
   DataTypes
 );
+
+
+db.user_booking_feedback = require("../models/user/feedback/feedback.model.js")(
+  sequelize,
+  DataTypes
+);
 db.notes = require("../models/doctor/notes/notes.model.js")(
   sequelize,
   DataTypes
@@ -127,9 +133,9 @@ db.room = require("../models/resource/meeting_room/room_model.js")(
 );
 
 
-db.sequelize.sync({ force: false }).then(() => {
-  console.log("yes re-sync done!");
-});
+// db.sequelize.sync({ force: false }).then(() => {
+//   console.log("yes re-sync done!");
+// });
 
 
 //access toekn tb link
@@ -326,7 +332,21 @@ db.notes.belongsTo(db.appointment_booking, {
   targetKey: "appointment_booking_id", // primary table
 });
 
-//
+/////////////////////////////////////
+db.user_booking_feedback.belongsTo(db.appointment_booking, {
+  foreignKey: "appointment_booking_id", // foreign table
+  targetKey: "appointment_booking_id", // primary table
+});
+db.user_booking_feedback.belongsTo(db.users, {
+  foreignKey: "user_id", // foreign table
+  targetKey: "user_id", // primary table
+});
+
+db.user_booking_feedback.belongsTo(db.doctor_user, {
+  foreignKey: "doctor_id", // foreign table
+  targetKey: "doctor_id", // primary table
+});
+
 
 //meeting room
 db.meeting_room.belongsTo(db.appointment_booking, {

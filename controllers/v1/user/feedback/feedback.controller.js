@@ -52,7 +52,7 @@ async function addUserfeedback(req, res) {
     });
 
     if (!findUserBookingFeedback) {
-      const addBookingFeedbackInsert = await tableNames.userBookingFeedback.create({
+      var addBookingFeedbackInsert = await tableNames.userBookingFeedback.create({
         appointment_booking_id: appointment_booking_id,
         user_id: user_id,
         doctor_id: doctor_id,
@@ -80,7 +80,13 @@ async function addUserfeedback(req, res) {
             { where: { appointment_booking_id: appointment_booking_id ,user_id:user_id} }
           );
         if (addAppointmentBookingInsert != null) {
-          success(res, "User booking feedback added", 200, 0);
+         // success(res, "User booking feedback added", 200, 0);//
+          successWithdata(
+            res,
+            "User booking feedback added",
+            200,
+            {user_booking_feedback_id:addBookingFeedbackInsert.user_booking_feedback_id}
+          );
         } else {
           res.statusCode = 409;
           error(res, "User booking feedback not added");
@@ -90,8 +96,14 @@ async function addUserfeedback(req, res) {
         error(res, "User booking feedback not added");
       }
     } else {
-      res.statusCode = 209;
-      error(res, "You have already added your feedback");
+      //res.statusCode = 209;
+    //  error(res, "You have already added your feedback");
+      successWithdata(
+        res,
+        "You have already added your feedback",
+        200,
+        {user_booking_feedback_id:findUserBookingFeedback.user_booking_feedback_id}
+      );
     }
   // } catch (err) {
   //   error(res, err, 500);
@@ -121,7 +133,7 @@ async function getUserfeedback(req, res) {
         },
       ],
       where: {
-        doctor_id: doctor_id,
+        user_id: user_id,
         ...(appointment_booking_id
           ? {
             appointment_booking_id: appointment_booking_id,

@@ -16,170 +16,174 @@ const {
 var jwt = require("jsonwebtoken");
 
 async function login(req, res) {
-  const doctor_number = req.body.number;
-  const doctor_email = req.body.email;
-  const pwd = req.body.password;
-  const client_id = req.body.clientId;
+  try {
+    const doctor_number = req.body.number;
+    const doctor_email = req.body.email;
+    const pwd = req.body.password;
+    const client_id = req.body.clientId;
 
-  if (!doctor_number && !doctor_email) {
-    res.statusCode = 404;
-    return error(res, "Please provide either email or phone number");
-  }
-
-  if (String(doctor_number).length < 10 && doctor_number != undefined) {
-    res.statusCode = 404;
-    return error(res, "Please enter correct phone number");
-  }
-
-  if (doctor_email && pwd) {
-    let user = await tableNames.doctorUser.findOne({
-      where: { doctor_email: doctor_email },
-    });
-    if (!user || !user.password) {
+    if (!doctor_number && !doctor_email) {
       res.statusCode = 404;
-      return error(res, "Doctor not found or password not set. Please signUp.");
+      return error(res, "Please provide either email or phone number");
     }
-    const passChk = await bcrypt.compare(String(pwd), user.password);
-    if (!passChk) {
-      res.statusCode = 404;
-      return error(res, "Incorrect Password!");
-    }
-    //Generating JWT token and sending user data
-    const privatekey = process.env.privateKey;
-    let params = {
-      doctor_id: user["doctor_id"],
-      doctor_number: user["doctor_number"],
-    };
-    const token = await jwt.sign(params, privatekey, {
-      expiresIn: "365d",
-    });
 
-    if (!token) {
-      res.statusCode = 409;
-      error(res, "Token not generated");
-    } else {
-      let tokeninfo = {
+    if (String(doctor_number).length < 10 && doctor_number != undefined) {
+      res.statusCode = 404;
+      return error(res, "Please enter correct phone number");
+    }
+
+    if (doctor_email && pwd) {
+      let user = await tableNames.doctorUser.findOne({
+        where: { doctor_email: doctor_email },
+      });
+      if (!user || !user.password) {
+        res.statusCode = 404;
+        return error(
+          res,
+          "Doctor not found or password not set. Please signUp."
+        );
+      }
+      const passChk = await bcrypt.compare(String(pwd), user.password);
+      if (!passChk) {
+        res.statusCode = 404;
+        return error(res, "Incorrect Password!");
+      }
+      //Generating JWT token and sending user data
+      const privatekey = process.env.privateKey;
+      let params = {
         doctor_id: user["doctor_id"],
         doctor_number: user["doctor_number"],
-        gen_token: token,
       };
-      const accessTokensGenInsetQuery = await tableNames.accessTokens.create(
-        tokeninfo
-      );
-      if (!accessTokensGenInsetQuery) {
-        res.statusCode = 409;
-        error(res, "Generated token not inserted into db");
-      } else {
-        if (!client_id) {
-          res.statusCode = 409;
-          return error(res, "Please provide client Id");
-        }
-        let checkClientId = await tableNames.clientAccessToken.findOne({
-          where: { doctor_id: user["doctor_id"], client_id: client_id },
-        });
-        if (checkClientId === null) {
-          const cliendIdInsertQuery = await tableNames.clientAccessToken.create(
-            {
-              doctor_id: user["doctor_id"],
-              client_id: client_id,
-            }
-          );
-          if (!cliendIdInsertQuery) {
-            res.statusCode = 409;
-            return error(res, "Client Id not inserted into DB!");
-          }
-        }
-        return res.status(200).send({
-          status: 200,
-          isuserfound: true,
-          message: "Login successful",
-          doctor_details: [
-            {
-              doctor_id: user["doctor_id"],
-              doctor_name: user["doctor_name"] ?? " ",
-              avatar: user["avatar"] ?? " ",
-              gender: user["gender"] ?? " ",
-              doctor_email: user["doctor_email"] ?? " ",
-              doctor_number: user["doctor_number"] ?? " ",
-              city_id: user["city_id"] ?? " ",
-              state_id: user["state_id"] ?? " ",
-              client_id: client_id ?? " ",
-              doctor_online_status: user["doctor_online_status"],
-              doctor_delete_flag: user["doctor_delete_flag"],
-              token: token ?? " ",
-            },
-          ],
-        });
-      }
-    }
-  } else {
-    let SqlQuery = await tableNames.doctorUser.findOne({
-      where: {
-        ...(doctor_number
-          ? {
-              doctor_number: doctor_number,
-            }
-          : {}),
-        ...(doctor_email
-          ? {
-              doctor_email: doctor_email,
-            }
-          : {}),
-      },
-    });
+      const token = await jwt.sign(params, privatekey, {
+        expiresIn: "365d",
+      });
 
-    if (
-      SqlQuery.doctor_number == doctor_number ||
-      SqlQuery.doctor_email == doctor_email
-    ) {
-      res.statusCode = 404;
-      return error(res, "Doctor already exists!");
-    }
-    let result = true;
-    if (!doctor_number) {
-      let verification_status = await userverify(doctor_email);
-      if (SqlQuery) {
-        if (SqlQuery?.password != null && pwd) {
-          result = await bcrypt.compare(String(pwd), SqlQuery?.password);
-        } else {
-          res.statusCode = 401;
-          return error(res, "You are already a User");
-        }
+      if (!token) {
+        res.statusCode = 409;
+        error(res, "Token not generated");
       } else {
-        if (!verification_status && pwd) {
-          res.statusCode = 401;
-          return error(
-            res,
-            "you are not registered user or please check your mail id"
-          );
+        let tokeninfo = {
+          doctor_id: user["doctor_id"],
+          doctor_number: user["doctor_number"],
+          gen_token: token,
+        };
+        const accessTokensGenInsetQuery = await tableNames.accessTokens.create(
+          tokeninfo
+        );
+        if (!accessTokensGenInsetQuery) {
+          res.statusCode = 409;
+          error(res, "Generated token not inserted into db");
         } else {
-          if (verification_status && pwd) {
-            result = null;
+          if (!client_id) {
+            res.statusCode = 409;
+            return error(res, "Please provide client Id");
+          }
+          let checkClientId = await tableNames.clientAccessToken.findOne({
+            where: { doctor_id: user["doctor_id"], client_id: client_id },
+          });
+          if (checkClientId === null) {
+            const cliendIdInsertQuery =
+              await tableNames.clientAccessToken.create({
+                doctor_id: user["doctor_id"],
+                client_id: client_id,
+              });
+            if (!cliendIdInsertQuery) {
+              res.statusCode = 409;
+              return error(res, "Client Id not inserted into DB!");
+            }
+          }
+          return res.status(200).send({
+            status: 200,
+            isuserfound: true,
+            message: "Login successful",
+            doctor_details: [
+              {
+                doctor_id: user["doctor_id"],
+                doctor_name: user["doctor_name"] ?? " ",
+                avatar: user["avatar"] ?? " ",
+                gender: user["gender"] ?? " ",
+                doctor_email: user["doctor_email"] ?? " ",
+                doctor_number: user["doctor_number"] ?? " ",
+                city_id: user["city_id"] ?? " ",
+                state_id: user["state_id"] ?? " ",
+                client_id: client_id ?? " ",
+                doctor_online_status: user["doctor_online_status"],
+                doctor_delete_flag: user["doctor_delete_flag"],
+                token: token ?? " ",
+              },
+            ],
+          });
+        }
+      }
+    } else {
+      let SqlQuery = await tableNames.doctorUser.findOne({
+        where: {
+          ...(doctor_number
+            ? {
+                doctor_number: doctor_number,
+              }
+            : {}),
+          ...(doctor_email
+            ? {
+                doctor_email: doctor_email,
+              }
+            : {}),
+        },
+      });
+      if (SqlQuery) {
+        if (
+          SqlQuery.doctor_number == doctor_number ||
+          SqlQuery.doctor_email == doctor_email
+        ) {
+          res.statusCode = 404;
+          return error(res, "Doctor already exists!");
+        }
+      }
+      let result = true;
+      if (!doctor_number) {
+        let verification_status = await userverify(doctor_email);
+        if (SqlQuery) {
+          if (SqlQuery?.password != null && pwd) {
+            result = await bcrypt.compare(String(pwd), SqlQuery?.password);
           } else {
-            result = "not found";
+            res.statusCode = 401;
+            return error(res, "You are already a User");
+          }
+        } else {
+          if (!verification_status && pwd) {
+            res.statusCode = 401;
+            return error(
+              res,
+              "you are not registered user or please check your mail id"
+            );
+          } else {
+            if (verification_status && pwd) {
+              result = null;
+            } else {
+              result = "not found";
+            }
           }
         }
       }
-    }
-    //comparing the password of the registered user
-    if (result == true || result === "not found") {
-      // const otpcode = Math.floor(1000 + Math.random() * 9000);
-      var otpcode = 4444;
-      if (doctor_email) {
-        const transporter = nodemailer.createTransport({
-          host: process.env.HOST_MAIL,
-          port: process.env.PORT_MAIL,
-          secure: false,
-          auth: {
-            user: process.env.USER_MAIL,
-            pass: process.env.PASSWORD_MAIL,
-          },
-        });
-        const mailOptions = {
-          from: process.env.USER_MAIL,
-          to: doctor_email,
-          subject: "Validation mail",
-          html: `
+      //comparing the password of the registered user
+      if (result == true || result === "not found") {
+        const otpcode = Math.floor(1000 + Math.random() * 9000);
+        // var otpcode = 4444;
+        if (doctor_email) {
+          const transporter = nodemailer.createTransport({
+            host: process.env.HOST_MAIL,
+            port: process.env.PORT_MAIL,
+            secure: false,
+            auth: {
+              user: process.env.USER_MAIL,
+              pass: process.env.PASSWORD_MAIL,
+            },
+          });
+          const mailOptions = {
+            from: process.env.USER_MAIL,
+            to: doctor_email,
+            subject: "Validation mail",
+            html: `
       <html>
         <head></head>
         <body>
@@ -189,58 +193,62 @@ async function login(req, res) {
         </body>
       </html>
     `,
-        };
+          };
 
-        const info = await transporter.sendMail(mailOptions);
-      }
-      const vvcode = uuidv4();
-      var data = null;
-      if (SqlQuery) {
-        data = SqlQuery.toJSON();
-        if (data["doctor_delete_flag"] == 1) {
-          res.statusCode = 403;
-          error(res, "you account has been deactivated");
+          const info = await transporter.sendMail(mailOptions);
         }
-      }
-      console.log("doctor_email==>", doctor_email);
-      const doctorUserOtp = await tableNames.Otp.create({
-        verification_code: vvcode,
-        otp_code: otpcode,
-        doctor_id: data == null ? null : data["doctor_id"],
-        ...(doctor_email
-          ? {
-              email: doctor_email,
-            }
-          : {}),
-        ...(doctor_number
-          ? {
-              number: doctor_number,
-            }
-          : {}),
-        ...(pwd
-          ? {
-              password: bcrypt.hashSync(String(pwd), 10),
-            }
-          : {}),
-      });
-
-      if (doctorUserOtp === 0) {
-        res.statusCode = 422;
-        error(res, "Otp not send");
-      } else {
-        successWithdata(
-          res,
-          "Verification code Found",
-          "Verification code Not Found",
-          {
-            verification_code: doctorUserOtp["verification_code"],
+        const vvcode = uuidv4();
+        var data = null;
+        if (SqlQuery) {
+          data = SqlQuery.toJSON();
+          if (data["doctor_delete_flag"] == 1) {
+            res.statusCode = 403;
+            error(res, "you account has been deactivated");
           }
-        );
+        }
+        console.log("doctor_email==>", doctor_email);
+        const doctorUserOtp = await tableNames.Otp.create({
+          verification_code: vvcode,
+          otp_code: otpcode,
+          doctor_id: data == null ? null : data["doctor_id"],
+          ...(doctor_email
+            ? {
+                email: doctor_email,
+              }
+            : {}),
+          ...(doctor_number
+            ? {
+                number: doctor_number,
+              }
+            : {}),
+          ...(pwd
+            ? {
+                password: bcrypt.hashSync(String(pwd), 10),
+              }
+            : {}),
+        });
+
+        if (doctorUserOtp === 0) {
+          res.statusCode = 422;
+          error(res, "Otp not send");
+        } else {
+          successWithdata(
+            res,
+            "Verification code Found",
+            "Verification code Not Found",
+            {
+              verification_code: doctorUserOtp["verification_code"],
+            }
+          );
+        }
+      } else {
+        res.statusCode = 401;
+        return error(res, "Passwords do not match! Login failed.");
       }
-    } else {
-      res.statusCode = 401;
-      return error(res, "Passwords do not match! Login failed.");
     }
+  } catch (err) {
+    res.statusCode = 500;
+    error(res, err);
   }
 }
 

@@ -73,7 +73,8 @@ async function createUser(req, res) {
       });
     }
   } catch (err) {
-    error(res, err, 500);
+    res.statusCode = 500;
+    error(res, err);
   }
 }
 
@@ -102,7 +103,8 @@ async function getUser(req, res) {
       }
     }
   } catch (err) {
-    error(res, err, 500);
+    res.statusCode = 500;
+    error(res, err);
   }
 }
 
@@ -125,7 +127,8 @@ async function getAllUser(req, res) {
       }
     }
   } catch (err) {
-    error(res, err, 500);
+    res.statusCode = 500;
+    error(res, err);
   }
 }
 
@@ -204,7 +207,8 @@ async function updateUser(req, res) {
       }
     }
   } catch (err) {
-    error(res, err, 500);
+    res.statusCode = 500;
+    error(res, err);
   }
 }
 
@@ -261,7 +265,8 @@ async function deleteUser(req, res) {
       }
     }
   } catch (err) {
-    error(res, err, 500);
+    res.statusCode = 500;
+    error(res, err);
   }
 }
 

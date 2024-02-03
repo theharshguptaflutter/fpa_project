@@ -10,12 +10,10 @@ const editParameterQuery = require("../../../../utils/edit_query");
 const bcrypt = require("bcrypt");
 
 async function userProfileUpdate(req, res) {
-
-
   try {
     var user_id = req.params.user_id;
     var password = req.body.password;
-    if (password){
+    if (password) {
       password = bcrypt.hashSync(String(password), 10);
     }
     let profileUpdateInfo = {
@@ -33,7 +31,7 @@ async function userProfileUpdate(req, res) {
         },
       }
     );
-   
+
     if (userProfileupdateQuery != 0) {
       const updatedUserData = await tableNames.User.findOne({
         where: { user_id: user_id },
@@ -52,23 +50,29 @@ async function userProfileUpdate(req, res) {
       error(res, "Profile  not updated please try again later ");
     }
   } catch (err) {
-    error(res, err, 500);
+    res.statusCode = 500;
+    error(res, err);
   }
 }
 
 async function getUserProfile(req, res) {
-  var user_id = req.params.user_id;
-  let userFindQuery = await tableNames.User.findOne({
-    where: { user_id: user_id, user_delete_flag: 0 },
-  });
-  if (userFindQuery != null || userFindQuery != "") {
-    successWithdata(
-      res,
-      "User profle details found",
-      "User profile details not found",
-      userFindQuery,
-      0
-    );
+  try {
+    var user_id = req.params.user_id;
+    let userFindQuery = await tableNames.User.findOne({
+      where: { user_id: user_id, user_delete_flag: 0 },
+    });
+    if (userFindQuery != null || userFindQuery != "") {
+      successWithdata(
+        res,
+        "User profle details found",
+        "User profile details not found",
+        userFindQuery,
+        0
+      );
+    }
+  } catch (err) {
+    res.statusCode = 500;
+    error(res, err);
   }
 }
 

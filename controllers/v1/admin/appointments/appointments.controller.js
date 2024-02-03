@@ -57,7 +57,8 @@ async function getAppointmentsOfUser(req, res) {
       0
     );
   } catch (err) {
-    error(res, err, 500);
+    res.statusCode = 500;
+    error(res, err);
   }
 }
 
@@ -95,7 +96,8 @@ async function getAppointmentById(req, res) {
       0
     );
   } catch (err) {
-    error(res, err, 500);
+    res.statusCode = 500;
+    error(res, err);
   }
 }
 
@@ -118,7 +120,8 @@ async function getAllAppointments(req, res) {
       }
     }
   } catch (err) {
-    error(res, err, 500);
+    res.statusCode = 500;
+    error(res, err);
   }
 }
 
@@ -163,7 +166,8 @@ async function cancelAppointment(req, res) {
 
     console.log(appointmentCancelQuery);
   } catch (err) {
-    error(res, err, 500);
+    res.statusCode = 500;
+    error(res, err);
   }
 }
 
@@ -211,7 +215,8 @@ async function appointmentReschedule(req, res) {
 
     console.log(appointmentRescheduleQuery);
   } catch (err) {
-    error(res, err, 500);
+    res.statusCode = 500;
+    error(res, err);
   }
 }
 

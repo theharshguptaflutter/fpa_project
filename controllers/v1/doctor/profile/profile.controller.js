@@ -119,7 +119,8 @@ async function userProfileUpdate(req, res) {
       error(res, "Profile  not updated please try again later ");
     }
   } catch (err) {
-    error(res, err, 500);
+    res.statusCode = 500;
+    error(res, err);
   }
 }
 

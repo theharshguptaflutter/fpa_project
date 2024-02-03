@@ -46,23 +46,53 @@ async function createDoctor(req, res) {
         doctor_name: doctor_name,
         password: password,
       };
-      const newDoc = await tableNames.doctorUser.create(doctorInfo);
 
-      return res.status(201).send({
-        status: 201,
-        message: "Doctor created successfully",
-        doctor_details: [
-          {
-            doctor_id: newDoc.doctor_id,
-            doctor_name: newDoc.doctor_name,
-            doctor_email: newDoc.doctor_email,
-            password: newDoc.password,
-          },
-        ],
+      const availableRoom = await tableNames.Room.findOne({
+        where: {
+          room_active: 0,
+          delete_flag: 0,
+        },
       });
+
+      if (!availableRoom) {
+        res.statusCode = 400;
+        return error(res, "No available room found. Cannot create a doctor.");
+      }
+
+      const newDoc = await tableNames.doctorUser.create(doctorInfo);
+      if (newDoc) {
+        const roomAssignment = await tableNames.Room.update(
+          {
+            doctor_id: newDoc["doctor_id"],
+            room_active: 1,
+          },
+          {
+            where: { room_id: availableRoom.room_id },
+          }
+        );
+
+        if (!roomAssignment) {
+          res.statusCode = 500;
+          return error(res, "Error assigning room to the doctor.");
+        }
+
+        return res.status(201).send({
+          status: 201,
+          message: "Doctor created successfully",
+          doctor_details: [
+            {
+              doctor_id: newDoc.doctor_id,
+              doctor_name: newDoc.doctor_name,
+              doctor_email: newDoc.doctor_email,
+              password: newDoc.password,
+            },
+          ],
+        });
+      }
     }
   } catch (err) {
-    error(res, err, 500);
+    res.statusCode = 500;
+    error(res, err);
   }
 }
 
@@ -120,7 +150,8 @@ async function getAllDoctor(req, res) {
       }
     }
   } catch (err) {
-    error(res, err, 500);
+    res.statusCode = 500;
+    error(res, err);
   }
 }
 
@@ -188,7 +219,8 @@ async function updateDoctor(req, res) {
       }
     }
   } catch (err) {
-    error(res, err, 500);
+    res.statusCode = 500;
+    error(res, err);
   }
 }
 
@@ -240,7 +272,8 @@ async function deleteDoctor(req, res) {
       }
     }
   } catch (err) {
-    error(res, err, 500);
+    res.statusCode = 500;
+    error(res, err);
   }
 }
 

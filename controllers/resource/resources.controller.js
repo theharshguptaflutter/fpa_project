@@ -211,48 +211,59 @@ async function getAppointmentList(req, res) {
     res.send({ status: 200, appointments: result });
     console.log("appointments===>", result);
   } catch (err) {
-    error(res, err, 500);
+    res.statusCode = 500;
+    error(res, err);
   }
 }
 
 async function getAppointmentTimeList(req, res) {
   // moment
-  var booked_current_date = req.body.booked_current_date;
-  const currentDate = moment().startOf("day").format("YYYY-MM-DD");
-  const threeMonthsLater = moment()
-    .add(3, "months")
-    .startOf("day")
-    .format("YYYY-MM-DD");
+  try {
+    var booked_current_date = req.body.booked_current_date;
+    const currentDate = moment().startOf("day").format("YYYY-MM-DD");
+    const threeMonthsLater = moment()
+      .add(3, "months")
+      .startOf("day")
+      .format("YYYY-MM-DD");
 
-  tableNames.appointmentBooking
-    .findAll({
-      attributes: ["booked_current_time"],
-      where: {
-        booked_current_date: {
-          [operatorsAliases.$between]: [currentDate, threeMonthsLater],
+    tableNames.appointmentBooking
+      .findAll({
+        attributes: ["booked_current_time"],
+        where: {
+          booked_current_date: {
+            [operatorsAliases.$between]: [currentDate, threeMonthsLater],
+          },
+          booking_status_id: 1,
+          booked_current_date: booked_current_date,
         },
-        booking_status_id: 1,
-        booked_current_date: booked_current_date,
-      },
-      raw: true,
-    })
-    .then((appointments) => {
-      res.send({ status: 200, appointments });
-      console.log("appointments===>", appointments);
-    })
-    .catch((error) => {
-      console.error("Error fetching appointments:", error);
-    });
+        raw: true,
+      })
+      .then((appointments) => {
+        res.send({ status: 200, appointments });
+        console.log("appointments===>", appointments);
+      })
+      .catch((error) => {
+        console.error("Error fetching appointments:", error);
+      });
+  } catch (err) {
+    res.statusCode = 500;
+    error(res, err);
+  }
 }
 
 async function getGallery(req, res) {
-  const getGallery = await tableNames.Gallery.findAll({
-    where: {
-      delete_flag: 0,
-    },
-  });
+  try {
+    const getGallery = await tableNames.Gallery.findAll({
+      where: {
+        delete_flag: 0,
+      },
+    });
 
-  successWithdata(res, "Gallery found", "Gallery not found", getGallery, 0);
+    successWithdata(res, "Gallery found", "Gallery not found", getGallery, 0);
+  } catch (err) {
+    res.statusCode = 500;
+    error(res, err);
+  }
 }
 
 module.exports = {

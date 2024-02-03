@@ -168,7 +168,13 @@ async function addDoctorFeedback(req, res) {
             { where: { appointment_booking_id: appointment_booking_id, doctor_id: doctor_id } }
           );
         if (addAppointmentBookingInsert != null) {
-          success(res, "User booking feedback added", 200, 0);
+          //success(res, "User booking feedback added", 200, 0);
+          successWithdata(
+            res,
+            "doctor booking feedback added",
+            200,
+            {doctor_booking_feedback_id:addBookingFeedbackInsert.doctor_booking_feedback_id}
+          );
         } else {
           res.statusCode = 409;
           error(res, "User booking feedback not added");
@@ -179,7 +185,13 @@ async function addDoctorFeedback(req, res) {
       }
     } else {
       res.statusCode = 209;
-      error(res, "You have already added your feedback");
+     // error(res, "You have already added your feedback");
+      successWithdata(
+        res,
+        "You have already added your feedback",
+        200,
+        {doctor_booking_feedback_id:findUserBookingFeedback.doctor_booking_feedback_id}
+      );
     }
   } catch (err) {
     error(res, err, 500);

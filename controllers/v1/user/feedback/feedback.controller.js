@@ -121,7 +121,7 @@ async function getUserfeedback(req, res) {
         },
       ],
       where: {
-        doctor_id: doctor_id,
+        user_id: user_id,
         ...(appointment_booking_id
           ? {
             appointment_booking_id: appointment_booking_id,

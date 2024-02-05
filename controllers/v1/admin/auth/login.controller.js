@@ -18,21 +18,22 @@ async function login(req, res) {
     const email = req.body.email;
     const pwd = req.body.password;
     const client_id = req.body.clientId;
-    const user_role = req.body.role_id;
+    // const user_role = req.body.role_id;
 
     if (!email || !pwd) {
       res.statusCode = 404;
       return error(res, "Please provide both email and password");
     }
 
-    if (user_role !== 1 && user_role !== 2) {
-      let user = await tableNames.User.findOne({
-        where: { email: email },
-      });
-      if (!user || !user.password) {
-        res.statusCode = 404;
-        return error(res, "User not found or password not set.");
-      }
+    let user = await tableNames.User.findOne({
+      where: { email: email },
+    });
+    if (!user || !user.password) {
+      res.statusCode = 404;
+      return error(res, "User not found or password not set.");
+    }
+    const user_role = user.role_id;
+    if (user_role === 1 || user_role === 2) {
       const passChk = await bcrypt.compare(String(pwd), user.password);
       if (!passChk) {
         res.statusCode = 404;

@@ -59,7 +59,7 @@ async function createUser(req, res) {
       const newUser = await tableNames.User.create(userInfo);
 
       return res.status(201).send({
-        status: 201,
+        status: 200,
         message: "User created successfully",
         user_details: [
           {

@@ -1,6 +1,6 @@
 // update admin and staff profiles
 const tableNames = require("../../../../utils/table_name");
-
+const { s3Upload, s3VideoUpload } = require("../../../../utils/s3_file_upload");
 const {
   success,
   error,
@@ -11,17 +11,30 @@ const editParameterQuery = require("../../../../utils/edit_query");
 
 async function addGallery(req, res) {
   try {
-   
+
+    var gallery_images = req.body.gallery_images;
+    var gallery_video = req.body.gallery_video;
+
+    // if (gallery_images != "") {
+    //   gallery_images = await s3Upload(gallery_images);
+    //   console.log(gallery_images);
+    // }
+
+    // if (gallery_video != "") {
+    //   gallery_video = await s3VideoUpload(gallery_video);
+    //   console.log(gallery_video);
+    // }
+
     let galleryAddInfo = {
       gallery_name: req.body.gallery_name,
-      gallery_images: req.body.gallery_images,
-      gallery_video: req.body.gallery_video,
+      gallery_images: gallery_images ?? "",
+      gallery_video: gallery_video ?? "",
     };
 
     const addGalletQuery = await tableNames.Gallery.create(galleryAddInfo);
- 
+
     if (addGalletQuery != null) {
-      
+
 
       successWithdata(res, "Gallery has been uploaded", 200, addGalletQuery);
     } else {
@@ -33,15 +46,26 @@ async function addGallery(req, res) {
   }
 }
 
-
 async function galleryUpdate(req, res) {
   try {
     var gallery_id = req.params.gallery_id;
+    var gallery_images = req.body.gallery_images;
+    var gallery_video = req.body.gallery_video;
+    
+     // if (gallery_images != "") {
+    //   gallery_images = await s3Upload(gallery_images);
+    //   console.log(gallery_images);
+    // }
+
+    // if (gallery_video != "") {
+    //   gallery_video = await s3VideoUpload(gallery_video);
+    //   console.log(gallery_video);
+    // }
 
     let galleryUpdateInfo = {
       gallery_name: req.body.gallery_name,
-      gallery_images: req.body.gallery_images,
-      gallery_video: req.body.gallery_video,
+      gallery_images: gallery_images ?? "",
+      gallery_video: gallery_video ?? "",
     };
 
     var galleryUpdateParamiter = await editParameterQuery(galleryUpdateInfo);
@@ -58,8 +82,6 @@ async function galleryUpdate(req, res) {
       const updatedUserData = await tableNames.Gallery.findOne({
         where: { gallery_id: gallery_id },
       });
-
-      console.log(updatedUserData);
 
       successWithdata(res, "Gallery has been updated", 200, updatedUserData);
     } else {

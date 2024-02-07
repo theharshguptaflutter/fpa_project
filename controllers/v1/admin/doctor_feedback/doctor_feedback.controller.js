@@ -51,7 +51,7 @@ async function getDoctorFeedback(req, res) {
 
 
   const doctorBookingFeedbackQuery = await tableNames.doctorBookingFeedback.findAll({
-    attributes: includeAttributesList.doctorBookingFeedbackAttributesList,
+    attributes:includeAttributesList.doctorBookingFeedbackAttributesList,
     include: [{
       attributes: includeAttributesList.appointmentBookingAttributesList,
       model: tableNames.appointmentBooking,

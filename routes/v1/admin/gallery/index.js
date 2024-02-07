@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const {
+  addGallery,
   getGallery,
   galleryUpdate,
   galleryDelete
@@ -8,6 +9,9 @@ const {
 
 router.get("/get-gallery", (req, res) => {
   getGallery(req, res);
+});
+router.post("/add-gallery", (req, res) => {
+  addGallery(req, res);
 });
 router.patch("/get-update/:gallery_id", (req, res) => {
   galleryUpdate(req, res);

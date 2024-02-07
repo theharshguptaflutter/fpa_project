@@ -18,7 +18,6 @@ async function doctorFeedbackUpdate(req, res) {
       sub_category: req.body.sub_category,
       specific_notes: req.body.specific_notes,
       prescription_details: req.body.prescription_details
-
     };
 
     var doctorfeedbackUpdateParamiter = await editParameterQuery(doctorFeedbackUpdateInfo);

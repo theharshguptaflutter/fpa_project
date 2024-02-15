@@ -18,14 +18,15 @@ async function s3Upload(image, BUCKET_NAME = process.env.BUCKET_NAME) {
   var imageData = Buffer.from(base64String, "base64");
 
   var uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-  var fileName = uniqueSuffix + ".glb";
+  var fileName = uniqueSuffix + ".png";
 
   const params = {
     Bucket: BUCKET_NAME,
     Key: fileName,
     Body: imageData,
     ACL: "public-read",
-    ContentType: "model/gltf-binary",
+    //ContentType: "model/gltf-binary",
+    ContentType: "image/png",
   };
 
   return new Promise((resolve, reject) => {

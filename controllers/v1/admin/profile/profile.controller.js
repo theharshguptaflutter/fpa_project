@@ -59,6 +59,23 @@ async function getUserProfile(req, res) {
   try {
     var user_id = req.params.user_id;
     let userFindQuery = await tableNames.User.findOne({
+      include:[
+        { 
+         attributes: [
+           "user_room_permission_id"
+         ],
+         model:tableNames.userRoomPermission,
+         include:
+         [
+             {
+               attributes: [
+                 "room_permission_name"
+               ],
+               model:tableNames.RoomPermission,
+             }
+         ]
+         }
+       ],
       where: { user_id: user_id, user_delete_flag: 0 },
     });
     if (userFindQuery != null || userFindQuery != "") {

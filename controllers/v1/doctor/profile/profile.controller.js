@@ -128,6 +128,23 @@ async function getUserProfile(req, res) {
   var doctor_id = req.params.doctor_id;
 
   let doctorFindQuery = await tableNames.doctorUser.findOne({
+    include:[
+      { 
+       attributes: [
+         "doctor_room_permission_id"
+       ],
+       model:tableNames.doctorRoomPermission,
+       include:
+       [
+           {
+             attributes: [
+               "room_permission_name"
+             ],
+             model:tableNames.RoomPermission,
+           }
+       ]
+       }
+     ],
     where: { doctor_id: doctor_id, doctor_delete_flag: 0 },
   });
   successWithdata(

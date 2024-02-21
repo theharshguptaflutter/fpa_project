@@ -113,6 +113,7 @@ module.exports = (sequelize, DataTypes) => {
       yourself: { type: DataTypes.STRING, defaultValue: null },
 
       medical_history: { type: DataTypes.STRING, defaultValue: null },
+      medical_history_other: { type: DataTypes.STRING, defaultValue: null },
       social_history: { type: DataTypes.STRING, defaultValue: null },
       surgical_history: { type: DataTypes.STRING, defaultValue: null },
 

@@ -500,7 +500,7 @@ async function addClientHistoryCard(req, res) {
   var residence = req.body.residence;
   var address = req.body.address;
   var reference = req.body.reference;
-
+var medical_history_other = req.body.medical_history_other;
   var city = req.body.city;
   var state = req.body.state;
   var pin_code = req.body.pin_code;
@@ -576,6 +576,7 @@ async function addClientHistoryCard(req, res) {
    occupation: occupation,
    yourself: yourself,
    medical_history: medical_history,
+   medical_history_other:medical_history_other,
    social_history: social_history,
    surgical_history: surgical_history,
 

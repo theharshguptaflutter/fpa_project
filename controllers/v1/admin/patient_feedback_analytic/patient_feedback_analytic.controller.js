@@ -22,7 +22,7 @@ async function getPatientFeedback(req, res) {
     const startDate = req.query.startDate; 
     const endDate = req.query.endDate;   
     //console.log(startDate);
-    const getGallery = await tableNames.userBookingFeedback.findAll({
+    const userBookingFeedbackFindQuery = await tableNames.userBookingFeedback.findAll({
       attributes: ["stars", "comment", "createdAt"],
       include: [{
         attributes: includeAttributesList.UserAttributesList,
@@ -73,12 +73,12 @@ async function getPatientFeedback(req, res) {
       },
     });
 
-    if (!getGallery || getGallery.length === 0) {
+    if (!userBookingFeedbackFindQuery || userBookingFeedbackFindQuery.length === 0) {
       throw new Error("No feedback found within the specified date range");
     }
 
-    const totalFeedbacks = getGallery.length;
-    const totalStars = getGallery.reduce((acc, feedback) => acc + feedback.stars, 0);
+    const totalFeedbacks = userBookingFeedbackFindQuery.length;
+    const totalStars = userBookingFeedbackFindQuery.reduce((acc, feedback) => acc + feedback.stars, 0);
     const averageStars = totalStars / totalFeedbacks;
     const percentage = (averageStars / 5) * 100;
     const cappedPercentage = Math.min(percentage, 100);
@@ -87,7 +87,7 @@ async function getPatientFeedback(req, res) {
 
     successWithdata(res, "Patient feedback found", "Patient feedback not found within the specified date range", {
       satisfaction_score: formattedPercentage,
-      patient_feedback_list: getGallery,
+      patient_feedback_list: userBookingFeedbackFindQuery,
     }, 0);
   } catch (error) {
     console.error("Error:", error.message);

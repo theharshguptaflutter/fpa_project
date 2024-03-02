@@ -35,7 +35,7 @@ async function getTreatmentSuccessRate(req, res) {
     
     //successWithdata(res, `Total_revenue_generated`, "as", { totalBookingPrice, averageRevenue ,totalOutstandingPayments}, 0);
 
-
+//staring new line
 
     const allAppointments = await tableNames.appointmentBooking.findAll({
       where: {
@@ -103,7 +103,24 @@ async function getTreatmentSuccessRate(req, res) {
         regularPatients: regularPatientsPercentage.toFixed(2) + "%",
         newPatients: newPatientsPercentage.toFixed(2) + "%"
       };
-      successWithdata(res, `Treatment success rate found`, 200, { Treatment_success_rate: `${successRate.toFixed(2)}%`, Treatment_failure_rate: `${failureRate.toFixed(2)}%`, Follow_up_Rate: responseData , totalBookingPrice, averageRevenue ,totalOutstandingPayments});//{ successfulAppointments, unsuccessfulAppointments }
+
+      const numberOfPrescriptionCountQuery = await tableNames.doctorBookingFeedback.count({ where: {} });
+      console.log('Number of records:', numberOfPrescriptionCountQuery);
+
+
+      successWithdata(res, `Data found`, 200, 
+      { 
+        Treatment_success_rate: `${successRate.toFixed(2)}%`, 
+        Treatment_failure_rate: `${failureRate.toFixed(2)}%`, 
+        Follow_up_Rate: responseData , 
+        number_of_prescription:
+        {  "prescription_count":numberOfPrescriptionCountQuery}
+        ,
+        totalBookingPrice, averageRevenue ,
+        totalOutstandingPayments
+      }
+      );
+      //{ successfulAppointments, unsuccessfulAppointments }
     }
 
   } catch (err) {

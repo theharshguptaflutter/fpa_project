@@ -105,8 +105,7 @@ async function getTreatmentSuccessRate(req, res) {
       };
 
       const numberOfPrescriptionCountQuery = await tableNames.doctorBookingFeedback.count({ where: {} });
-      console.log('Number of records:', numberOfPrescriptionCountQuery);
-
+      
 
       successWithdata(res, `Data found`, 200, 
       { 

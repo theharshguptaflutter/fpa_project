@@ -110,8 +110,8 @@ async function getTreatmentSuccessRate(req, res) {
 
       successWithdata(res, `Data found`, 200, 
       { 
-        Treatment_success_rate: `${successRate.toFixed(2)}%`, 
-        Treatment_failure_rate: `${failureRate.toFixed(2)}%`, 
+      //  Treatment_success_rate: `${successRate.toFixed(2)}%`, 
+      //  Treatment_failure_rate: `${failureRate.toFixed(2)}%`, 
         Follow_up_Rate: responseData , 
         number_of_prescription:
         {  "prescription_count":numberOfPrescriptionCountQuery}

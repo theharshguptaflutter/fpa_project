@@ -102,7 +102,7 @@ async function getAppointmentById(req, res) {
 }
 
 async function getAllAppointments(req, res) {
-  try {
+ // try {
     const admin_id = req.params.admin_id;
     const adminCheckQuery = await tableNames.User.findOne({
       where: { user_id: admin_id },
@@ -119,10 +119,10 @@ async function getAllAppointments(req, res) {
         successWithdata(res, "All Appointments found", "No Appointment found!", [], 0);
       }
     }
-  } catch (err) {
-    res.statusCode = 500;
-    error(res, err);
-  }
+  // } catch (err) {
+  //   res.statusCode = 500;
+  //   error(res, err);
+  // }
 }
 
 async function cancelAppointment(req, res) {

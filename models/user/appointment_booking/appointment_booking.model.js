@@ -78,6 +78,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         defaultValue: null,
       },
+        payment_mode: {
+        type: DataTypes.STRING,
+        defaultValue: null,
+      },
 
       booked_current_date: {
         type: DataTypes.DATEONLY,

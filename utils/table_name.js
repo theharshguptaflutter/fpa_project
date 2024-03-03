@@ -32,6 +32,7 @@ tableNames = {
   userRoomPermission:db.user_room_permission,
   RoomPermission:db.room_permission,
   doctorRoomPermission:db.doctor_room_permission,
+  platformUsage:db.platform_usage,
 
 };
 

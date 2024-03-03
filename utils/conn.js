@@ -139,7 +139,12 @@ db.user_room_permission = require("../models/admin/user_room_permission/user_roo
   sequelize,
   DataTypes
 );
-db.doctor_room_permission = require("../models/admin//doctor_room_permission/doctor_room_permission.js")(
+db.doctor_room_permission = require("../models/admin/doctor_room_permission/doctor_room_permission.js")(
+  sequelize,
+  DataTypes
+);
+
+db.platform_usage = require("../models/resource/platform_usage/platform_usage.model.js")(
   sequelize,
   DataTypes
 );

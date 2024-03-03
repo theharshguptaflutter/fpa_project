@@ -81,11 +81,25 @@ async function getOperationalMetrics(req, res) {
       };
     }));
 
-    successWithdata(
+    
+    const platformUsageFindQueryMobile = await tableNames.platformUsage.count({
+      where:{
+        platform_type:"mobile"
+      }
+    });
+    const platformUsageFindQueryDesktop = await tableNames.platformUsage.count({
+      where:{
+        platform_type:"desktop"
+      }
+    });
+    //const platformUsageFindQuerypp = Math.min(100, Math.max(0, platformUsageFindQuery));
+    const joinedList = data.concat({plat_form_usage:{mobile:platformUsageFindQueryMobile,desktop:platformUsageFindQueryDesktop}});
+ 
+   successWithdata(
       res,
       "Operational Metrics data",
       200,
-      data,
+      joinedList,
       0
     );
     

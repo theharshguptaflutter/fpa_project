@@ -78,7 +78,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         defaultValue: null,
       },
-        payment_mode: {
+      payment_mode: {
         type: DataTypes.STRING,
         defaultValue: null,
       },
@@ -92,6 +92,10 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: null,
       },
       user_review_flag: {
+        type: DataTypes.TINYINT,
+        defaultValue: 0,
+      },
+      doctor_availability_status: {
         type: DataTypes.TINYINT,
         defaultValue: 0,
       },

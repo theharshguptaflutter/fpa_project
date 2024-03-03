@@ -71,6 +71,7 @@ async function addAppointment(req, res) {
           {
             user_id: user_id,
             doctor_id: findAvailableDoctorQuery,
+            doctor_availability_status:1,
             user_booking_price: user_booking_price,
             total_booking_price: total_booking_price,
             booked_current_date: booked_current_date,
@@ -623,6 +624,7 @@ async function appointmentCancel(req, res) {
     {
       booking_status_id: 4, // 4 means Appointment cancel
       appointment_delete_flag: 1,
+      doctor_availability_status:0
     },
     {
       where: {
@@ -659,6 +661,7 @@ async function appointmentReschedule(req, res) {
     {
       booked_current_date: booked_current_date,
       booked_current_time: booked_current_time,
+      doctor_availability_status:1
     },
     {
       where: {

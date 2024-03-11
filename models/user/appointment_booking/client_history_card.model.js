@@ -88,6 +88,8 @@ module.exports = (sequelize, DataTypes) => {
       //   defaultValue: null,
       // },
 
+
+
       heightFt: {
         type: DataTypes.STRING,
         defaultValue: null,
@@ -97,6 +99,7 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: null,
       },
       weightKg : {
+
         type: DataTypes.STRING,
         defaultValue: null,
       },

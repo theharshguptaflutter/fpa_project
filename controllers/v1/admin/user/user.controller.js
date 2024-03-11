@@ -83,6 +83,23 @@ async function getUser(req, res) {
     const admin_id = req.params.admin_id;
     const email = req.body.email;
     const adminCheckQuery = await tableNames.User.findOne({
+      include:[
+        { 
+         attributes: [
+           "user_room_permission_id"
+         ],
+         model:tableNames.userRoomPermission,
+         include:
+         [
+             {
+               attributes: [
+                 "room_permission_name"
+               ],
+               model:tableNames.RoomPermission,
+             }
+         ]
+         }
+       ],
       where: { user_id: admin_id },
     });
     if (adminCheckQuery.role_id !== 1) {
@@ -112,6 +129,23 @@ async function getAllUser(req, res) {
   try {
     const admin_id = req.params.admin_id;
     const adminCheckQuery = await tableNames.User.findOne({
+      include:[
+        { 
+         attributes: [
+           "user_room_permission_id"
+         ],
+         model:tableNames.userRoomPermission,
+         include:
+         [
+             {
+               attributes: [
+                 "room_permission_name"
+               ],
+               model:tableNames.RoomPermission,
+             }
+         ]
+         }
+       ],
       where: { user_id: admin_id },
     });
     if (adminCheckQuery.role_id !== 1) {

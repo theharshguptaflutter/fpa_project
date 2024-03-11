@@ -101,6 +101,23 @@ async function getDoctor(req, res) {
     const admin_id = req.params.admin_id;
     const doctor_email = req.body.doctor_email;
     const adminCheckQuery = await tableNames.User.findOne({
+      include:[
+        { 
+         attributes: [
+           "doctor_room_permission_id"
+         ],
+         model:tableNames.doctorRoomPermission,
+         include:
+         [
+             {
+               attributes: [
+                 "room_permission_name"
+               ],
+               model:tableNames.RoomPermission,
+             }
+         ]
+         }
+       ],
       where: { user_id: admin_id },
     });
 
@@ -128,6 +145,23 @@ async function getAllDoctor(req, res) {
   try {
     const admin_id = req.params.admin_id;
     const adminCheckQuery = await tableNames.User.findOne({
+      include:[
+        { 
+         attributes: [
+           "doctor_room_permission_id"
+         ],
+         model:tableNames.doctorRoomPermission,
+         include:
+         [
+             {
+               attributes: [
+                 "room_permission_name"
+               ],
+               model:tableNames.RoomPermission,
+             }
+         ]
+         }
+       ],
       where: { user_id: admin_id },
     });
 

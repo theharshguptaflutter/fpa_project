@@ -266,6 +266,39 @@ async function getGallery(req, res) {
   }
 }
 
+
+async function getPlatformUsage(req, res) {
+  try {
+    const getplatformUsageQuery = await tableNames.platformUsage.findAll({
+      where: {
+        delete_flag: 0,
+      },
+    });
+
+    successWithdata(res, "Platform usage data found", "Platform usage data not found", getplatformUsageQuery, 0);
+  } catch (err) {
+    res.statusCode = 500;
+    error(res, err);
+  }
+}
+async function addPlatformUsage(req, res) {
+  let platformInfo = {
+    platform_type:req.body.platform_type,
+    user_type:req.body.user_type,
+  };
+  
+  if(platformInfo.platform_type == '' || platformInfo.user_type == ''){
+ return  error(res, "Please fill up your field");
+  }
+  try {
+    const addplatformUsageQuery = await tableNames.platformUsage.create(platformInfo);
+
+    successWithdata(res, "Platform usage add", "Platform usage data not added", addplatformUsageQuery, 0);
+  } catch (err) {
+    res.statusCode = 500;
+    error(res, err);
+  }
+}
 module.exports = {
   getState,
   getCity,
@@ -274,4 +307,6 @@ module.exports = {
   getAppointmentList,
   getGallery,
   getAppointmentTimeList,
+  getPlatformUsage,
+  addPlatformUsage
 };

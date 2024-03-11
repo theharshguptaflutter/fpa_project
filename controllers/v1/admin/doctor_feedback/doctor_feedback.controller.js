@@ -48,8 +48,6 @@ async function doctorFeedbackUpdate(req, res) {
 }
 
 async function getDoctorFeedback(req, res) {
-
-
   const doctorBookingFeedbackQuery = await tableNames.doctorBookingFeedback.findAll({
     attributes:includeAttributesList.doctorBookingFeedbackAttributesList,
     include: [{

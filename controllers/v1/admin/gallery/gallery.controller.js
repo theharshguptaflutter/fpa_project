@@ -15,15 +15,15 @@ async function addGallery(req, res) {
     var gallery_images = req.body.gallery_images;
     var gallery_video = req.body.gallery_video;
 
-    // if (gallery_images != "") {
-    //   gallery_images = await s3Upload(gallery_images);
-    //   console.log(gallery_images);
-    // }
+    if (gallery_images != "") {
+      gallery_images = await s3Upload(gallery_images);
+      console.log(gallery_images);
+    }
 
-    // if (gallery_video != "") {
-    //   gallery_video = await s3VideoUpload(gallery_video);
-    //   console.log(gallery_video);
-    // }
+    if (gallery_video != "") {
+      gallery_video = await s3VideoUpload(gallery_video);
+      console.log(gallery_video);
+    }
 
     let galleryAddInfo = {
       gallery_name: req.body.gallery_name,

@@ -7,7 +7,9 @@ const {
   getRole,
   getAppointmentList,
   getGallery,
-  getAppointmentTimeList
+  getAppointmentTimeList,
+  getPlatformUsage,
+  addPlatformUsage
 } = require("../../controllers/resource/resources.controller");
 
 router.get("/get-state", (req, res) => {
@@ -37,4 +39,11 @@ router.get("/get-gallery", (req, res) => {
   
   getGallery(req, res);
 });
+router.get("/get-platform-usage", (req, res) => {
+  getPlatformUsage(req, res);
+});
+router.post("/add-platform-usage", (req, res) => {
+  addPlatformUsage(req, res);
+});
+
 module.exports = router;

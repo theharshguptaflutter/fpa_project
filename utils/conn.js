@@ -131,11 +131,28 @@ db.room = require("../models/resource/meeting_room/room_model.js")(
   sequelize,
   DataTypes
 );
+db.room_permission = require("../models/resource/room_permission/room_permission.model.js")(
+  sequelize,
+  DataTypes
+);
+db.user_room_permission = require("../models/admin/user_room_permission/user_room_permission.js")(
+  sequelize,
+  DataTypes
+);
+db.doctor_room_permission = require("../models/admin/doctor_room_permission/doctor_room_permission.js")(
+  sequelize,
+  DataTypes
+);
+
+db.platform_usage = require("../models/resource/platform_usage/platform_usage.model.js")(
+  sequelize,
+  DataTypes
+);
 
 
 // db.sequelize.sync({ force: false }).then(() => {
 //   console.log("yes re-sync done!");
-// });
+//  });
 
 
 //access toekn tb link
@@ -375,6 +392,41 @@ db.room.hasOne(db.meeting_room, {
 });
 
 db.doctor_user.hasMany(db.appointment_booking, {
+  foreignKey: "doctor_id",
+});
+
+
+db.user_room_permission.belongsTo(db.users, {
+  foreignKey: "user_id", // foreign table
+  targetKey: "user_id", // primary table
+});
+
+db.user_room_permission.belongsTo(db.room_permission, {
+  foreignKey: "room_permission_id", // foreign table
+  targetKey: "room_permission_id", // primary table
+});
+
+db.users.hasMany(db.user_room_permission, {
+  foreignKey: "user_id",
+});
+
+db.room_permission.hasMany(db.user_room_permission, {
+  foreignKey: "room_permission_id",
+});
+
+
+//doctor room permission
+db.doctor_room_permission.belongsTo(db.doctor_user, {
+  foreignKey: "doctor_id", // foreign table
+  targetKey: "doctor_id", // primary table
+});
+
+db.doctor_room_permission.belongsTo(db.room_permission, {
+  foreignKey: "room_permission_id", // foreign table
+  targetKey: "room_permission_id", // primary table
+});
+
+db.doctor_user.hasMany(db.doctor_room_permission, {
   foreignKey: "doctor_id",
 });
 

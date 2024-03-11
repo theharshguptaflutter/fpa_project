@@ -71,6 +71,7 @@ async function addAppointment(req, res) {
           {
             user_id: user_id,
             doctor_id: findAvailableDoctorQuery,
+            doctor_availability_status:1,
             user_booking_price: user_booking_price,
             total_booking_price: total_booking_price,
             booked_current_date: booked_current_date,
@@ -511,8 +512,6 @@ var medical_history_other = req.body.medical_history_other;
 
   var yourself = req.body.yourself;
   var blood_group = req.body.blood_group;
-  // var height = req.body.height;
-  // var weight = req.body.weight;
 
   var heightFt  = req.body.heightFt;
   var heightIn  = req.body.heightIn;
@@ -547,56 +546,51 @@ var medical_history_other = req.body.medical_history_other;
   var age_of_youngest_living_child = req.body.age_of_youngest_living_child;
   try {
     const addClientHistoryCardInserQuery = tableNames.clientHistoryCard.create({
-    
-  user_id: user_id,
-  name: name,
-   mother_name: mother_name,
-   reference: reference,
-   dob: dob,
-   age: age,
-   male: male,
-   female: female,
-   transgender: transgender,
-   religion: religion,
-   residence: residence,
-   address: address,
-   education: education,
-   marital_status: marital_status,
-   disability: disability,
-   gender: gender,
-  sexuality: sexuality,
-   blood_group: blood_group,
-   heightFt  :heightFt,
-   heightIn  :heightIn,
-   weightKg  :weightKg,
-   weightGm  :weightGm,
-    city: city,
-   state: state,
-   pin_code: pin_code,
-   occupation: occupation,
-   yourself: yourself,
-   medical_history: medical_history,
-   medical_history_other:medical_history_other,
-   social_history: social_history,
-   surgical_history: surgical_history,
-
-   current_medicaton: current_medicaton,
-   family_medical_history: family_medical_history,
-
-  
-  lmp: lmp,
-  cycle: cycle,
-  length: length,
-  obstetric_history: obstetric_history,
-  currently_pregnant: currently_pregnant,
-  no_previous_pregnancies: no_previous_pregnancies,
-  no_currently_children_total: no_currently_children_total,
-  clc_male: clc_male,
-  clc_female: clc_female,
-  clc_other: clc_other,
-  abortions: abortions,
-  stillbirth: stillbirth,
-  age_of_youngest_living_child: age_of_youngest_living_child
+      user_id: user_id,
+      name: name,
+       mother_name: mother_name,
+       reference: reference,
+       dob: dob,
+       age: age,
+       male: male,
+       female: female,
+       transgender: transgender,
+       religion: religion,
+       residence: residence,
+       address: address,
+       education: education,
+       marital_status: marital_status,
+       disability: disability,
+       gender: gender,
+      sexuality: sexuality,
+       blood_group: blood_group,
+       heightFt  :heightFt,
+       heightIn  :heightIn,
+       weightKg  :weightKg,
+       weightGm  :weightGm,
+        city: city,
+       state: state,
+       pin_code: pin_code,
+       occupation: occupation,
+       yourself: yourself,
+       medical_history: medical_history,
+       social_history: social_history,
+       surgical_history: surgical_history,
+       current_medicaton: current_medicaton,
+       family_medical_history: family_medical_history,
+      lmp: lmp,
+      cycle: cycle,
+      length: length,
+      obstetric_history: obstetric_history,
+      currently_pregnant: currently_pregnant,
+      no_previous_pregnancies: no_previous_pregnancies,
+      no_currently_children_total: no_currently_children_total,
+      clc_male: clc_male,
+      clc_female: clc_female,
+      clc_other: clc_other,
+      abortions: abortions,
+      stillbirth: stillbirth,
+      age_of_youngest_living_child: age_of_youngest_living_child
     });
 
     successWithdata(
@@ -628,6 +622,7 @@ async function appointmentCancel(req, res) {
     {
       booking_status_id: 4, // 4 means Appointment cancel
       appointment_delete_flag: 1,
+      doctor_availability_status:0
     },
     {
       where: {
@@ -664,6 +659,7 @@ async function appointmentReschedule(req, res) {
     {
       booked_current_date: booked_current_date,
       booked_current_time: booked_current_time,
+      doctor_availability_status:1
     },
     {
       where: {

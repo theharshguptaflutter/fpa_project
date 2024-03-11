@@ -501,7 +501,7 @@ async function addClientHistoryCard(req, res) {
   var residence = req.body.residence;
   var address = req.body.address;
   var reference = req.body.reference;
-
+var medical_history_other = req.body.medical_history_other;
   var city = req.body.city;
   var state = req.body.state;
   var pin_code = req.body.pin_code;
@@ -512,6 +512,7 @@ async function addClientHistoryCard(req, res) {
 
   var yourself = req.body.yourself;
   var blood_group = req.body.blood_group;
+
   var heightFt  = req.body.heightFt;
   var heightIn  = req.body.heightIn;
   var  weightKg  = req.body.weightKg;
@@ -575,11 +576,8 @@ async function addClientHistoryCard(req, res) {
        medical_history: medical_history,
        social_history: social_history,
        surgical_history: surgical_history,
-
        current_medicaton: current_medicaton,
        family_medical_history: family_medical_history,
-
-      
       lmp: lmp,
       cycle: cycle,
       length: length,

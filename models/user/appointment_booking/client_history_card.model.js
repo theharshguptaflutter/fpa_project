@@ -87,6 +87,9 @@ module.exports = (sequelize, DataTypes) => {
       //   type: DataTypes.STRING,
       //   defaultValue: null,
       // },
+
+
+
       heightFt: {
         type: DataTypes.STRING,
         defaultValue: null,
@@ -96,6 +99,7 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: null,
       },
       weightKg : {
+
         type: DataTypes.STRING,
         defaultValue: null,
       },
@@ -104,6 +108,7 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: null,
       },
 
+
       city: { type: DataTypes.STRING, defaultValue: null },
       state: { type: DataTypes.STRING, defaultValue: null },
       pin_code: { type: DataTypes.BIGINT, defaultValue: null },
@@ -111,6 +116,7 @@ module.exports = (sequelize, DataTypes) => {
       yourself: { type: DataTypes.STRING, defaultValue: null },
 
       medical_history: { type: DataTypes.STRING, defaultValue: null },
+      medical_history_other: { type: DataTypes.STRING, defaultValue: null },
       social_history: { type: DataTypes.STRING, defaultValue: null },
       surgical_history: { type: DataTypes.STRING, defaultValue: null },
 

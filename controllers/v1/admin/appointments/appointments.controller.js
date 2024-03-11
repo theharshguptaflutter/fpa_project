@@ -102,16 +102,38 @@ async function getAppointmentById(req, res) {
 }
 
 async function getAllAppointments(req, res) {
-  try {
+ // try {
     const admin_id = req.params.admin_id;
     const adminCheckQuery = await tableNames.User.findOne({
+     
       where: { user_id: admin_id },
     });
     if (adminCheckQuery.role_id !== 1) {
       res.statusCode = 403;
       return error(res, "Unauthorized Access! Admin Only!");
     } else {
-      const allAppointments = await tableNames.appointmentBooking.findAll();
+      const allAppointments = await tableNames.appointmentBooking.findAll({
+        include:[
+        
+          {
+            attributes: [
+             // "doctor_id",
+              "doctor_name",
+              "doctor_email",
+              "doctor_number",
+              "doctor_specialist",
+            ],
+            model: tableNames.doctorUser,
+          },
+          
+            {
+              attributes: ["booking_status_name"],
+              model: tableNames.bookingStatus,
+            },
+          
+        
+      ],
+      });
 
       if (allAppointments.length > 0) {
         successWithdata(res, "All Appointments found", "No Appointment found!", allAppointments, 0);
@@ -119,10 +141,10 @@ async function getAllAppointments(req, res) {
         successWithdata(res, "All Appointments found", "No Appointment found!", [], 0);
       }
     }
-  } catch (err) {
-    res.statusCode = 500;
-    error(res, err);
-  }
+  // } catch (err) {
+  //   res.statusCode = 500;
+  //   error(res, err);
+  // }
 }
 
 async function cancelAppointment(req, res) {
